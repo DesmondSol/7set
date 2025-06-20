@@ -52,7 +52,7 @@ export const PitchRefiner: React.FC<PitchRefinerProps> = ({
 
   const handleSavePitch = (pitchToSave: Pitch) => {
     let updatedPitches: Pitch[];
-    if (editingPitch) {
+    if (editingPitch && pitchToSave.id) { // Check if editingPitch and its id exist
       updatedPitches = copywritingData.pitches.map(p => p.id === pitchToSave.id ? pitchToSave : p);
     } else {
       updatedPitches = [...copywritingData.pitches, { ...pitchToSave, id: `pitch-${Date.now()}` }];
@@ -63,7 +63,7 @@ export const PitchRefiner: React.FC<PitchRefinerProps> = ({
   };
 
   const handleDeletePitch = (pitchId: string) => {
-    if (window.confirm(t('delete_button') + "?")) {
+    if (window.confirm(t('delete_button') + ` "${copywritingData.pitches.find(p=>p.id === pitchId)?.title || 'pitch'}"?`)) {
         const updatedPitches = copywritingData.pitches.filter(p => p.id !== pitchId);
         onUpdateData({ ...copywritingData, pitches: updatedPitches });
     }
@@ -112,9 +112,7 @@ export const PitchRefiner: React.FC<PitchRefinerProps> = ({
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-white rounded-lg shadow">
         <h3 className="text-xl font-semibold text-blue-700">{t('copywriting_pitch_refinement_title')}</h3>
          <div className="flex space-x-2">
-            <Button onClick={() => setOpenAiModalFlag(true)} leftIcon={<SparklesIcon className="h-5 w-5"/>} variant="secondary">
-                {t('pitch_ai_generate_button')}
-            </Button>
+            {/* Redundant AI button removed. AI is triggered by FAB on CopywritingPage */}
             <Button onClick={() => handleOpenPitchModal(null)} leftIcon={<PlusIcon className="h-5 w-5"/>}>
                 {t('pitch_add_button')}
             </Button>

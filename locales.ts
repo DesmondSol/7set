@@ -5,6 +5,7 @@ import { Page, SubPage, CanvasSection, ResearchSection, Language } from './types
 export type TranslationKey =
   | Page
   | SubPage
+  | CanvasSection // Added all CanvasSection enum values
   | 'export_all_button'
   | 'ai_assistant_canvas_button_tooltip'
   | 'help_canvas_button_tooltip'
@@ -13,10 +14,14 @@ export type TranslationKey =
   | 'ai_modal_q1_label'
   | 'ai_modal_q2_label'
   | 'ai_modal_q3_label'
+  | 'ai_modal_idea_placeholder' // New key
+  | 'ai_modal_q1_placeholder'   // New key
+  | 'ai_modal_q2_placeholder'   // New key
+  | 'ai_modal_q3_placeholder'   // New key
   | 'ai_modal_generate_button_canvas'
   | 'ai_modal_generating_button_canvas'
   | 'help_modal_title_canvas'
-  | 'businessLaunchCanvas_title' // Added
+  | 'businessLaunchCanvas_title' 
   | 'edit_button'
   | 'save_button'
   | 'cancel_button'
@@ -70,7 +75,6 @@ export type TranslationKey =
   | 'coming_soon_message'
   | 'welcome_title'
   | 'welcome_message'
-  // | 'footer_copyright' // Removed
   | 'lang_english'
   | 'lang_amharic';
 
@@ -89,18 +93,43 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [SubPage.LEARN]: 'Learn',
     [SubPage.AI_ADVISOR]: 'AI Advisor',
 
+    // Canvas Section Titles
+    [CanvasSection.PROJECT_OVERVIEW]: "Project Overview",
+    [CanvasSection.PRODUCT_VISION]: "Product Vision",
+    [CanvasSection.NORTH_STAR_METRIC]: "North Star Metric",
+    [CanvasSection.PRODUCT_WHY]: "Product Why",
+    [CanvasSection.PROBLEM]: "Problem",
+    [CanvasSection.SOLUTION]: "Solution",
+    [CanvasSection.PRODUCT_DETAIL]: "Product Detail",
+    [CanvasSection.MARKET]: "Market",
+    [CanvasSection.PERSONAS]: "Personas",
+    [CanvasSection.JOBS_TO_BE_DONE]: "Jobs To Be Done",
+    [CanvasSection.USE_CASES]: "Use Cases",
+    [CanvasSection.UNIQUE_VALUE_PROPOSITION]: "Unique Value Proposition",
+    [CanvasSection.UNFAIR_ADVANTAGE]: "Unfair Advantage",
+    [CanvasSection.BUSINESS_MODEL]: "Business Model",
+    [CanvasSection.PRICING]: "Pricing",
+    [CanvasSection.COMPETITORS]: "Competitors",
+    [CanvasSection.UNIT_ECONOMICS]: "Unit Economics",
+    [CanvasSection.BRAND_STYLE_GUIDES]: "Brand & Style Guides",
+    [CanvasSection.PRODUCT_MARKET_FIT]: "Product - Market Fit",
+
     export_all_button: 'Export All',
     ai_assistant_canvas_button_tooltip: 'AI Assistant to Fill Canvas',
     help_canvas_button_tooltip: 'Business Launch Canvas Guide',
     ai_assistant_modal_title_canvas: 'AI Assistant - Business Canvas',
-    ai_modal_idea_label: 'Your Core Business Idea:',
-    ai_modal_q1_label: '1. What primary problem does your business solve?',
-    ai_modal_q2_label: '2. Who is your target customer?',
-    ai_modal_q3_label: '3. What makes your solution unique or different?',
+    ai_modal_idea_label: 'Your Core Business Idea (Ethiopian Context):',
+    ai_modal_q1_label: '1. Primary Problem Solved (in Ethiopia):',
+    ai_modal_q2_label: '2. Target Customer (Ethiopian Focus):',
+    ai_modal_q3_label: '3. Unique Selling Proposition (for Ethiopia):',
+    ai_modal_idea_placeholder: 'e.g., "GebeyaSook", a mobile app for Ethiopian artisans to sell crafts online, focusing on traditional patterns.',
+    ai_modal_q1_placeholder: 'e.g., Ethiopian artisans lack direct access to broader markets and fair pricing.',
+    ai_modal_q2_placeholder: 'e.g., Tourists, diaspora, and local Ethiopians interested in authentic, high-quality crafts.',
+    ai_modal_q3_placeholder: 'e.g., Direct artist-to-consumer model, integrated Telebirr payments, and promoting cultural heritage.',
     ai_modal_generate_button_canvas: 'Generate Canvas Content',
     ai_modal_generating_button_canvas: 'Generating...',
     help_modal_title_canvas: 'Business Launch Canvas Guide',
-    businessLaunchCanvas_title: 'Business Launch Canvas', // Added
+    businessLaunchCanvas_title: 'Business Launch Canvas',
     edit_button: 'Edit',
     save_button: 'Save',
     cancel_button: 'Cancel',
@@ -157,7 +186,6 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 
     welcome_title: "Welcome to 7set Spark!",
     welcome_message: "Your innovation and training hub for entrepreneurs. Select a section from the navigation bar above to begin your journey.",
-    // footer_copyright: "7set Spark Innovation. All rights reserved.", // Removed
     lang_english: "English",
     lang_amharic: "Amharic",
   },
@@ -173,18 +201,43 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [SubPage.LEARN]: 'ይማሩ',
     [SubPage.AI_ADVISOR]: 'የአርቴፊሻል ኢንተለጀንስ አማካሪ',
 
+    // Canvas Section Titles - Amharic
+    [CanvasSection.PROJECT_OVERVIEW]: "የፕሮጀክት አጠቃላይ እይታ",
+    [CanvasSection.PRODUCT_VISION]: "የምርት ራዕይ",
+    [CanvasSection.NORTH_STAR_METRIC]: "የሰሜን ኮከብ መለኪያ",
+    [CanvasSection.PRODUCT_WHY]: "የምርት ምክንያት",
+    [CanvasSection.PROBLEM]: "ችግር",
+    [CanvasSection.SOLUTION]: "መፍትሄ",
+    [CanvasSection.PRODUCT_DETAIL]: "የምርት ዝርዝር",
+    [CanvasSection.MARKET]: "ገበያ",
+    [CanvasSection.PERSONAS]: "የደንበኛ ዓይነቶች",
+    [CanvasSection.JOBS_TO_BE_DONE]: "ሊሰሩ የሚገባቸው ስራዎች",
+    [CanvasSection.USE_CASES]: "የአጠቃቀም ሁኔታዎች",
+    [CanvasSection.UNIQUE_VALUE_PROPOSITION]: "ልዩ የእሴት አቅርቦት",
+    [CanvasSection.UNFAIR_ADVANTAGE]: "ኢ-ፍትሃዊ ጥቅም",
+    [CanvasSection.BUSINESS_MODEL]: "የንግድ ሞዴል",
+    [CanvasSection.PRICING]: "የዋጋ አወጣጥ",
+    [CanvasSection.COMPETITORS]: "ተወዳዳሪዎች",
+    [CanvasSection.UNIT_ECONOMICS]: "የአሃድ ኢኮኖሚክስ",
+    [CanvasSection.BRAND_STYLE_GUIDES]: "የምርት ስም እና የቅጥ መመሪያዎች",
+    [CanvasSection.PRODUCT_MARKET_FIT]: "የምርት-ገበያ ተስማሚነት",
+
     export_all_button: 'ሁሉንም ላክ',
     ai_assistant_canvas_button_tooltip: 'ሸራውን ለመሙላት የ AI ረዳት',
     help_canvas_button_tooltip: 'የቢዝነስ ማስጀመሪያ ሸራ መመሪያ',
     ai_assistant_modal_title_canvas: 'የ AI ረዳት - የቢዝነስ ሸራ',
-    ai_modal_idea_label: 'የእርስዎ ዋና የንግድ ሃሳብ፡',
-    ai_modal_q1_label: '1. ንግድዎ በዋናነት የሚፈታው ችግር ምንድን ነው?',
-    ai_modal_q2_label: '2. የእርስዎ ኢላማ ደንበኛ ማነው?',
-    ai_modal_q3_label: '3. የእርስዎን መፍትሄ ልዩ ወይም የተለየ የሚያደርገው ምንድን ነው?',
+    ai_modal_idea_label: 'የእርስዎ ዋና የንግድ ሃሳብ (የኢትዮጵያ አውድ):',
+    ai_modal_q1_label: '1. ንግድዎ በዋናነት የሚፈታው ችግር (በኢትዮጵያ):',
+    ai_modal_q2_label: '2. የእርስዎ ኢላማ ደንበኛ (የኢትዮጵያ ትኩረት):',
+    ai_modal_q3_label: '3. የእርስዎን መፍትሄ ልዩ ወይም የተለየ የሚያደርገው (ለኢትዮጵያ):',
+    ai_modal_idea_placeholder: 'ለምሳሌ፦ "ገበያሱቅ"፣ ኢትዮጵያውያን የእጅ ባለሞያዎች የባህል ሥራዎቻቸውን ኦንላይን እንዲሸጡ የሚያስችል የሞባይል መተግበሪያ፣ በባህላዊ ንድፎች ላይ ያተኮረ።',
+    ai_modal_q1_placeholder: 'ለምሳሌ፦ ኢትዮጵያውያን የእጅ ባለሞያዎች ሰፊ ገበያ የማግኘት እና ፍትሃዊ ዋጋ የማግኘት ችግር አለባቸው።',
+    ai_modal_q2_placeholder: 'ለምሳሌ፦ ቱሪስቶች፣ ዲያስፖራዎች፣ እና ጥራት ያላቸው የባህል ሥራዎችን የሚፈልጉ የአገር ውስጥ ኢትዮጵያውያን።',
+    ai_modal_q3_placeholder: 'ለምሳሌ፦ በቀጥታ ከባለሙያ ወደ ተጠቃሚ የሚደርስ ሞዴል፣ የተቀናጀ የቴሌብር ክፍያ፣ እና የባህል ቅርሶችን ማስተዋወቅ።',
     ai_modal_generate_button_canvas: 'የሸራ ይዘት አመንጭ',
     ai_modal_generating_button_canvas: 'እያመነጨ ነው...',
     help_modal_title_canvas: 'የቢዝነስ ማስጀመሪያ ሸራ መመሪያ',
-    businessLaunchCanvas_title: 'የቢዝነስ ማስጀመሪያ ሸራ', // Added
+    businessLaunchCanvas_title: 'የቢዝነስ ማስጀመሪያ ሸራ',
     edit_button: 'አስተካክል',
     save_button: 'አስቀምጥ',
     cancel_button: 'ሰርዝ',
@@ -241,7 +294,6 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 
     welcome_title: "እንኳን ወደ 7ሴት ስፓርክ በደህና መጡ!",
     welcome_message: "የእርስዎ የፈጠራ እና የስልጠና ማዕከል ለስራ ፈጣሪዎች። ጉዞዎን ለመጀመር ከላይ ካለው የማውጫ ቁልፎች አንድ ክፍል ይምረጡ።",
-    // footer_copyright: "7ሴት ስፓርክ ኢኖቬሽን። ሁሉም መብቶች በህግ የተጠበቁ ናቸው።", // Removed
     lang_english: "English",
     lang_amharic: "አማርኛ",
   }

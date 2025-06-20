@@ -30,13 +30,10 @@ const SectionContentEditor: React.FC<SectionContentEditorProps> = ({ section, co
     setEditing(false);
   };
   
-  // For section titles that might need translation if they were dynamic (not the case here as they are enum keys)
-  // const sectionTitle = t(section as TranslationKey, section); 
-
   return (
     <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-2xl font-semibold text-blue-700">{section}</h3> {/* Section names are keys, not directly translated in UI title here */}
+        <h3 className="text-2xl font-semibold text-blue-700">{t(section as TranslationKey, section)}</h3>
         {!editing && (
           <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
             {t('edit_button', 'Edit')}
@@ -50,7 +47,7 @@ const SectionContentEditor: React.FC<SectionContentEditorProps> = ({ section, co
             value={currentContent}
             onChange={(e) => setCurrentContent(e.target.value)}
             className="w-full h-40 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
-            placeholder={`${t('no_content_yet_placeholder', 'Enter details for')} ${section}...`}
+            placeholder={`${t('no_content_yet_placeholder', 'Enter details for')} ${t(section as TranslationKey, section)}...`}
             dir={language === 'am' ? 'rtl' : 'ltr'} // Basic RTL support for Amharic in textarea
           />
           <div className="mt-3 flex space-x-2">
@@ -87,8 +84,7 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
     const title = `7set Spark - ${t('businessLaunchCanvas_title', "Business Launch Canvas")} Export\n`;
     const date = `Exported on: ${new Date().toLocaleString()}\n\n`;
     const content = ALL_CANVAS_SECTIONS.map(section => {
-      // Section titles remain in English as they are keys. Content is in the generated language.
-      return `## ${section}\n\n${canvasData[section] || t('no_content_yet_placeholder', 'No content provided.')}\n\n------------------------------------\n`;
+      return `## ${t(section as TranslationKey, section)}\n\n${canvasData[section] || t('no_content_yet_placeholder', 'No content provided.')}\n\n------------------------------------\n`;
     }).join('');
     
     const fullContent = title + date + content;
@@ -181,19 +177,19 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
         <div className="space-y-4">
           <div>
             <label htmlFor="idea" className="block text-sm font-medium text-gray-700 mb-1">{t('ai_modal_idea_label')}</label>
-            <textarea id="idea" name="idea" rows={3} value={aiForm.idea} onChange={handleAiInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., A subscription box for eco-friendly pet toys."/>
+            <textarea id="idea" name="idea" rows={3} value={aiForm.idea} onChange={handleAiInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder={t('ai_modal_idea_placeholder')}/>
           </div>
           <div>
             <label htmlFor="q1" className="block text-sm font-medium text-gray-700 mb-1">{t('ai_modal_q1_label')}</label>
-            <input type="text" id="q1" name="q1" value={aiForm.q1} onChange={handleAiInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Pet owners struggle to find sustainable and engaging toys."/>
+            <input type="text" id="q1" name="q1" value={aiForm.q1} onChange={handleAiInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder={t('ai_modal_q1_placeholder')}/>
           </div>
           <div>
             <label htmlFor="q2" className="block text-sm font-medium text-gray-700 mb-1">{t('ai_modal_q2_label')}</label>
-            <input type="text" id="q2" name="q2" value={aiForm.q2} onChange={handleAiInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Environmentally conscious dog and cat owners aged 25-45."/>
+            <input type="text" id="q2" name="q2" value={aiForm.q2} onChange={handleAiInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder={t('ai_modal_q2_placeholder')}/>
           </div>
           <div>
             <label htmlFor="q3" className="block text-sm font-medium text-gray-700 mb-1">{t('ai_modal_q3_label')}</label>
-            <input type="text" id="q3" name="q3" value={aiForm.q3} onChange={handleAiInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Curated selection of artisanal, upcycled materials, and a portion of profits go to animal shelters."/>
+            <input type="text" id="q3" name="q3" value={aiForm.q3} onChange={handleAiInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder={t('ai_modal_q3_placeholder')}/>
           </div>
           <Button onClick={handleAiGenerate} disabled={isLoadingAi} className="w-full" variant="primary">
             {isLoadingAi ? (
@@ -210,7 +206,7 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
         <div className="space-y-6">
           {CANVAS_SECTIONS_HELP.map(helpItem => (
             <div key={helpItem.title} className="p-4 bg-gray-50 rounded-lg shadow">
-              <h4 className="text-xl font-semibold text-blue-700 mb-2">{helpItem.title}</h4> {/* Section titles are keys */}
+              <h4 className="text-xl font-semibold text-blue-700 mb-2">{t(helpItem.title as TranslationKey, helpItem.title)}</h4>
               <p className="text-gray-700 mb-2 whitespace-pre-line" dir={language === 'am' ? 'rtl' : 'ltr'}>{helpItem.explanation[language] || helpItem.explanation.en}</p>
               {helpItem.example && (helpItem.example[language] || helpItem.example.en) && (
                 <div>

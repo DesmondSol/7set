@@ -112,5 +112,6 @@ export interface MarketResearchData {
 
 export interface ResearchSectionHelp {
   title: ResearchSection; // This remains the enum key
+  sidebarTitle: Record<Language, string>; // New field for concise sidebar title
   explanation: Record<Language, string>;
 }

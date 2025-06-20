@@ -8,6 +8,7 @@ import {
     CompetitorProfile,
     TrendEntry,
     CanvasData,
+    CanvasSection, // Added CanvasSection
     ResearchQuestionnaireSet,
     Language
 } from '../../types';
@@ -252,7 +253,9 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
   const [activeResearchSection, setActiveResearchSection] = useState<ResearchSection>(ResearchSection.QUESTIONS);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
-  const [currentHelpContent, setCurrentHelpContent] = useState<ResearchSectionHelp | null>(null);
+  const [currentHelpContent, setCurrentHelpContent] = useState<ResearchSectionHelp | null>(
+    RESEARCH_SECTIONS_HELP.find(h => h.title === activeResearchSection) || RESEARCH_SECTIONS_HELP[0]
+  );
   const [isLoadingAi, setIsLoadingAi] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -404,7 +407,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
       setError(t('mra_error_select_or_create_set'));
       return;
     }
-    if (!strategyData || Object.keys(strategyData).length === 0) {
+    if (!strategyData || Object.keys(strategyData).filter(k=>strategyData[k as CanvasSection]?.trim()).length === 0) {
         setError(t('mra_questions_ai_requires_canvas_note'));
         return;
     }
@@ -521,10 +524,8 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
   };
   
   const handleExport = () => {
-    let sectionTitleForExport = activeResearchSection;
-    const translatedSectionTitle = RESEARCH_SECTIONS_HELP.find(h => h.title === activeResearchSection)?.explanation[language]
-      ?.split('\n')[0] // Attempt to get a short title from explanation
-      || activeResearchSection;
+    const activeSectionHelp = RESEARCH_SECTIONS_HELP.find(h => h.title === activeResearchSection);
+    const translatedSectionTitle = activeSectionHelp?.sidebarTitle[language] || activeSectionHelp?.title || activeResearchSection;
 
     let contentToExport = `7set Spark - ${t('market_research_accelerator_page_title')} (${translatedSectionTitle})\n`;
     contentToExport += `Exported on: ${new Date().toLocaleString()}\n\n`;
@@ -535,18 +536,18 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
     
     // Example for Questions section title in export
      if (activeResearchSection === ResearchSection.QUESTIONS) {
-        contentToExport += `## ${RESEARCH_SECTIONS_HELP.find(h => h.title === ResearchSection.QUESTIONS)?.explanation[language]?.split('\n')[0] || ResearchSection.QUESTIONS}\n\n`;
+        contentToExport += `## ${RESEARCH_SECTIONS_HELP.find(h => h.title === ResearchSection.QUESTIONS)?.sidebarTitle[language] || ResearchSection.QUESTIONS}\n\n`;
         // ... rest of question export logic ...
     } else {
         // ... other sections ...
     }
     
-    const fileContent = contentToExport.replace(/\\n/g, '\n');
+    const fileContent = contentToExport.replace(/\\n/g, '\n'); // This line might not be needed if content is already clean
     const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     const fileNameBase = language === 'am' ? 'የገበያ_ጥናት' : 'market_research';
-    link.download = `${fileNameBase}_${activeResearchSection.toLowerCase().replace(/\s+|&/g, '_')}.txt`;
+    link.download = `${fileNameBase}_${(activeSectionHelp?.sidebarTitle.en || activeResearchSection).toLowerCase().replace(/\s+|&|\//g, '_')}.txt`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -554,7 +555,11 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
 
   const openHelpModalForSection = (sectionKey: ResearchSection) => {
     const help = RESEARCH_SECTIONS_HELP.find(h => h.title === sectionKey);
-    setCurrentHelpContent(help || { title: sectionKey, explanation: {en: "No help text available.", am: "ምንም የእገዛ ጽሑፍ የለም።"} });
+    setCurrentHelpContent(help || { 
+        title: sectionKey, 
+        sidebarTitle: {en: sectionKey, am: sectionKey}, 
+        explanation: {en: "No help text available.", am: "ምንም የእገዛ ጽሑፍ የለም።"} 
+    });
     setIsHelpModalOpen(true);
   };
   
@@ -564,7 +569,8 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
     if (error && activeResearchSection !== ResearchSection.AI_SUMMARY) { 
       if(activeResearchSection !== ResearchSection.QUESTIONS) setError(null);
     }
-    const translatedSectionTitle = RESEARCH_SECTIONS_HELP.find(h => h.title === activeResearchSection)?.explanation[language]?.split('\n')[0] || activeResearchSection;
+    const currentSectionHelp = RESEARCH_SECTIONS_HELP.find(h => h.title === activeResearchSection);
+    const translatedSectionTitle = currentSectionHelp?.sidebarTitle[language] || activeResearchSection;
 
     switch (activeResearchSection) {
       case ResearchSection.QUESTIONS:
@@ -572,7 +578,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
           <div className="space-y-4">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-4 p-4 bg-gray-100 rounded-lg shadow">
                 <div>
-                    <h3 className="text-xl font-semibold text-blue-700">{RESEARCH_SECTIONS_HELP.find(h => h.title === ResearchSection.QUESTIONS)?.explanation[language]?.split('.')[0] || "Research Question Sets"}</h3>
+                    <h3 className="text-xl font-semibold text-blue-700">{RESEARCH_SECTIONS_HELP.find(h => h.title === ResearchSection.QUESTIONS)?.sidebarTitle[language] || "Research Question Sets"}</h3>
                     <p className="text-sm text-gray-600">{language === 'am' ? 'የተለያዩ ግቦች ወይም ታዳሚዎች ላሏቸው የተለያዩ የምርምር ጥያቄ ስብስቦችን ያስተዳድሩ።' : 'Manage different sets of research questions for various goals or audiences.'}</p>
                 </div>
                 <Button onClick={() => { setIsCreateSetModalOpen(true); setError(null); }} leftIcon={<PlusIcon className="h-5 w-5"/>}>
@@ -624,10 +630,10 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
                     <Button onClick={handleAddManualQuestion} disabled={!manualQuestion.trim()}>{t('mra_questions_add_manual_button')}</Button>
                   </div>
                 </div>
-                <Button variant="secondary" onClick={() => {handleAiGenerateQuestions(); setError(null);}} leftIcon={<SparklesIcon className="h-5 w-5"/>} disabled={isLoadingAi || !strategyData || Object.keys(strategyData).length === 0}>
+                <Button variant="secondary" onClick={() => {handleAiGenerateQuestions(); setError(null);}} leftIcon={<SparklesIcon className="h-5 w-5"/>} disabled={isLoadingAi || !strategyData || Object.keys(strategyData).filter(k=>strategyData[k as CanvasSection]?.trim()).length === 0}>
                   {isLoadingAi ? t('mra_questions_ai_generating_button') : t('mra_questions_ai_generate_button')}
                 </Button>
-                {!strategyData || Object.keys(strategyData).length === 0 && <p className="text-xs text-orange-600 mt-1">{t('mra_questions_ai_requires_canvas_note')}</p>}
+                {(!strategyData || Object.keys(strategyData).filter(k=>strategyData[k as CanvasSection]?.trim()).length === 0) && <p className="text-xs text-orange-600 mt-1">{t('mra_questions_ai_requires_canvas_note')}</p>}
 
                 <div className="mt-4 space-y-2">
                   {currentActiveSet.questions.length > 0 ? (
@@ -661,7 +667,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
       case ResearchSection.GENERAL_NOTES_IMPORT:
         return (
           <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-blue-700">{t('mra_general_notes_title')}</h3>
+            <h3 className="text-xl font-semibold text-blue-700">{translatedSectionTitle}</h3>
              <div className="bg-white p-4 rounded-lg shadow">
                 <label htmlFor="csvUpload" className="block text-sm font-medium text-gray-700 mb-2">{t('mra_general_notes_import_csv_label')}</label>
                 <input type="file" id="csvUpload" accept=".csv" onChange={handleFileUpload} 
@@ -683,7 +689,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         return (
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold text-blue-700">{t('mra_competitor_analysis_title')}</h3>
+              <h3 className="text-xl font-semibold text-blue-700">{translatedSectionTitle}</h3>
               <Button onClick={handleAddCompetitor} leftIcon={<PlusIcon className="h-5 w-5"/>}>{t('mra_competitor_add_button')}</Button>
             </div>
             {editingCompetitorId && currentCompetitor ? (
@@ -706,7 +712,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         return (
           <div>
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-semibold text-blue-700">{t('mra_trends_title')}</h3>
+                <h3 className="text-xl font-semibold text-blue-700">{translatedSectionTitle}</h3>
                 <Button onClick={handleAddTrend} leftIcon={<PlusIcon className="h-5 w-5"/>}>{t('mra_trends_add_button')}</Button>
             </div>
             {editingTrendId && currentTrend ? (
@@ -727,7 +733,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
       case ResearchSection.AI_SUMMARY:
         return (
           <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-blue-700">{t('mra_ai_summary_title')}</h3>
+            <h3 className="text-xl font-semibold text-blue-700">{translatedSectionTitle}</h3>
             {error && <p className="text-red-500 bg-red-100 p-3 rounded-md mb-2">{error}</p>}
             <Button onClick={() => {handleGenerateSummary(); setError(null);}} disabled={isLoadingAi} variant="primary" leftIcon={<SparklesIcon className="h-5 w-5"/>}>
               {isLoadingAi ? (<><SpinnerIcon className="h-5 w-5 mr-2" /> {t('mra_ai_summary_generating_button')}</>) : t('mra_ai_summary_generate_button')}
@@ -752,23 +758,28 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         </div>
         <nav>
           <ul className="space-y-2">
-            {Object.values(ResearchSection).map(section => (
-              <li key={section}>
-                <a
-                  href="#"
-                  onClick={(e) => { 
-                    e.preventDefault(); 
-                    setActiveResearchSection(section);
-                    setEditingCompetitorId(null); 
-                    setEditingTrendId(null);    
-                    if(window.innerWidth < 768) setIsSidebarOpen(false); 
-                  }}
-                  className={`block px-3 py-2 rounded-md transition-colors ${activeResearchSection === section ? 'bg-red-600 font-semibold' : 'hover:bg-blue-600'}`}
-                >
-                  {RESEARCH_SECTIONS_HELP.find(h => h.title === section)?.explanation[language]?.split('.')[0] || section}
-                </a>
-              </li>
-            ))}
+            {Object.values(ResearchSection).map(section => {
+              const helpInfo = RESEARCH_SECTIONS_HELP.find(h => h.title === section);
+              const sidebarTitle = helpInfo?.sidebarTitle[language] || section;
+              return (
+                <li key={section}>
+                  <a
+                    href="#"
+                    onClick={(e) => { 
+                      e.preventDefault(); 
+                      setActiveResearchSection(section);
+                      setCurrentHelpContent(helpInfo || {title: section, sidebarTitle: {[language]:section} as any, explanation: {en: "Error", am: "ስህተት"}});
+                      setEditingCompetitorId(null); 
+                      setEditingTrendId(null);    
+                      if(window.innerWidth < 768) setIsSidebarOpen(false); 
+                    }}
+                    className={`block px-3 py-2 rounded-md transition-colors ${activeResearchSection === section ? 'bg-red-600 font-semibold' : 'hover:bg-blue-600'}`}
+                  >
+                    {sidebarTitle}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </aside>
@@ -795,7 +806,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         size="md" 
       />
 
-      <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title={`${t('mra_help_modal_title_prefix')}: ${currentHelpContent?.explanation[language]?.split('.')[0] || currentHelpContent?.title || ''}`} size="lg">
+      <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title={`${t('mra_help_modal_title_prefix')}: ${currentHelpContent?.sidebarTitle[language] || currentHelpContent?.title || ''}`} size="lg">
         <p className="text-gray-700 whitespace-pre-line" dir={language === 'am' ? 'rtl' : 'ltr'}>
             {currentHelpContent?.explanation[language] || currentHelpContent?.explanation.en}
         </p>

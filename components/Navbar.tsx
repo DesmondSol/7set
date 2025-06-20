@@ -73,7 +73,7 @@ export const Navbar: React.FC<NavbarProps> = ({ navItems, onSelectPage, activeSu
                 {t(item.label as TranslationKey, item.label)}
               </button>
               {openDropdown === item.label && (
-                <div className="absolute mt-2 w-56 bg-white rounded-md shadow-xl z-20 right-0 lg:left-0 py-1">
+                <div className="absolute mt-2 w-auto max-w-[90vw] sm:max-w-sm md:w-56 bg-white rounded-md shadow-xl z-20 right-0 lg:left-0 py-1">
                   {item.subItems.map((subItem) => (
                     <a
                       key={subItem}
@@ -82,7 +82,7 @@ export const Navbar: React.FC<NavbarProps> = ({ navItems, onSelectPage, activeSu
                         e.preventDefault();
                         handleSubItemClick(item.label, subItem);
                       }}
-                      className={`block px-4 py-3 text-sm transition-colors duration-150
+                      className={`block px-4 py-3 text-sm transition-colors duration-150 whitespace-normal
                         ${activeSubPage === subItem 
                           ? 'bg-blue-500 text-white' 
                           : 'text-gray-700 hover:bg-red-100 hover:text-red-700'
@@ -107,7 +107,7 @@ export const Navbar: React.FC<NavbarProps> = ({ navItems, onSelectPage, activeSu
             <ChevronDownIcon className={`w-4 h-4 ml-1 transition-transform duration-200 ${isLangDropdownOpen ? 'transform rotate-180' : ''}`} />
           </button>
           {isLangDropdownOpen && (
-            <div className="absolute mt-2 w-36 bg-white rounded-md shadow-xl z-20 right-0 py-1">
+            <div className="absolute mt-2 w-auto max-w-[70vw] sm:max-w-[12rem] md:w-36 bg-white rounded-md shadow-xl z-20 right-0 py-1">
               {(['en', 'am'] as Language[]).map((lang) => (
                 <a
                   key={lang}
@@ -116,7 +116,7 @@ export const Navbar: React.FC<NavbarProps> = ({ navItems, onSelectPage, activeSu
                     e.preventDefault();
                     handleLanguageChange(lang);
                   }}
-                  className={`block px-4 py-3 text-sm transition-colors duration-150
+                  className={`block px-4 py-3 text-sm transition-colors duration-150 whitespace-normal
                     ${currentLanguage === lang
                       ? 'bg-blue-500 text-white'
                       : 'text-gray-700 hover:bg-red-100 hover:text-red-700'
@@ -138,3 +138,4 @@ const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.23 8.29a.75.75 0 01.02-1.06z" clipRule="evenodd" />
   </svg>
 );
+    

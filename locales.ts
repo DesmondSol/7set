@@ -1,0 +1,254 @@
+
+import { Page, SubPage, CanvasSection, ResearchSection, Language } from './types';
+
+// Define a more comprehensive type for translation keys
+export type TranslationKey =
+  | Page
+  | SubPage
+  | 'export_all_button'
+  | 'ai_assistant_canvas_button_tooltip'
+  | 'help_canvas_button_tooltip'
+  | 'ai_assistant_modal_title_canvas'
+  | 'ai_modal_idea_label'
+  | 'ai_modal_q1_label'
+  | 'ai_modal_q2_label'
+  | 'ai_modal_q3_label'
+  | 'ai_modal_generate_button_canvas'
+  | 'ai_modal_generating_button_canvas'
+  | 'help_modal_title_canvas'
+  | 'businessLaunchCanvas_title' // Added
+  | 'edit_button'
+  | 'save_button'
+  | 'cancel_button'
+  | 'no_content_yet_placeholder'
+  | 'error_ai_failed_generic'
+  | 'error_ai_no_idea'
+  | 'market_research_accelerator_page_title'
+  | 'export_current_view_button'
+  | 'help_mra_button_tooltip'
+  | 'mra_help_modal_title_prefix'
+  | 'mra_sidebar_title'
+  | 'mra_questions_create_set_button'
+  | 'mra_questions_active_set_label'
+  | 'mra_questions_select_set_placeholder'
+  | 'mra_questions_delete_set_button_title'
+  | 'mra_questions_working_on_prefix'
+  | 'mra_questions_goal_prefix'
+  | 'mra_questions_audience_prefix'
+  | 'mra_questions_add_manual_label'
+  | 'mra_questions_add_manual_button'
+  | 'mra_questions_ai_generate_button'
+  | 'mra_questions_ai_generating_button'
+  | 'mra_questions_ai_requires_canvas_note'
+  | 'mra_questions_no_questions_placeholder'
+  | 'mra_questions_select_set_prompt'
+  | 'mra_questions_no_sets_prompt'
+  | 'mra_general_notes_title'
+  | 'mra_general_notes_import_csv_label'
+  | 'mra_general_notes_csv_note'
+  | 'mra_general_notes_placeholder'
+  | 'mra_competitor_analysis_title'
+  | 'mra_competitor_add_button'
+  | 'mra_competitor_no_competitors_placeholder'
+  | 'mra_trends_title'
+  | 'mra_trends_add_button'
+  | 'mra_trends_no_trends_placeholder'
+  | 'mra_ai_summary_title'
+  | 'mra_ai_summary_generate_button'
+  | 'mra_ai_summary_generating_button'
+  | 'mra_ai_summary_placeholder'
+  | 'mra_create_set_modal_title'
+  | 'mra_create_set_name_label'
+  | 'mra_create_set_goal_label'
+  | 'mra_create_set_audience_label'
+  | 'mra_create_set_button'
+  | 'mra_error_fill_all_fields'
+  | 'mra_error_select_or_create_set'
+  | 'coming_soon_title'
+  | 'coming_soon_feature_text_prefix'
+  | 'coming_soon_feature_text_suffix'
+  | 'coming_soon_message'
+  | 'welcome_title'
+  | 'welcome_message'
+  // | 'footer_copyright' // Removed
+  | 'lang_english'
+  | 'lang_amharic';
+
+export type LocalizedContent = Record<TranslationKey, string>;
+
+export const translations: Record<Language, Partial<LocalizedContent>> = {
+  en: {
+    [Page.START]: 'Start',
+    [Page.BUILD]: 'Build',
+    [Page.GROW]: 'Grow',
+    [SubPage.STRATEGY]: 'Strategy',
+    [SubPage.RESEARCH]: 'Research',
+    [SubPage.COPYWRITING]: 'Copywriting',
+    [SubPage.CRM]: 'CRM',
+    [SubPage.EXECUTION_TRACKING]: 'Execution Tracking',
+    [SubPage.LEARN]: 'Learn',
+    [SubPage.AI_ADVISOR]: 'AI Advisor',
+
+    export_all_button: 'Export All',
+    ai_assistant_canvas_button_tooltip: 'AI Assistant to Fill Canvas',
+    help_canvas_button_tooltip: 'Business Launch Canvas Guide',
+    ai_assistant_modal_title_canvas: 'AI Assistant - Business Canvas',
+    ai_modal_idea_label: 'Your Core Business Idea:',
+    ai_modal_q1_label: '1. What primary problem does your business solve?',
+    ai_modal_q2_label: '2. Who is your target customer?',
+    ai_modal_q3_label: '3. What makes your solution unique or different?',
+    ai_modal_generate_button_canvas: 'Generate Canvas Content',
+    ai_modal_generating_button_canvas: 'Generating...',
+    help_modal_title_canvas: 'Business Launch Canvas Guide',
+    businessLaunchCanvas_title: 'Business Launch Canvas', // Added
+    edit_button: 'Edit',
+    save_button: 'Save',
+    cancel_button: 'Cancel',
+    no_content_yet_placeholder: "No content yet. Click 'Edit' or use AI to generate.",
+    error_ai_failed_generic: "AI generation failed or returned no data. Ensure API key is valid and inputs are clear.",
+    error_ai_no_idea: "Please provide your business idea.",
+
+    market_research_accelerator_page_title: "Market Research Accelerator",
+    export_current_view_button: "Export Current View",
+    help_mra_button_tooltip: "Help & Section Explanations",
+    mra_help_modal_title_prefix: "Help",
+    mra_sidebar_title: "Research Sections",
+    mra_questions_create_set_button: "Create New Research Set",
+    mra_questions_active_set_label: "Select Active Research Set:",
+    mra_questions_select_set_placeholder: "-- Select a Set --",
+    mra_questions_delete_set_button_title: "Delete selected set",
+    mra_questions_working_on_prefix: "Working on",
+    mra_questions_goal_prefix: "Goal",
+    mra_questions_audience_prefix: "Audience",
+    mra_questions_add_manual_label: "Add Question Manually to this Set:",
+    mra_questions_add_manual_button: "Add Q",
+    mra_questions_ai_generate_button: "Generate Questions with AI for this Set",
+    mra_questions_ai_generating_button: "AI Generating...",
+    mra_questions_ai_requires_canvas_note: "Note: AI question generation requires Business Launch Canvas data to be filled.",
+    mra_questions_no_questions_placeholder:"No research questions added to this set yet.",
+    mra_questions_select_set_prompt: "Please select a Research Set above to view or add questions.",
+    mra_questions_no_sets_prompt: "No Research Sets created yet. Click 'Create New Research Set' to begin.",
+    mra_general_notes_title: "General Notes & Bulk Data Import",
+    mra_general_notes_import_csv_label: "Import Google Forms CSV Responses:",
+    mra_general_notes_csv_note: "Note: CSV data will be appended. Formatting may be simplified.",
+    mra_general_notes_placeholder: "Enter general research notes, paste bulk data, or summarize imported content here...",
+    mra_competitor_analysis_title: "Competitor Analysis",
+    mra_competitor_add_button: "Add Competitor",
+    mra_competitor_no_competitors_placeholder: "No competitors added yet.",
+    mra_trends_title: "Industry Trends",
+    mra_trends_add_button: "Add Trend",
+    mra_trends_no_trends_placeholder: "No trends added yet.",
+    mra_ai_summary_title: "AI Generated Summary",
+    mra_ai_summary_generate_button: "Generate AI Summary",
+    mra_ai_summary_generating_button: "Generating Summary...",
+    mra_ai_summary_placeholder: "Click \"Generate AI Summary\" to populate. Ensure relevant sections and strategy canvas have data.",
+    mra_create_set_modal_title: "Create New Research Question Set",
+    mra_create_set_name_label: "Set Name:",
+    mra_create_set_goal_label: "Research Goal for this Set:",
+    mra_create_set_audience_label: "Target Audience for this Set:",
+    mra_create_set_button: "Create Set",
+    mra_error_fill_all_fields: "Please fill in all fields for the new research set.",
+    mra_error_select_or_create_set: "Please select or create a Research Set before adding questions.",
+
+    coming_soon_title: "Coming Soon!",
+    coming_soon_feature_text_prefix: "The",
+    coming_soon_feature_text_suffix: "feature is under construction.",
+    coming_soon_message: "We're working hard to bring you this exciting new tool. Stay tuned!",
+
+    welcome_title: "Welcome to 7set Spark!",
+    welcome_message: "Your innovation and training hub for entrepreneurs. Select a section from the navigation bar above to begin your journey.",
+    // footer_copyright: "7set Spark Innovation. All rights reserved.", // Removed
+    lang_english: "English",
+    lang_amharic: "Amharic",
+  },
+  am: {
+    [Page.START]: 'ጀምር',
+    [Page.BUILD]: 'ገንባ',
+    [Page.GROW]: 'አሳድግ',
+    [SubPage.STRATEGY]: 'ስትራቴጂ',
+    [SubPage.RESEARCH]: 'ምርምር',
+    [SubPage.COPYWRITING]: 'የፅሁፍ ዝግጅት',
+    [SubPage.CRM]: 'ሲአርኤም',
+    [SubPage.EXECUTION_TRACKING]: 'የአፈጻጸም ክትትል',
+    [SubPage.LEARN]: 'ይማሩ',
+    [SubPage.AI_ADVISOR]: 'የአርቴፊሻል ኢንተለጀንስ አማካሪ',
+
+    export_all_button: 'ሁሉንም ላክ',
+    ai_assistant_canvas_button_tooltip: 'ሸራውን ለመሙላት የ AI ረዳት',
+    help_canvas_button_tooltip: 'የቢዝነስ ማስጀመሪያ ሸራ መመሪያ',
+    ai_assistant_modal_title_canvas: 'የ AI ረዳት - የቢዝነስ ሸራ',
+    ai_modal_idea_label: 'የእርስዎ ዋና የንግድ ሃሳብ፡',
+    ai_modal_q1_label: '1. ንግድዎ በዋናነት የሚፈታው ችግር ምንድን ነው?',
+    ai_modal_q2_label: '2. የእርስዎ ኢላማ ደንበኛ ማነው?',
+    ai_modal_q3_label: '3. የእርስዎን መፍትሄ ልዩ ወይም የተለየ የሚያደርገው ምንድን ነው?',
+    ai_modal_generate_button_canvas: 'የሸራ ይዘት አመንጭ',
+    ai_modal_generating_button_canvas: 'እያመነጨ ነው...',
+    help_modal_title_canvas: 'የቢዝነስ ማስጀመሪያ ሸራ መመሪያ',
+    businessLaunchCanvas_title: 'የቢዝነስ ማስጀመሪያ ሸራ', // Added
+    edit_button: 'አስተካክል',
+    save_button: 'አስቀምጥ',
+    cancel_button: 'ሰርዝ',
+    no_content_yet_placeholder: "እስካሁን ምንም ይዘት የለም። 'አስተካክል' የሚለውን ይጫኑ ወይም AI ይጠቀሙ።",
+    error_ai_failed_generic: "የ AI ማመንጨት አልተሳካም ወይም ምንም ውሂብ አልተመለሰም። የኤፒአይ ቁልፍ ትክክል መሆኑን እና ግብአቶች ግልጽ መሆናቸውን ያረጋግጡ።",
+    error_ai_no_idea: "እባክዎ የንግድ ሃሳብዎን ያቅርቡ።",
+
+    market_research_accelerator_page_title: "የገበያ ጥናት ማፋጠኛ",
+    export_current_view_button: "የአሁኑን እይታ ላክ",
+    help_mra_button_tooltip: "እገዛ እና የክፍል ማብራሪያዎች",
+    mra_help_modal_title_prefix: "እገዛ",
+    mra_sidebar_title: "የምርምር ክፍሎች",
+    mra_questions_create_set_button: "አዲስ የምርምር ስብስብ ይፍጠሩ",
+    mra_questions_active_set_label: "ንቁ የምርምር ስብስብ ይምረጡ:",
+    mra_questions_select_set_placeholder: "-- ስብስብ ይምረጡ --",
+    mra_questions_delete_set_button_title: "የተመረጠውን ስብስብ ሰርዝ",
+    mra_questions_working_on_prefix: "በመስራት ላይ ያለ",
+    mra_questions_goal_prefix: "ግብ",
+    mra_questions_audience_prefix: "ታዳሚ",
+    mra_questions_add_manual_label: "ጥያቄ በእጅ ወደዚህ ስብስብ ያክሉ:",
+    mra_questions_add_manual_button: "ጥያቄ ጨምር",
+    mra_questions_ai_generate_button: "ለዚህ ስብስብ በ AI ጥያቄዎችን አመንጭ",
+    mra_questions_ai_generating_button: "AI እያመነጨ ነው...",
+    mra_questions_ai_requires_canvas_note: "ማሳሰቢያ: የ AI ጥያቄ ማመንጨት የቢዝነስ ማስጀመሪያ ሸራ ውሂብ መሞላት ይፈልጋል።",
+    mra_questions_no_questions_placeholder: "እስካሁን ምንም የምርምር ጥያቄዎች ወደዚህ ስብስብ አልተጨመሩም።",
+    mra_questions_select_set_prompt: "ጥያቄዎችን ለማየት ወይም ለመጨመር እባክዎ ከላይ የምርምር ስብስብ ይምረጡ።",
+    mra_questions_no_sets_prompt: "እስካሁን የተፈጠሩ የምርምር ስብስቦች የሉም። ለመጀመር 'አዲስ የምርምር ስብስብ ይፍጠሩ' የሚለውን ይጫኑ።",
+    mra_general_notes_title: "አጠቃላይ ማስታወሻዎች እና የጅምላ ውሂብ ማስገባት",
+    mra_general_notes_import_csv_label: "የጉግል ቅጾች CSV ምላሾችን አስገባ:",
+    mra_general_notes_csv_note: "ማሳሰቢያ: የ CSV ውሂብ ይያያዛል። ቅርጸቱ ሊቀልል ይችላል።",
+    mra_general_notes_placeholder: "አጠቃላይ የምርምር ማስታወሻዎችን ያስገቡ፣ የጅምላ ውሂብ ይለጥፉ፣ ወይም የገባውን ይዘት እዚህ ያጠቃልሉ...",
+    mra_competitor_analysis_title: "የተፎካካሪ ትንተና",
+    mra_competitor_add_button: "ተፎካካሪ ጨምር",
+    mra_competitor_no_competitors_placeholder: "እስካሁን ምንም ተፎካካሪዎች አልተጨመሩም።",
+    mra_trends_title: "የኢንዱስትሪ አዝማሚያዎች",
+    mra_trends_add_button: "አዝማሚያ ጨምር",
+    mra_trends_no_trends_placeholder: "እስካሁን ምንም አዝማሚያዎች አልተጨመሩም።",
+    mra_ai_summary_title: "በ AI የተፈጠረ ማጠቃለያ",
+    mra_ai_summary_generate_button: "የ AI ማጠቃለያ አመንጭ",
+    mra_ai_summary_generating_button: "ማጠቃለያ እያመነጨ ነው...",
+    mra_ai_summary_placeholder: "ለማመንጨት \"የ AI ማጠቃለያ አመንጭ\" የሚለውን ይጫኑ። ተዛማጅ ክፍሎች እና የስትራቴጂ ሸራ ውሂብ እንዳላቸው ያረጋግጡ።",
+    mra_create_set_modal_title: "አዲስ የምርምር ጥያቄ ስብስብ ይፍጠሩ",
+    mra_create_set_name_label: "የስብስብ ስም:",
+    mra_create_set_goal_label: "የዚህ ስብስብ የምርምር ግብ:",
+    mra_create_set_audience_label: "የዚህ ስብስብ ኢላማ ታዳሚ:",
+    mra_create_set_button: "ስብስብ ፍጠር",
+    mra_error_fill_all_fields: "እባክዎ ለአዲሱ የምርምር ስብስብ ሁሉንም መስኮች ይሙሉ፡፡",
+    mra_error_select_or_create_set: "ጥያቄዎችን ከመጨመርዎ በፊት እባክዎ የምርምር ስብስብ ይምረጡ ወይም ይፍጠሩ፡፡",
+
+    coming_soon_title: "በቅርቡ ይመጣል!",
+    coming_soon_feature_text_prefix: "የ",
+    coming_soon_feature_text_suffix: "ባህሪ በግንባታ ላይ ነው።",
+    coming_soon_message: "ይህን አስደሳች አዲስ መሳሪያ ለእርስዎ ለማቅረብ ጠንክረን እየሰራን ነው። ይጠብቁን!",
+
+    welcome_title: "እንኳን ወደ 7ሴት ስፓርክ በደህና መጡ!",
+    welcome_message: "የእርስዎ የፈጠራ እና የስልጠና ማዕከል ለስራ ፈጣሪዎች። ጉዞዎን ለመጀመር ከላይ ካለው የማውጫ ቁልፎች አንድ ክፍል ይምረጡ።",
+    // footer_copyright: "7ሴት ስፓርክ ኢኖቬሽን። ሁሉም መብቶች በህግ የተጠበቁ ናቸው።", // Removed
+    lang_english: "English",
+    lang_amharic: "አማርኛ",
+  }
+};
+
+// Helper function for translations
+export const getTranslator = (language: Language) => (key: TranslationKey, defaultText?: string): string => {
+  const text = translations[language]?.[key] || translations.en?.[key]; // Fallback to English if current lang or key is missing
+  return text || defaultText || String(key); // Fallback to key itself if no translation found
+};

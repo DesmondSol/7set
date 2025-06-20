@@ -4,10 +4,18 @@ import { Navbar } from './components/Navbar';
 import { BusinessLaunchCanvas } from './components/BusinessLaunchCanvas/BusinessLaunchCanvas';
 import { MarketResearchAccelerator } from './components/MarketResearchAccelerator/MarketResearchAccelerator';
 import { ComingSoon } from './components/ComingSoon';
-import { UserProfileModal } from './components/UserProfileModal'; // Import UserProfileModal
-import { Page, SubPage, CanvasData, ALL_CANVAS_SECTIONS, CanvasSection, Language, UserProfile } from './types';
+import { UserProfileModal } from './components/UserProfileModal';
+import { Page, SubPage, CanvasData, ALL_CANVAS_SECTIONS, CanvasSection, Language, UserProfile, MarketResearchData, ResearchSection } from './types';
 import { NAV_ITEMS } from './constants';
 import { getTranslator, TranslationKey } from './locales';
+
+const initialMarketResearchData: MarketResearchData = {
+  [ResearchSection.QUESTIONS]: [], 
+  [ResearchSection.GENERAL_NOTES_IMPORT]: "",
+  [ResearchSection.COMPETITOR_ANALYSIS]: [],
+  [ResearchSection.TRENDS]: [],
+  [ResearchSection.AI_SUMMARY]: "",
+};
 
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<Page | null>(null);
@@ -16,20 +24,49 @@ const App: React.FC = () => {
   const [isUserProfileModalOpen, setIsUserProfileModalOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
-  const [canvasData, setCanvasData] = useState<CanvasData>(
-    ALL_CANVAS_SECTIONS.reduce((acc, section) => {
+  const [canvasData, setCanvasData] = useState<CanvasData>(() => {
+    const storedCanvasData = localStorage.getItem('sparkCanvasData');
+    if (storedCanvasData) {
+      try {
+        const parsedData = JSON.parse(storedCanvasData);
+        // Ensure all sections are present, even if not in stored data
+        return ALL_CANVAS_SECTIONS.reduce((acc, section) => {
+          acc[section] = parsedData[section] || "";
+          return acc;
+        }, {} as CanvasData);
+      } catch (e) {
+        console.error("Failed to parse canvasData from localStorage", e);
+      }
+    }
+    return ALL_CANVAS_SECTIONS.reduce((acc, section) => {
       acc[section] = ""; 
       return acc;
-    }, {} as CanvasData)
-  );
+    }, {} as CanvasData);
+  });
+
+  const [marketResearchData, setMarketResearchData] = useState<MarketResearchData>(() => {
+    const storedMarketData = localStorage.getItem('sparkMarketResearchData');
+    if (storedMarketData) {
+      try {
+        // Basic validation could be added here if needed
+        return JSON.parse(storedMarketData);
+      } catch (e) {
+        console.error("Failed to parse marketResearchData from localStorage", e);
+      }
+    }
+    return initialMarketResearchData;
+  });
 
   const t = useCallback(getTranslator(currentLanguage), [currentLanguage]);
 
-  // Load user profile from localStorage on initial mount
   useEffect(() => {
     const storedProfile = localStorage.getItem('sparkUserProfile');
     if (storedProfile) {
-      setUserProfile(JSON.parse(storedProfile));
+      try {
+        setUserProfile(JSON.parse(storedProfile));
+      } catch (e) {
+        console.error("Failed to parse userProfile from localStorage", e);
+      }
     }
   }, []);
 
@@ -40,11 +77,24 @@ const App: React.FC = () => {
   };
 
   const handleUpdateCanvasData = (newData: Partial<CanvasData>) => {
-    setCanvasData(prev => ({ ...prev, ...newData }));
+    setCanvasData(prev => {
+      const updatedData = { ...prev, ...newData };
+      localStorage.setItem('sparkCanvasData', JSON.stringify(updatedData));
+      return updatedData;
+    });
   };
 
   const handleSaveCanvasSection = (section: CanvasSection, content: string) => {
-    setCanvasData(prev => ({ ...prev, [section]: content }));
+    setCanvasData(prev => {
+      const updatedData = { ...prev, [section]: content };
+      localStorage.setItem('sparkCanvasData', JSON.stringify(updatedData));
+      return updatedData;
+    });
+  };
+
+  const handleUpdateMarketResearchData = (updatedData: MarketResearchData) => {
+    setMarketResearchData(updatedData);
+    localStorage.setItem('sparkMarketResearchData', JSON.stringify(updatedData));
   };
 
   const changeLanguage = (lang: Language) => {
@@ -64,6 +114,8 @@ const App: React.FC = () => {
     }
     if (activePage === Page.START && activeSubPage === SubPage.RESEARCH) {
       return <MarketResearchAccelerator 
+                initialData={marketResearchData}
+                onUpdateData={handleUpdateMarketResearchData}
                 strategyData={canvasData} 
                 language={currentLanguage}
                 t={t}

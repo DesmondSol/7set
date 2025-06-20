@@ -36,16 +36,6 @@ const TEXT_FONT_SIZE = 10;
 const FOOTER_FONT_SIZE = 8;
 const USER_PHOTO_SIZE_MM = 25;
 
-
-const initialMarketResearchData: MarketResearchData = {
-  [ResearchSection.QUESTIONS]: [], 
-  [ResearchSection.GENERAL_NOTES_IMPORT]: "",
-  [ResearchSection.COMPETITOR_ANALYSIS]: [],
-  [ResearchSection.TRENDS]: [],
-  [ResearchSection.AI_SUMMARY]: "",
-};
-
-
 interface ResearchQuestionCardProps {
   item: ResearchQuestionItem;
   questionSetId: string;
@@ -252,6 +242,8 @@ const TrendEntryEditor: React.FC<TrendEntryEditorProps> = ({ entry, onSave, onDe
 };
 
 interface MarketResearchAcceleratorProps {
+  initialData: MarketResearchData;
+  onUpdateData: (data: MarketResearchData) => void;
   strategyData: Partial<CanvasData>; 
   language: Language;
   t: (key: TranslationKey, defaultText?: string) => string;
@@ -294,8 +286,7 @@ const addTextWithPageBreakToDoc = (
 };
 
 
-export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps> = ({ strategyData, language, t, userProfile }) => {
-  const [data, setData] = useState<MarketResearchData>(initialMarketResearchData);
+export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps> = ({ initialData, onUpdateData, strategyData, language, t, userProfile }) => {
   const [activeResearchSection, setActiveResearchSection] = useState<ResearchSection>(ResearchSection.QUESTIONS);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
@@ -317,10 +308,10 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
     if (window.innerWidth < 768) { 
         setIsSidebarOpen(false);
     }
-    if (!activeQuestionnaireSetId && data[ResearchSection.QUESTIONS].length > 0) {
-      setActiveQuestionnaireSetId(data[ResearchSection.QUESTIONS][0].id);
+    if (!activeQuestionnaireSetId && initialData[ResearchSection.QUESTIONS].length > 0) {
+      setActiveQuestionnaireSetId(initialData[ResearchSection.QUESTIONS][0].id);
     }
-  }, [data[ResearchSection.QUESTIONS], activeQuestionnaireSetId]);
+  }, [initialData[ResearchSection.QUESTIONS], activeQuestionnaireSetId]);
 
 
   const handleCreateNewQuestionnaireSet = () => {
@@ -336,10 +327,10 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
       targetAudience: newSetForm.targetAudience.trim(),
       questions: []
     };
-    setData(prev => ({
-      ...prev,
-      [ResearchSection.QUESTIONS]: [...prev[ResearchSection.QUESTIONS], newSet]
-    }));
+    onUpdateData({
+      ...initialData,
+      [ResearchSection.QUESTIONS]: [...initialData[ResearchSection.QUESTIONS], newSet]
+    });
     setActiveQuestionnaireSetId(newSet.id);
     setIsCreateSetModalOpen(false);
     setNewSetForm({ name: '', researchGoal: '', targetAudience: '' });
@@ -350,19 +341,20 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
       ? "ይህን ሙሉ የምርምር ስብስብ እና ሁሉንም ጥያቄዎቹን መሰረዝ እንደሚፈልጉ እርግጠኛ ነዎት?"
       : "Are you sure you want to delete this entire research set and all its questions?";
     if (window.confirm(confirmMessage)) {
-        setData(prev => ({
-            ...prev,
-            [ResearchSection.QUESTIONS]: prev[ResearchSection.QUESTIONS].filter(set => set.id !== setId)
-        }));
+        const updatedSets = initialData[ResearchSection.QUESTIONS].filter(set => set.id !== setId);
+        onUpdateData({
+            ...initialData,
+            [ResearchSection.QUESTIONS]: updatedSets
+        });
         if (activeQuestionnaireSetId === setId) {
-            setActiveQuestionnaireSetId(data[ResearchSection.QUESTIONS].length > 1 ? data[ResearchSection.QUESTIONS].find(s => s.id !== setId)?.[0]?.id || null : null);
+            setActiveQuestionnaireSetId(updatedSets.length > 0 ? updatedSets[0].id : null);
         }
     }
   };
 
   const handleGeneralNotesChange = useCallback((value: string) => {
-    setData(prev => ({ ...prev, [ResearchSection.GENERAL_NOTES_IMPORT]: value }));
-  }, []);
+    onUpdateData({ ...initialData, [ResearchSection.GENERAL_NOTES_IMPORT]: value });
+  }, [initialData, onUpdateData]);
 
   const handleAddManualQuestion = () => {
     if (manualQuestion.trim() && activeQuestionnaireSetId) {
@@ -371,14 +363,15 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         text: manualQuestion.trim(),
         responses: [] 
       };
-      setData(prev => ({ 
-        ...prev, 
-        [ResearchSection.QUESTIONS]: prev[ResearchSection.QUESTIONS].map(set => 
-          set.id === activeQuestionnaireSetId 
-            ? { ...set, questions: [...set.questions, newQuestion] }
-            : set
-        )
-      }));
+      const updatedSets = initialData[ResearchSection.QUESTIONS].map(set => 
+        set.id === activeQuestionnaireSetId 
+          ? { ...set, questions: [...set.questions, newQuestion] }
+          : set
+      );
+      onUpdateData({ 
+        ...initialData, 
+        [ResearchSection.QUESTIONS]: updatedSets
+      });
       setManualQuestion('');
     } else if (!activeQuestionnaireSetId) {
         setError(t('mra_error_select_or_create_set'));
@@ -386,69 +379,73 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
   };
 
   const handleUpdateQuestionText = (questionSetId: string, questionId: string, text: string) => {
-    setData(prev => ({
-      ...prev,
-      [ResearchSection.QUESTIONS]: prev[ResearchSection.QUESTIONS].map(set => 
-        set.id === questionSetId 
-          ? { ...set, questions: set.questions.map(q => q.id === questionId ? { ...q, text } : q) }
-          : set
-      )
-    }));
+    const updatedSets = initialData[ResearchSection.QUESTIONS].map(set => 
+      set.id === questionSetId 
+        ? { ...set, questions: set.questions.map(q => q.id === questionId ? { ...q, text } : q) }
+        : set
+    );
+    onUpdateData({
+      ...initialData,
+      [ResearchSection.QUESTIONS]: updatedSets
+    });
   };
 
   const handleRemoveQuestion = (questionSetId: string, questionId: string) => {
-    setData(prev => ({
-      ...prev,
-      [ResearchSection.QUESTIONS]: prev[ResearchSection.QUESTIONS].map(set => 
-        set.id === questionSetId 
-          ? { ...set, questions: set.questions.filter(q => q.id !== questionId) }
-          : set
-      )
-    }));
+    const updatedSets = initialData[ResearchSection.QUESTIONS].map(set => 
+      set.id === questionSetId 
+        ? { ...set, questions: set.questions.filter(q => q.id !== questionId) }
+        : set
+    );
+    onUpdateData({
+      ...initialData,
+      [ResearchSection.QUESTIONS]: updatedSets
+    });
   };
   
   const handleAddResponseToQuestion = (questionSetId: string, questionId: string, responseText: string) => {
-    setData(prevData => ({
-      ...prevData,
-      [ResearchSection.QUESTIONS]: prevData[ResearchSection.QUESTIONS].map(set => {
-        if (set.id === questionSetId) {
-          return { 
-            ...set, 
-            questions: set.questions.map(q => {
-              if (q.id === questionId) {
-                return { ...q, responses: [...q.responses, {id: `resp-${Date.now()}`, text: responseText}] };
-              }
-              return q;
-            }) 
-          };
-        }
-        return set;
-      })
-    }));
+    const updatedSets = initialData[ResearchSection.QUESTIONS].map(set => {
+      if (set.id === questionSetId) {
+        return { 
+          ...set, 
+          questions: set.questions.map(q => {
+            if (q.id === questionId) {
+              return { ...q, responses: [...q.responses, {id: `resp-${Date.now()}`, text: responseText}] };
+            }
+            return q;
+          }) 
+        };
+      }
+      return set;
+    });
+    onUpdateData({
+      ...initialData,
+      [ResearchSection.QUESTIONS]: updatedSets
+    });
   };
 
   const handleRemoveResponseFromQuestion = (questionSetId: string, questionId: string, responseId: string) => {
-     setData(prevData => ({
-      ...prevData,
-      [ResearchSection.QUESTIONS]: prevData[ResearchSection.QUESTIONS].map(set => {
-        if (set.id === questionSetId) {
-          return { 
-            ...set, 
-            questions: set.questions.map(q => {
-              if (q.id === questionId) {
-                return { ...q, responses: q.responses.filter(r => r.id !== responseId) };
-              }
-              return q;
-            }) 
-          };
-        }
-        return set;
-      })
-    }));
+     const updatedSets = initialData[ResearchSection.QUESTIONS].map(set => {
+      if (set.id === questionSetId) {
+        return { 
+          ...set, 
+          questions: set.questions.map(q => {
+            if (q.id === questionId) {
+              return { ...q, responses: q.responses.filter(r => r.id !== responseId) };
+            }
+            return q;
+          }) 
+        };
+      }
+      return set;
+    });
+    onUpdateData({
+      ...initialData,
+      [ResearchSection.QUESTIONS]: updatedSets
+    });
   };
 
   const handleAiGenerateQuestions = async () => {
-    const currentSet = data[ResearchSection.QUESTIONS].find(s => s.id === activeQuestionnaireSetId);
+    const currentSet = initialData[ResearchSection.QUESTIONS].find(s => s.id === activeQuestionnaireSetId);
     if (!currentSet) {
       setError(t('mra_error_select_or_create_set'));
       return;
@@ -463,14 +460,15 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
     try {
       const questions = await generateMarketResearchQuestions(strategyData, currentSet.researchGoal, currentSet.targetAudience, language);
       if (questions.length > 0) {
-        setData(prev => ({ 
-          ...prev, 
-          [ResearchSection.QUESTIONS]: prev[ResearchSection.QUESTIONS].map(set => 
-            set.id === activeQuestionnaireSetId 
-              ? { ...set, questions: [...set.questions, ...questions] } 
-              : set
-          ) 
-        }));
+        const updatedSets = initialData[ResearchSection.QUESTIONS].map(set => 
+          set.id === activeQuestionnaireSetId 
+            ? { ...set, questions: [...set.questions, ...questions] } 
+            : set
+        );
+        onUpdateData({ 
+          ...initialData, 
+          [ResearchSection.QUESTIONS]: updatedSets 
+        });
       } else {
          setError(t('error_ai_failed_generic', "AI could not generate questions. Try rephrasing research goal/audience or check API key and Strategy Canvas content."));
       }
@@ -483,23 +481,25 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
       id: `comp-${Date.now()}`, name: language === 'am' ? "አዲስ ተፎካካሪ" : "New Competitor", pricingStrategy: "", keyFeatures: "",
       strengths: "", weaknesses: "", marketGapsAddressed: "", notes: ""
     };
-    setData(prev => ({ ...prev, [ResearchSection.COMPETITOR_ANALYSIS]: [...prev[ResearchSection.COMPETITOR_ANALYSIS], newCompetitor] }));
+    onUpdateData({ ...initialData, [ResearchSection.COMPETITOR_ANALYSIS]: [...initialData[ResearchSection.COMPETITOR_ANALYSIS], newCompetitor] });
     setEditingCompetitorId(newCompetitor.id); 
   };
 
   const handleSaveCompetitor = (updatedProfile: CompetitorProfile) => {
-    setData(prev => ({
-      ...prev,
-      [ResearchSection.COMPETITOR_ANALYSIS]: prev[ResearchSection.COMPETITOR_ANALYSIS].map(c => c.id === updatedProfile.id ? updatedProfile : c)
-    }));
+    const updatedCompetitors = initialData[ResearchSection.COMPETITOR_ANALYSIS].map(c => c.id === updatedProfile.id ? updatedProfile : c);
+    onUpdateData({
+      ...initialData,
+      [ResearchSection.COMPETITOR_ANALYSIS]: updatedCompetitors
+    });
     setEditingCompetitorId(null);
   };
 
   const handleDeleteCompetitor = (id: string) => {
-    setData(prev => ({
-      ...prev,
-      [ResearchSection.COMPETITOR_ANALYSIS]: prev[ResearchSection.COMPETITOR_ANALYSIS].filter(c => c.id !== id)
-    }));
+    const updatedCompetitors = initialData[ResearchSection.COMPETITOR_ANALYSIS].filter(c => c.id !== id);
+    onUpdateData({
+      ...initialData,
+      [ResearchSection.COMPETITOR_ANALYSIS]: updatedCompetitors
+    });
     if (editingCompetitorId === id) setEditingCompetitorId(null);
   };
 
@@ -508,23 +508,25 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
       id: `trend-${Date.now()}`, title: language === 'am' ? "አዲስ አዝማሚያ" : "New Trend", description: "", sourceEvidence: "", 
       timeframe: "", locationMarket: "", potentialImpact: "", notes: ""
     };
-    setData(prev => ({ ...prev, [ResearchSection.TRENDS]: [...prev[ResearchSection.TRENDS], newTrend] }));
+    onUpdateData({ ...initialData, [ResearchSection.TRENDS]: [...initialData[ResearchSection.TRENDS], newTrend] });
     setEditingTrendId(newTrend.id); 
   };
 
   const handleSaveTrend = (updatedEntry: TrendEntry) => {
-    setData(prev => ({
-      ...prev,
-      [ResearchSection.TRENDS]: prev[ResearchSection.TRENDS].map(t => t.id === updatedEntry.id ? updatedEntry : t)
-    }));
+    const updatedTrends = initialData[ResearchSection.TRENDS].map(t => t.id === updatedEntry.id ? updatedEntry : t);
+    onUpdateData({
+      ...initialData,
+      [ResearchSection.TRENDS]: updatedTrends
+    });
     setEditingTrendId(null);
   };
 
   const handleDeleteTrend = (id: string) => {
-    setData(prev => ({
-      ...prev,
-      [ResearchSection.TRENDS]: prev[ResearchSection.TRENDS].filter(t => t.id !== id)
-    }));
+    const updatedTrends = initialData[ResearchSection.TRENDS].filter(t => t.id !== id);
+    onUpdateData({
+      ...initialData,
+      [ResearchSection.TRENDS]: updatedTrends
+    });
      if (editingTrendId === id) setEditingTrendId(null);
   };
 
@@ -534,15 +536,15 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
     try {
       const summary = await generateMarketResearchSummary(
         { 
-          [ResearchSection.QUESTIONS]: data[ResearchSection.QUESTIONS],
-          [ResearchSection.GENERAL_NOTES_IMPORT]: data[ResearchSection.GENERAL_NOTES_IMPORT],
-          [ResearchSection.COMPETITOR_ANALYSIS]: data[ResearchSection.COMPETITOR_ANALYSIS],
-          [ResearchSection.TRENDS]: data[ResearchSection.TRENDS],
+          [ResearchSection.QUESTIONS]: initialData[ResearchSection.QUESTIONS],
+          [ResearchSection.GENERAL_NOTES_IMPORT]: initialData[ResearchSection.GENERAL_NOTES_IMPORT],
+          [ResearchSection.COMPETITOR_ANALYSIS]: initialData[ResearchSection.COMPETITOR_ANALYSIS],
+          [ResearchSection.TRENDS]: initialData[ResearchSection.TRENDS],
         },
         strategyData,
         language
       );
-      setData(prev => ({ ...prev, [ResearchSection.AI_SUMMARY]: summary || (language === 'am' ? "AI ማጠቃለያ ማመንጨት አልቻለም።" : "AI could not generate a summary.") }));
+      onUpdateData({ ...initialData, [ResearchSection.AI_SUMMARY]: summary || (language === 'am' ? "AI ማጠቃለያ ማመንጨት አልቻለም።" : "AI could not generate a summary.") });
        if (!summary) setError(t('error_ai_failed_generic', "AI could not generate a summary. Ensure relevant sections and strategy canvas have data or check API key."));
     } catch (e) { console.error(e); setError(t('error_ai_failed_generic')); } 
     finally { setIsLoadingAi(false); }
@@ -556,13 +558,13 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         const text = e.target?.result as string;
         const simplifiedCsvContent = text.split('\n').map(line => line.split(',').join(' | ')).join('\n'); 
         const importHeader = language === 'am' ? "--- ከ CSV የገባ ውሂብ ---" : "--- Imported CSV Data ---";
-        setData(prev => ({ 
-            ...prev, 
+        onUpdateData({ 
+            ...initialData, 
             [ResearchSection.GENERAL_NOTES_IMPORT]: 
-                (prev[ResearchSection.GENERAL_NOTES_IMPORT] ? prev[ResearchSection.GENERAL_NOTES_IMPORT] + "\n\n" : "") + 
+                (initialData[ResearchSection.GENERAL_NOTES_IMPORT] ? initialData[ResearchSection.GENERAL_NOTES_IMPORT] + "\n\n" : "") + 
                 importHeader + "\n" + 
                 simplifiedCsvContent 
-        }));
+        });
       };
       reader.readAsText(file);
       event.target.value = ''; 
@@ -642,7 +644,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
 
     switch (activeResearchSection) {
       case ResearchSection.QUESTIONS:
-        data[ResearchSection.QUESTIONS].forEach(set => {
+        initialData[ResearchSection.QUESTIONS].forEach(set => {
           doc.setFontSize(SECTION_TITLE_FONT_SIZE);
           doc.setFont("helvetica", "bold");
           const setTitleText = `${t('mra_report_set_title', 'Research Set')}: ${set.name} (${t('mra_report_goal_label', 'Goal')}: ${set.researchGoal}, ${t('mra_report_audience_label', 'Audience')}: ${set.targetAudience})`;
@@ -666,11 +668,11 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         });
         break;
       case ResearchSection.GENERAL_NOTES_IMPORT:
-        const notes = data[ResearchSection.GENERAL_NOTES_IMPORT] || t('no_content_yet_placeholder_pdf', 'No content provided.');
+        const notes = initialData[ResearchSection.GENERAL_NOTES_IMPORT] || t('no_content_yet_placeholder_pdf', 'No content provided.');
         addTextWithPageBreakToDoc(doc, notes, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
         break;
       case ResearchSection.COMPETITOR_ANALYSIS:
-        data[ResearchSection.COMPETITOR_ANALYSIS].forEach(comp => {
+        initialData[ResearchSection.COMPETITOR_ANALYSIS].forEach(comp => {
           doc.setFontSize(SECTION_TITLE_FONT_SIZE);
           doc.setFont("helvetica", "bold");
           addTextWithPageBreakToDoc(doc, comp.name, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, language, t);
@@ -695,7 +697,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         });
         break;
       case ResearchSection.TRENDS:
-        data[ResearchSection.TRENDS].forEach(trend => {
+        initialData[ResearchSection.TRENDS].forEach(trend => {
           doc.setFontSize(SECTION_TITLE_FONT_SIZE);
           doc.setFont("helvetica", "bold");
           addTextWithPageBreakToDoc(doc, trend.title, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, language, t);
@@ -719,7 +721,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         });
         break;
       case ResearchSection.AI_SUMMARY:
-        const summary = data[ResearchSection.AI_SUMMARY] || t('no_content_yet_placeholder_pdf', 'No summary generated.');
+        const summary = initialData[ResearchSection.AI_SUMMARY] || t('no_content_yet_placeholder_pdf', 'No summary generated.');
         addTextWithPageBreakToDoc(doc, summary, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
         break;
     }
@@ -743,7 +745,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
     setIsHelpModalOpen(true);
   };
   
-  const currentActiveSet = data[ResearchSection.QUESTIONS].find(s => s.id === activeQuestionnaireSetId);
+  const currentActiveSet = initialData[ResearchSection.QUESTIONS].find(s => s.id === activeQuestionnaireSetId);
 
   const renderSectionContent = () => {
     if (error && activeResearchSection !== ResearchSection.AI_SUMMARY) { 
@@ -769,7 +771,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
 
             {error && <p className="text-red-500 bg-red-100 p-3 rounded-md mb-4">{error}</p>}
 
-            {data[ResearchSection.QUESTIONS].length > 0 && (
+            {initialData[ResearchSection.QUESTIONS].length > 0 && (
                 <div className="mb-6">
                     <label htmlFor="activeQuestionnaireSet" className="block text-sm font-medium text-gray-700 mb-1">{t('mra_questions_active_set_label')}</label>
                     <div className="flex items-center space-x-2">
@@ -780,7 +782,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
                             className="flex-grow p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         >
                             <option value="" disabled>{t('mra_questions_select_set_placeholder')}</option>
-                            {data[ResearchSection.QUESTIONS].map(set => (
+                            {initialData[ResearchSection.QUESTIONS].map(set => (
                                 <option key={set.id} value={set.id}>{set.name} ({set.researchGoal})</option>
                             ))}
                         </select>
@@ -836,7 +838,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
               </div>
             ) : (
                 <p className="text-gray-500 italic p-4 text-center">
-                    {data[ResearchSection.QUESTIONS].length > 0 
+                    {initialData[ResearchSection.QUESTIONS].length > 0 
                         ? t('mra_questions_select_set_prompt')
                         : t('mra_questions_no_sets_prompt')
                     }
@@ -855,7 +857,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
                 <p className="text-xs text-gray-500 mt-1">{t('mra_general_notes_csv_note')}</p>
              </div>
             <textarea
-              value={data[ResearchSection.GENERAL_NOTES_IMPORT]}
+              value={initialData[ResearchSection.GENERAL_NOTES_IMPORT]}
               onChange={(e) => handleGeneralNotesChange(e.target.value)}
               rows={10}
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -864,7 +866,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
           </div>
         );
       case ResearchSection.COMPETITOR_ANALYSIS:
-        const currentCompetitor = data[ResearchSection.COMPETITOR_ANALYSIS].find(c => c.id === editingCompetitorId);
+        const currentCompetitor = initialData[ResearchSection.COMPETITOR_ANALYSIS].find(c => c.id === editingCompetitorId);
         return (
           <div>
             <div className="flex justify-between items-center mb-4">
@@ -875,8 +877,8 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
               <CompetitorProfileEditor profile={currentCompetitor} onSave={handleSaveCompetitor} onDelete={handleDeleteCompetitor} language={language} t={t} />
             ) : (
               <div className="space-y-2">
-                {data[ResearchSection.COMPETITOR_ANALYSIS].length === 0 && <p className="text-gray-500 italic">{t('mra_competitor_no_competitors_placeholder')}</p>}
-                {data[ResearchSection.COMPETITOR_ANALYSIS].map(comp => (
+                {initialData[ResearchSection.COMPETITOR_ANALYSIS].length === 0 && <p className="text-gray-500 italic">{t('mra_competitor_no_competitors_placeholder')}</p>}
+                {initialData[ResearchSection.COMPETITOR_ANALYSIS].map(comp => (
                   <div key={comp.id} className="bg-white p-3 rounded-md shadow flex justify-between items-center">
                     <span className="text-gray-700">{comp.name}</span>
                     <Button variant="outline" size="sm" onClick={() => {setEditingCompetitorId(comp.id); setEditingTrendId(null);}}>{t('edit_button')}</Button>
@@ -887,7 +889,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
           </div>
         );
       case ResearchSection.TRENDS:
-        const currentTrend = data[ResearchSection.TRENDS].find(t => t.id === editingTrendId);
+        const currentTrend = initialData[ResearchSection.TRENDS].find(t => t.id === editingTrendId);
         return (
           <div>
             <div className="flex justify-between items-center mb-4">
@@ -898,8 +900,8 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
                 <TrendEntryEditor entry={currentTrend} onSave={handleSaveTrend} onDelete={handleDeleteTrend} language={language} t={t} />
             ) : (
                 <div className="space-y-2">
-                    {data[ResearchSection.TRENDS].length === 0 && <p className="text-gray-500 italic">{t('mra_trends_no_trends_placeholder')}</p>}
-                    {data[ResearchSection.TRENDS].map(trend => (
+                    {initialData[ResearchSection.TRENDS].length === 0 && <p className="text-gray-500 italic">{t('mra_trends_no_trends_placeholder')}</p>}
+                    {initialData[ResearchSection.TRENDS].map(trend => (
                         <div key={trend.id} className="bg-white p-3 rounded-md shadow flex justify-between items-center">
                             <span className="text-gray-700">{trend.title}</span>
                              <Button variant="outline" size="sm" onClick={() => {setEditingTrendId(trend.id); setEditingCompetitorId(null);}}>{t('edit_button')}</Button>
@@ -918,7 +920,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
               {isLoadingAi ? (<><SpinnerIcon className="h-5 w-5 mr-2" /> {t('mra_ai_summary_generating_button')}</>) : t('mra_ai_summary_generate_button')}
             </Button>
             <div className="bg-white p-4 rounded-lg shadow min-h-[200px] whitespace-pre-wrap text-gray-700">
-              {isLoadingAi && !data[ResearchSection.AI_SUMMARY] ? <div className="flex justify-center items-center h-full"><SpinnerIcon className="h-8 w-8 text-blue-600" /></div> : (data[ResearchSection.AI_SUMMARY] || <span className="italic text-gray-400">{t('mra_ai_summary_placeholder')}</span>)}
+              {isLoadingAi && !initialData[ResearchSection.AI_SUMMARY] ? <div className="flex justify-center items-center h-full"><SpinnerIcon className="h-8 w-8 text-blue-600" /></div> : (initialData[ResearchSection.AI_SUMMARY] || <span className="italic text-gray-400">{t('mra_ai_summary_placeholder')}</span>)}
             </div>
           </div>
         );

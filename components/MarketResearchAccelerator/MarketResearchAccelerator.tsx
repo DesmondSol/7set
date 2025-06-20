@@ -1,5 +1,6 @@
 
 import React, { useState, useCallback, ChangeEvent, useEffect } from 'react';
+import jsPDF from 'jspdf';
 import { 
     MarketResearchData, 
     ResearchSection, 
@@ -8,9 +9,10 @@ import {
     CompetitorProfile,
     TrendEntry,
     CanvasData,
-    CanvasSection, // Added CanvasSection
+    CanvasSection, 
     ResearchQuestionnaireSet,
-    Language
+    Language,
+    UserProfile
 } from '../../types';
 import { RESEARCH_SECTIONS_HELP, GENERIC_ERROR_MESSAGE } from '../../constants';
 import { generateMarketResearchQuestions, generateMarketResearchSummary } from '../../services/geminiService';
@@ -18,6 +20,21 @@ import { Button } from '../common/Button';
 import { Modal } from '../common/Modal';
 import { FloatingActionButton } from '../common/FloatingActionButton';
 import { TranslationKey } from '../../locales';
+
+// PDF Export Helper Constants
+const A4_WIDTH_MM = 210;
+const A4_HEIGHT_MM = 297;
+const MARGIN_MM = 15;
+const CONTENT_WIDTH_MM = A4_WIDTH_MM - 2 * MARGIN_MM;
+const LINE_HEIGHT_NORMAL = 7; 
+const LINE_HEIGHT_TITLE = 9; 
+const LINE_HEIGHT_SECTION_TITLE = 8; 
+
+const TITLE_FONT_SIZE = 18;
+const SECTION_TITLE_FONT_SIZE = 14;
+const TEXT_FONT_SIZE = 10;
+const FOOTER_FONT_SIZE = 8;
+const USER_PHOTO_SIZE_MM = 25;
 
 
 const initialMarketResearchData: MarketResearchData = {
@@ -73,13 +90,12 @@ const ResearchQuestionCard: React.FC<ResearchQuestionCardProps> = ({
               onChange={(e) => setEditText(e.target.value)}
               className="w-full p-2 border border-blue-300 rounded-md text-sm"
               rows={2}
-              dir={language === 'am' ? 'rtl' : 'ltr'}
             />
             <Button size="sm" onClick={handleSaveQuestion} className="mt-1 mr-1">{t('save_button', 'Save Q')}</Button>
             <Button size="sm" variant="outline" onClick={() => {setIsEditingQuestion(false); setEditText(item.text);}} className="mt-1">{t('cancel_button')}</Button>
           </div>
         ) : (
-          <p className="text-gray-800 font-medium flex-grow mr-2 text-sm whitespace-pre-wrap" dir={language === 'am' ? 'rtl' : 'ltr'}>{item.text}</p>
+          <p className="text-gray-800 font-medium flex-grow mr-2 text-sm whitespace-pre-wrap">{item.text}</p>
         )}
         <div className="flex-shrink-0 flex items-center space-x-1">
           {!isEditingQuestion && <Button variant="outline" size="sm" onClick={() => setIsEditingQuestion(true)} className="p-1"><PencilIcon className="h-4 w-4"/></Button>}
@@ -92,7 +108,7 @@ const ResearchQuestionCard: React.FC<ResearchQuestionCardProps> = ({
         {item.responses.length > 0 ? (
           item.responses.map((resp) => ( 
             <div key={resp.id} className="text-xs text-gray-700 bg-white p-1.5 rounded shadow-sm mb-1 flex justify-between items-center">
-              <span className="whitespace-pre-wrap flex-grow" dir={language === 'am' ? 'rtl' : 'ltr'}>{resp.text}</span>
+              <span className="whitespace-pre-wrap flex-grow">{resp.text}</span>
               <Button size="sm" variant="danger" onClick={() => onRemoveResponse(questionSetId, item.id, resp.id)} className="p-0.5 ml-2"><TrashIcon className="h-3 w-3"/></Button>
             </div>
           ))
@@ -106,7 +122,6 @@ const ResearchQuestionCard: React.FC<ResearchQuestionCardProps> = ({
             onChange={(e) => setNewResponse(e.target.value)} 
             placeholder={language === 'am' ? 'የግል ምላሽ አክል...' : "Add individual response..."}
             className="flex-grow p-1 border border-gray-300 rounded-l-md text-xs"
-            dir={language === 'am' ? 'rtl' : 'ltr'}
           />
           <Button size="sm" onClick={handleAddResponse} className="rounded-l-none text-xs px-2 py-1.5" disabled={!newResponse.trim()}>
             {language === 'am' ? 'ምላሽ ጨምር' : 'Add Resp.'}
@@ -133,7 +148,6 @@ const CompetitorProfileEditor: React.FC<CompetitorProfileEditorProps> = ({ profi
         setLocalProfile(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
     
-    // For Amharic, labels could be translated here if keys were added to locales.ts
     const fieldLabels: { key: keyof CompetitorProfile; label: string; type?: string }[] = [
         { key: 'name', label: language === 'am' ? 'የተፎካካሪ ስም' : 'Competitor Name' },
         { key: 'pricingStrategy', label: language === 'am' ? 'የዋጋ አወጣጥ ስትራቴጂ' : 'Pricing Strategy', type: 'textarea' },
@@ -157,7 +171,6 @@ const CompetitorProfileEditor: React.FC<CompetitorProfileEditorProps> = ({ profi
                             onChange={handleChange}
                             rows={3}
                             className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                            dir={language === 'am' ? 'rtl' : 'ltr'}
                         />
                     ) : (
                         <input
@@ -167,7 +180,6 @@ const CompetitorProfileEditor: React.FC<CompetitorProfileEditorProps> = ({ profi
                             value={localProfile[field.key] as string}
                             onChange={handleChange}
                             className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                            dir={language === 'am' ? 'rtl' : 'ltr'}
                         />
                     )}
                 </div>
@@ -195,7 +207,6 @@ const TrendEntryEditor: React.FC<TrendEntryEditorProps> = ({ entry, onSave, onDe
         setLocalEntry(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    // Labels can be translated similarly
     const fieldLabels: { key: keyof TrendEntry; label: string; type?: string }[] = [
         { key: 'title', label: language === 'am' ? 'የአዝማሚያ ርዕስ' : 'Trend Title' },
         { key: 'description', label: language === 'am' ? 'መግለጫ' : 'Description', type: 'textarea' },
@@ -219,7 +230,6 @@ const TrendEntryEditor: React.FC<TrendEntryEditorProps> = ({ entry, onSave, onDe
                             onChange={handleChange}
                             rows={3}
                             className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                             dir={language === 'am' ? 'rtl' : 'ltr'}
                         />
                     ) : (
                         <input
@@ -229,7 +239,6 @@ const TrendEntryEditor: React.FC<TrendEntryEditorProps> = ({ entry, onSave, onDe
                             value={localEntry[field.key] as string}
                             onChange={handleChange}
                             className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                            dir={language === 'am' ? 'rtl' : 'ltr'}
                         />
                     )}
                 </div>
@@ -246,9 +255,46 @@ interface MarketResearchAcceleratorProps {
   strategyData: Partial<CanvasData>; 
   language: Language;
   t: (key: TranslationKey, defaultText?: string) => string;
+  userProfile: UserProfile | null;
 }
 
-export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps> = ({ strategyData, language, t }) => {
+const addPageFooterToDoc = (doc: jsPDF, lang: Language, translator: Function, pageNumber: number, totalPages: number) => {
+    doc.setFontSize(FOOTER_FONT_SIZE);
+    doc.setTextColor(100);
+    const footerText = translator('page_x_of_y', `Page ${pageNumber} of ${totalPages}`)
+                        .replace('{currentPage}', String(pageNumber))
+                        .replace('{totalPages}', String(totalPages));
+    doc.text(footerText, MARGIN_MM, A4_HEIGHT_MM - MARGIN_MM / 2); 
+    doc.setTextColor(0);
+};
+
+const addTextWithPageBreakToDoc = (
+    doc: jsPDF, 
+    text: string | string[], 
+    x: number, 
+    currentYRef: { value: number }, 
+    options: any, 
+    lineHeight: number, 
+    totalPagesRef: { current: number }, 
+    lang: Language, 
+    translator: Function
+) => {
+    const lines = Array.isArray(text) ? text : doc.splitTextToSize(text, CONTENT_WIDTH_MM - (x - MARGIN_MM) );
+
+    lines.forEach((line: string) => {
+        if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - lineHeight) {
+            addPageFooterToDoc(doc, lang, translator, doc.getNumberOfPages(), totalPagesRef.current);
+            doc.addPage();
+            totalPagesRef.current = doc.getNumberOfPages();
+            currentYRef.value = MARGIN_MM;
+        }
+        doc.text(line, x, currentYRef.value, options); 
+        currentYRef.value += lineHeight;
+    });
+};
+
+
+export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps> = ({ strategyData, language, t, userProfile }) => {
   const [data, setData] = useState<MarketResearchData>(initialMarketResearchData);
   const [activeResearchSection, setActiveResearchSection] = useState<ResearchSection>(ResearchSection.QUESTIONS);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
@@ -524,33 +570,167 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
   };
   
   const handleExport = () => {
-    const activeSectionHelp = RESEARCH_SECTIONS_HELP.find(h => h.title === activeResearchSection);
-    const translatedSectionTitle = activeSectionHelp?.sidebarTitle[language] || activeSectionHelp?.title || activeResearchSection;
+    const doc = new jsPDF();
+    const currentYRef = { value: MARGIN_MM };
+    const totalPagesRef = { current: 1 };
 
-    let contentToExport = `7set Spark - ${t('market_research_accelerator_page_title')} (${translatedSectionTitle})\n`;
-    contentToExport += `Exported on: ${new Date().toLocaleString()}\n\n`;
-    // ... rest of export logic ...
-    // Note: The data being exported (questions, responses, etc.) will be in the language they were generated/entered in.
-    // The headers within the export file could be translated too for full consistency.
-    // For now, only the main title and section name in the title are localized.
-    
-    // Example for Questions section title in export
-     if (activeResearchSection === ResearchSection.QUESTIONS) {
-        contentToExport += `## ${RESEARCH_SECTIONS_HELP.find(h => h.title === ResearchSection.QUESTIONS)?.sidebarTitle[language] || ResearchSection.QUESTIONS}\n\n`;
-        // ... rest of question export logic ...
-    } else {
-        // ... other sections ...
+    // Add User Profile Section
+    if (userProfile) {
+        doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+        doc.setFont("helvetica", "bold");
+        addTextWithPageBreakToDoc(doc, t('pdf_made_by_title'), MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, language, t);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(TEXT_FONT_SIZE);
+
+        let textX = MARGIN_MM;
+        if (userProfile.photo) {
+            try {
+                const base64Image = userProfile.photo.split(',')[1] || userProfile.photo;
+                const imageType = userProfile.photo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+                doc.addImage(base64Image, imageType, MARGIN_MM, currentYRef.value, USER_PHOTO_SIZE_MM, USER_PHOTO_SIZE_MM);
+                textX = MARGIN_MM + USER_PHOTO_SIZE_MM + 5;
+            } catch (e) { console.error("Error adding image to MRA PDF:", e); }
+        }
+        
+        const profileDetails = [
+            `${t('user_profile_name_label')} ${userProfile.name}`,
+            `${t('user_profile_email_label')} ${userProfile.email || '-'}`,
+            `${t('user_profile_phone_label')} ${userProfile.phone || '-'}`,
+            `${t('user_profile_other_details_label')} ${userProfile.otherDetails || '-'}`
+        ];
+        
+        let textStartY = currentYRef.value;
+        profileDetails.forEach(detail => {
+             const lines = doc.splitTextToSize(detail, CONTENT_WIDTH_MM - (textX - MARGIN_MM));
+             lines.forEach((line: string) => {
+                 if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - LINE_HEIGHT_NORMAL) {
+                    addPageFooterToDoc(doc, language, t, doc.getNumberOfPages(), totalPagesRef.current);
+                    doc.addPage();
+                    totalPagesRef.current = doc.getNumberOfPages();
+                    currentYRef.value = MARGIN_MM;
+                    textX = MARGIN_MM;
+                 }
+                 doc.text(line, textX, currentYRef.value);
+                 currentYRef.value += LINE_HEIGHT_NORMAL;
+            });
+        });
+        if (userProfile.photo) {
+            currentYRef.value = Math.max(currentYRef.value, textStartY + USER_PHOTO_SIZE_MM + LINE_HEIGHT_NORMAL);
+        } else {
+            currentYRef.value += LINE_HEIGHT_NORMAL; 
+        }
     }
-    
-    const fileContent = contentToExport.replace(/\\n/g, '\n'); // This line might not be needed if content is already clean
-    const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
+
+
+    const activeSectionHelp = RESEARCH_SECTIONS_HELP.find(h => h.title === activeResearchSection);
+    const translatedSectionTitleForFileName = activeSectionHelp?.sidebarTitle[language] || activeResearchSection;
+    const translatedSectionTitleForDisplay = activeSectionHelp?.sidebarTitle[language] || t(activeResearchSection as TranslationKey, activeResearchSection);
+
+    doc.setFontSize(TITLE_FONT_SIZE);
+    doc.setFont("helvetica", "bold");
+    const mainTitleText = `7set Spark - ${t('market_research_accelerator_page_title')} - ${translatedSectionTitleForDisplay}`;
+    addTextWithPageBreakToDoc(doc, mainTitleText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_TITLE, totalPagesRef, language, t);
+    currentYRef.value += LINE_HEIGHT_NORMAL / 2;
+    doc.setFont("helvetica", "normal");
+
+    doc.setFontSize(TEXT_FONT_SIZE - 1);
+    const exportDateText = `${t('exported_on_label', 'Exported on')}: ${new Date().toLocaleString(language === 'am' ? 'am-ET' : 'en-US')}`;
+    addTextWithPageBreakToDoc(doc, exportDateText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t);
+    currentYRef.value += LINE_HEIGHT_NORMAL;
+
+    doc.setFontSize(TEXT_FONT_SIZE);
+
+    switch (activeResearchSection) {
+      case ResearchSection.QUESTIONS:
+        data[ResearchSection.QUESTIONS].forEach(set => {
+          doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+          doc.setFont("helvetica", "bold");
+          const setTitleText = `${t('mra_report_set_title', 'Research Set')}: ${set.name} (${t('mra_report_goal_label', 'Goal')}: ${set.researchGoal}, ${t('mra_report_audience_label', 'Audience')}: ${set.targetAudience})`;
+          addTextWithPageBreakToDoc(doc, setTitleText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, language, t);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(TEXT_FONT_SIZE);
+
+          set.questions.forEach(q => {
+            const qText = `${t('mra_report_question_label', 'Question')}: ${q.text}`;
+            addTextWithPageBreakToDoc(doc, qText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+            if (q.responses.length > 0) {
+              const rTitle = `  ${t('mra_report_responses_label', 'Responses')}:`;
+              addTextWithPageBreakToDoc(doc, rTitle, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+              q.responses.forEach(r => {
+                addTextWithPageBreakToDoc(doc, `    - ${r.text}`, MARGIN_MM + 5, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+              });
+            }
+            currentYRef.value += LINE_HEIGHT_NORMAL * 0.5; // Space after question
+          });
+          currentYRef.value += LINE_HEIGHT_NORMAL; // Space after set
+        });
+        break;
+      case ResearchSection.GENERAL_NOTES_IMPORT:
+        const notes = data[ResearchSection.GENERAL_NOTES_IMPORT] || t('no_content_yet_placeholder_pdf', 'No content provided.');
+        addTextWithPageBreakToDoc(doc, notes, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+        break;
+      case ResearchSection.COMPETITOR_ANALYSIS:
+        data[ResearchSection.COMPETITOR_ANALYSIS].forEach(comp => {
+          doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+          doc.setFont("helvetica", "bold");
+          addTextWithPageBreakToDoc(doc, comp.name, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, language, t);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(TEXT_FONT_SIZE);
+          
+          const fields = [
+            { labelKey: 'mra_report_pricing_label', defaultLabel: 'Pricing Strategy', value: comp.pricingStrategy },
+            { labelKey: 'mra_report_features_label', defaultLabel: 'Key Features', value: comp.keyFeatures },
+            { labelKey: 'mra_report_strengths_label', defaultLabel: 'Strengths', value: comp.strengths },
+            { labelKey: 'mra_report_weaknesses_label', defaultLabel: 'Weaknesses', value: comp.weaknesses },
+            { labelKey: 'mra_report_gaps_label', defaultLabel: 'Market Gaps Addressed', value: comp.marketGapsAddressed },
+            { labelKey: 'mra_report_notes_label', defaultLabel: 'Notes', value: comp.notes },
+          ];
+          fields.forEach(field => {
+            if (field.value) {
+              const fieldText = `${t(field.labelKey as TranslationKey, field.defaultLabel)}: ${field.value}`;
+              addTextWithPageBreakToDoc(doc, fieldText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+            }
+          });
+          currentYRef.value += LINE_HEIGHT_NORMAL;
+        });
+        break;
+      case ResearchSection.TRENDS:
+        data[ResearchSection.TRENDS].forEach(trend => {
+          doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+          doc.setFont("helvetica", "bold");
+          addTextWithPageBreakToDoc(doc, trend.title, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, language, t);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(TEXT_FONT_SIZE);
+          const fields = [
+            { labelKey: 'mra_report_description_label', defaultLabel: 'Description', value: trend.description },
+            { labelKey: 'mra_report_source_label', defaultLabel: 'Source/Evidence', value: trend.sourceEvidence },
+            { labelKey: 'mra_report_timeframe_label', defaultLabel: 'Timeframe', value: trend.timeframe },
+            { labelKey: 'mra_report_location_label', defaultLabel: 'Location/Market', value: trend.locationMarket },
+            { labelKey: 'mra_report_impact_label', defaultLabel: 'Potential Impact', value: trend.potentialImpact },
+            { labelKey: 'mra_report_notes_label', defaultLabel: 'Notes', value: trend.notes },
+          ];
+          fields.forEach(field => {
+            if (field.value) {
+              const fieldText = `${t(field.labelKey as TranslationKey, field.defaultLabel)}: ${field.value}`;
+              addTextWithPageBreakToDoc(doc, fieldText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+            }
+          });
+          currentYRef.value += LINE_HEIGHT_NORMAL;
+        });
+        break;
+      case ResearchSection.AI_SUMMARY:
+        const summary = data[ResearchSection.AI_SUMMARY] || t('no_content_yet_placeholder_pdf', 'No summary generated.');
+        addTextWithPageBreakToDoc(doc, summary, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+        break;
+    }
+
+    for (let i = 1; i <= totalPagesRef.current; i++) {
+        doc.setPage(i);
+        addPageFooterToDoc(doc, language, t, i, totalPagesRef.current);
+    }
+
     const fileNameBase = language === 'am' ? 'የገበያ_ጥናት' : 'market_research';
-    link.download = `${fileNameBase}_${(activeSectionHelp?.sidebarTitle.en || activeResearchSection).toLowerCase().replace(/\s+|&|\//g, '_')}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    doc.save(`${fileNameBase}_${translatedSectionTitleForFileName.toLowerCase().replace(/\s+|&|\//g, '_')}.pdf`);
   };
 
   const openHelpModalForSection = (sectionKey: ResearchSection) => {
@@ -570,7 +750,8 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
       if(activeResearchSection !== ResearchSection.QUESTIONS) setError(null);
     }
     const currentSectionHelp = RESEARCH_SECTIONS_HELP.find(h => h.title === activeResearchSection);
-    const translatedSectionTitle = currentSectionHelp?.sidebarTitle[language] || activeResearchSection;
+    const translatedSectionTitle = currentSectionHelp?.sidebarTitle[language] || t(activeResearchSection as TranslationKey, activeResearchSection);
+
 
     switch (activeResearchSection) {
       case ResearchSection.QUESTIONS:
@@ -625,7 +806,6 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
                       type="text" id="manualQuestion" value={manualQuestion} onChange={(e) => setManualQuestion(e.target.value)}
                       className="flex-grow p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                       placeholder={language === 'am' ? 'የምርምር ጥያቄዎን ያስገቡ' : "Enter your research question"}
-                      dir={language === 'am' ? 'rtl' : 'ltr'}
                     />
                     <Button onClick={handleAddManualQuestion} disabled={!manualQuestion.trim()}>{t('mra_questions_add_manual_button')}</Button>
                   </div>
@@ -680,7 +860,6 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
               rows={10}
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               placeholder={t('mra_general_notes_placeholder')}
-              dir={language === 'am' ? 'rtl' : 'ltr'}
             />
           </div>
         );
@@ -738,7 +917,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
             <Button onClick={() => {handleGenerateSummary(); setError(null);}} disabled={isLoadingAi} variant="primary" leftIcon={<SparklesIcon className="h-5 w-5"/>}>
               {isLoadingAi ? (<><SpinnerIcon className="h-5 w-5 mr-2" /> {t('mra_ai_summary_generating_button')}</>) : t('mra_ai_summary_generate_button')}
             </Button>
-            <div className="bg-white p-4 rounded-lg shadow min-h-[200px] whitespace-pre-wrap text-gray-700" dir={language === 'am' ? 'rtl' : 'ltr'}>
+            <div className="bg-white p-4 rounded-lg shadow min-h-[200px] whitespace-pre-wrap text-gray-700">
               {isLoadingAi && !data[ResearchSection.AI_SUMMARY] ? <div className="flex justify-center items-center h-full"><SpinnerIcon className="h-8 w-8 text-blue-600" /></div> : (data[ResearchSection.AI_SUMMARY] || <span className="italic text-gray-400">{t('mra_ai_summary_placeholder')}</span>)}
             </div>
           </div>
@@ -760,7 +939,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
           <ul className="space-y-2">
             {Object.values(ResearchSection).map(section => {
               const helpInfo = RESEARCH_SECTIONS_HELP.find(h => h.title === section);
-              const sidebarTitle = helpInfo?.sidebarTitle[language] || section;
+              const sidebarTitle = helpInfo?.sidebarTitle[language] || t(section as TranslationKey, section);
               return (
                 <li key={section}>
                   <a
@@ -768,7 +947,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
                     onClick={(e) => { 
                       e.preventDefault(); 
                       setActiveResearchSection(section);
-                      setCurrentHelpContent(helpInfo || {title: section, sidebarTitle: {[language]:section} as any, explanation: {en: "Error", am: "ስህተት"}});
+                      setCurrentHelpContent(helpInfo || {title: section, sidebarTitle: {[language]:t(section as TranslationKey, section)} as any, explanation: {en: "Error", am: "ስህተት"}});
                       setEditingCompetitorId(null); 
                       setEditingTrendId(null);    
                       if(window.innerWidth < 768) setIsSidebarOpen(false); 
@@ -807,7 +986,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
       />
 
       <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title={`${t('mra_help_modal_title_prefix')}: ${currentHelpContent?.sidebarTitle[language] || currentHelpContent?.title || ''}`} size="lg">
-        <p className="text-gray-700 whitespace-pre-line" dir={language === 'am' ? 'rtl' : 'ltr'}>
+        <p className="text-gray-700 whitespace-pre-line">
             {currentHelpContent?.explanation[language] || currentHelpContent?.explanation.en}
         </p>
       </Modal>

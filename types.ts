@@ -115,3 +115,11 @@ export interface ResearchSectionHelp {
   sidebarTitle: Record<Language, string>; // New field for concise sidebar title
   explanation: Record<Language, string>;
 }
+
+export interface UserProfile {
+  name: string;
+  email: string;
+  phone: string;
+  otherDetails: string;
+  photo: string | null; // Base64 string for the image, or null if not set
+}

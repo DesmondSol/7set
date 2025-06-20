@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { CanvasSection, CanvasData, ALL_CANVAS_SECTIONS, CanvasSectionHelp, Language } from '../../types';
+import jsPDF from 'jspdf';
+import { CanvasSection, CanvasData, ALL_CANVAS_SECTIONS, CanvasSectionHelp, Language, UserProfile } from '../../types';
 import { CANVAS_SECTIONS_HELP, GENERIC_ERROR_MESSAGE } from '../../constants';
 import { generateBusinessCanvasContent } from '../../services/geminiService';
 import { Button } from '../common/Button';
@@ -48,7 +49,6 @@ const SectionContentEditor: React.FC<SectionContentEditorProps> = ({ section, co
             onChange={(e) => setCurrentContent(e.target.value)}
             className="w-full h-40 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
             placeholder={`${t('no_content_yet_placeholder', 'Enter details for')} ${t(section as TranslationKey, section)}...`}
-            dir={language === 'am' ? 'rtl' : 'ltr'} // Basic RTL support for Amharic in textarea
           />
           <div className="mt-3 flex space-x-2">
             <Button onClick={handleSave} size="sm">{t('save_button', 'Save')}</Button>
@@ -56,7 +56,7 @@ const SectionContentEditor: React.FC<SectionContentEditorProps> = ({ section, co
           </div>
         </div>
       ) : (
-        <p className="text-gray-700 whitespace-pre-wrap min-h-[50px]" dir={language === 'am' ? 'rtl' : 'ltr'}>
+        <p className="text-gray-700 whitespace-pre-wrap min-h-[50px]">
             {content || <span className="text-gray-400 italic">{t('no_content_yet_placeholder')}</span>}
         </p>
       )}
@@ -70,9 +70,26 @@ interface BusinessLaunchCanvasProps {
   onMassUpdate: (newData: Partial<CanvasData>) => void;
   language: Language;
   t: (key: TranslationKey, defaultText?: string) => string;
+  userProfile: UserProfile | null;
 }
 
-export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canvasData, onSaveSection, onMassUpdate, language, t }) => {
+// PDF Export Helper Constants
+const A4_WIDTH_MM = 210;
+const A4_HEIGHT_MM = 297;
+const MARGIN_MM = 15;
+const CONTENT_WIDTH_MM = A4_WIDTH_MM - 2 * MARGIN_MM;
+const LINE_HEIGHT_NORMAL = 7; 
+const LINE_HEIGHT_TITLE = 9; 
+const LINE_HEIGHT_SECTION_TITLE = 8; 
+
+const TITLE_FONT_SIZE = 18;
+const SECTION_TITLE_FONT_SIZE = 14;
+const TEXT_FONT_SIZE = 10;
+const FOOTER_FONT_SIZE = 8;
+const USER_PHOTO_SIZE_MM = 25;
+
+
+export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canvasData, onSaveSection, onMassUpdate, language, t, userProfile }) => {
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isLoadingAi, setIsLoadingAi] = useState(false);
@@ -80,21 +97,151 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
   const [aiForm, setAiForm] = useState({ idea: '', q1: '', q2: '', q3: '' });
   const [error, setError] = useState<string | null>(null);
 
+  const addPageFooter = (doc: jsPDF, pageNumber: number, totalPages: number) => {
+    doc.setFontSize(FOOTER_FONT_SIZE);
+    doc.setTextColor(100);
+    const footerText = t('page_x_of_y', `Page ${pageNumber} of ${totalPages}`)
+                        .replace('{currentPage}', String(pageNumber))
+                        .replace('{totalPages}', String(totalPages));
+    doc.text(footerText, MARGIN_MM, A4_HEIGHT_MM - MARGIN_MM / 2);
+    doc.setTextColor(0);
+  };
+  
+  const addTextWithPageBreak = (
+    doc: jsPDF, 
+    text: string | string[], 
+    x: number, 
+    currentYRef: { value: number }, 
+    options: any, 
+    lineHeight: number, 
+    totalPagesRef: { current: number }
+  ) => {
+    const lines = Array.isArray(text) ? text : doc.splitTextToSize(text, CONTENT_WIDTH_MM - (x - MARGIN_MM));
+
+    lines.forEach((line: string) => {
+        if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - lineHeight) { 
+            addPageFooter(doc, doc.getNumberOfPages(), totalPagesRef.current); 
+            doc.addPage();
+            totalPagesRef.current = doc.getNumberOfPages();
+            currentYRef.value = MARGIN_MM; 
+        }
+        doc.text(line, x, currentYRef.value, options); 
+        currentYRef.value += lineHeight;
+    });
+  };
+
+
   const handleExport = () => {
-    const title = `7set Spark - ${t('businessLaunchCanvas_title', "Business Launch Canvas")} Export\n`;
-    const date = `Exported on: ${new Date().toLocaleString()}\n\n`;
-    const content = ALL_CANVAS_SECTIONS.map(section => {
-      return `## ${t(section as TranslationKey, section)}\n\n${canvasData[section] || t('no_content_yet_placeholder', 'No content provided.')}\n\n------------------------------------\n`;
-    }).join('');
+    const doc = new jsPDF();
+    let currentYRef = { value: MARGIN_MM };
+    const totalPagesRef = { current: 1 }; 
+
+    // Add User Profile Section
+    if (userProfile) {
+        doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+        doc.setFont("helvetica", "bold");
+        addTextWithPageBreak(doc, t('pdf_made_by_title'), MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(TEXT_FONT_SIZE);
+
+        let textX = MARGIN_MM;
+        if (userProfile.photo) {
+            try {
+                // Ensure photo is valid base64 string (remove data:image/jpeg;base64, part if present)
+                const base64Image = userProfile.photo.split(',')[1] || userProfile.photo;
+                const imageType = userProfile.photo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+                doc.addImage(base64Image, imageType, MARGIN_MM, currentYRef.value, USER_PHOTO_SIZE_MM, USER_PHOTO_SIZE_MM);
+                textX = MARGIN_MM + USER_PHOTO_SIZE_MM + 5; // Indent text next to photo
+            } catch (e) {
+                console.error("Error adding image to PDF:", e);
+                // Continue without image if error
+            }
+        }
+        
+        const profileDetails = [
+            `${t('user_profile_name_label')} ${userProfile.name}`,
+            `${t('user_profile_email_label')} ${userProfile.email || '-'}`,
+            `${t('user_profile_phone_label')} ${userProfile.phone || '-'}`,
+            `${t('user_profile_other_details_label')} ${userProfile.otherDetails || '-'}`
+        ];
+
+        let textStartY = currentYRef.value;
+        profileDetails.forEach(detail => {
+            if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - LINE_HEIGHT_NORMAL && textStartY + (USER_PHOTO_SIZE_MM / 2) > A4_HEIGHT_MM - MARGIN_MM - LINE_HEIGHT_NORMAL) { // Check if new page is needed
+                 // Only add new page if not enough space for text next to photo
+                 if (userProfile.photo && currentYRef.value < textStartY + USER_PHOTO_SIZE_MM + 5 ) {
+                     // Still on the same line as photo, don't break page yet
+                 } else {
+                    addPageFooter(doc, doc.getNumberOfPages(), totalPagesRef.current);
+                    doc.addPage();
+                    totalPagesRef.current = doc.getNumberOfPages();
+                    currentYRef.value = MARGIN_MM;
+                    textStartY = MARGIN_MM; // Reset textStartY for new page
+                    textX = MARGIN_MM; // Reset textX if new page and no photo
+                 }
+            }
+            // Ensure we don't write text over the photo space if photo exists
+            const yPos = userProfile.photo && currentYRef.value < textStartY + USER_PHOTO_SIZE_MM + 5 ? currentYRef.value : textStartY;
+
+            const lines = doc.splitTextToSize(detail, CONTENT_WIDTH_MM - (textX - MARGIN_MM));
+            lines.forEach((line: string) => {
+                 if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - LINE_HEIGHT_NORMAL) {
+                    addPageFooter(doc, doc.getNumberOfPages(), totalPagesRef.current);
+                    doc.addPage();
+                    totalPagesRef.current = doc.getNumberOfPages();
+                    currentYRef.value = MARGIN_MM;
+                    textX = MARGIN_MM;
+                 }
+                 doc.text(line, textX, currentYRef.value);
+                 currentYRef.value += LINE_HEIGHT_NORMAL;
+            });
+        });
+        // Ensure Y is below photo if photo was added
+        if (userProfile.photo) {
+            currentYRef.value = Math.max(currentYRef.value, textStartY + USER_PHOTO_SIZE_MM + LINE_HEIGHT_NORMAL);
+        } else {
+            currentYRef.value += LINE_HEIGHT_NORMAL; // Extra space if no photo
+        }
+    }
+
+
+    doc.setFontSize(TITLE_FONT_SIZE);
+    doc.setFont("helvetica", "bold");
+    const mainTitleText = `7set Spark - ${t('businessLaunchCanvas_title', "Business Launch Canvas")}`;
+    addTextWithPageBreak(doc, mainTitleText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_TITLE, totalPagesRef);
+    currentYRef.value += LINE_HEIGHT_NORMAL / 2; 
+    doc.setFont("helvetica", "normal");
+
+    doc.setFontSize(TEXT_FONT_SIZE - 1);
+    const exportDateText = `${t('exported_on_label', 'Exported on')}: ${new Date().toLocaleString(language === 'am' ? 'am-ET' : 'en-US')}`;
+    addTextWithPageBreak(doc, exportDateText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef);
+    currentYRef.value += LINE_HEIGHT_NORMAL;
+
+    ALL_CANVAS_SECTIONS.forEach(section => {
+      if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - (LINE_HEIGHT_SECTION_TITLE * 2) ) { 
+          addPageFooter(doc, doc.getNumberOfPages(), totalPagesRef.current);
+          doc.addPage();
+          totalPagesRef.current = doc.getNumberOfPages();
+          currentYRef.value = MARGIN_MM;
+      }
+      doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+      doc.setFont("helvetica", "bold");
+      const sectionTitleText = t(section as TranslationKey, section);
+      addTextWithPageBreak(doc, sectionTitleText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef);
+      doc.setFont("helvetica", "normal");
+      
+      doc.setFontSize(TEXT_FONT_SIZE);
+      const contentText = canvasData[section] || t('no_content_yet_placeholder_pdf', 'No content provided.');
+      addTextWithPageBreak(doc, contentText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef);
+      currentYRef.value += LINE_HEIGHT_NORMAL / 2; 
+    });
     
-    const fullContent = title + date + content;
-    const blob = new Blob([fullContent], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = language === 'am' ? 'የቢዝነስ_ማስጀመሪያ_ሸራ.txt' : 'business_launch_canvas.txt';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    for (let i = 1; i <= totalPagesRef.current; i++) {
+        doc.setPage(i);
+        addPageFooter(doc, i, totalPagesRef.current);
+    }
+
+    doc.save(language === 'am' ? 'የቢዝነስ_ማስጀመሪያ_ሸራ.pdf' : 'business_launch_canvas.pdf');
   };
 
   const handleAiGenerate = async () => {
@@ -111,7 +258,7 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
             aiForm.q2, 
             aiForm.q3,
             ALL_CANVAS_SECTIONS,
-            language // Pass current language to AI
+            language
         );
         if (result) {
             onMassUpdate(result);
@@ -207,11 +354,11 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
           {CANVAS_SECTIONS_HELP.map(helpItem => (
             <div key={helpItem.title} className="p-4 bg-gray-50 rounded-lg shadow">
               <h4 className="text-xl font-semibold text-blue-700 mb-2">{t(helpItem.title as TranslationKey, helpItem.title)}</h4>
-              <p className="text-gray-700 mb-2 whitespace-pre-line" dir={language === 'am' ? 'rtl' : 'ltr'}>{helpItem.explanation[language] || helpItem.explanation.en}</p>
+              <p className="text-gray-700 mb-2 whitespace-pre-line">{helpItem.explanation[language] || helpItem.explanation.en}</p>
               {helpItem.example && (helpItem.example[language] || helpItem.example.en) && (
                 <div>
                   <h5 className="text-sm font-semibold text-gray-600 mb-1">{language === 'am' ? 'ምሳሌ:' : 'Example:'}</h5>
-                  <p className="text-sm text-gray-600 bg-blue-50 p-2 rounded whitespace-pre-line border border-blue-200" dir={language === 'am' ? 'rtl' : 'ltr'}>
+                  <p className="text-sm text-gray-600 bg-blue-50 p-2 rounded whitespace-pre-line border border-blue-200">
                     {helpItem.example[language] || helpItem.example.en}
                   </p>
                 </div>

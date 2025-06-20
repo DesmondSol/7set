@@ -4,14 +4,17 @@ import { Navbar } from './components/Navbar';
 import { BusinessLaunchCanvas } from './components/BusinessLaunchCanvas/BusinessLaunchCanvas';
 import { MarketResearchAccelerator } from './components/MarketResearchAccelerator/MarketResearchAccelerator';
 import { ComingSoon } from './components/ComingSoon';
-import { Page, SubPage, CanvasData, ALL_CANVAS_SECTIONS, CanvasSection, Language } from './types';
+import { UserProfileModal } from './components/UserProfileModal'; // Import UserProfileModal
+import { Page, SubPage, CanvasData, ALL_CANVAS_SECTIONS, CanvasSection, Language, UserProfile } from './types';
 import { NAV_ITEMS } from './constants';
-import { getTranslator, TranslationKey } from './locales'; // Import localization utilities
+import { getTranslator, TranslationKey } from './locales';
 
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<Page | null>(null);
   const [activeSubPage, setActiveSubPage] = useState<SubPage | null>(null);
   const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
+  const [isUserProfileModalOpen, setIsUserProfileModalOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   const [canvasData, setCanvasData] = useState<CanvasData>(
     ALL_CANVAS_SECTIONS.reduce((acc, section) => {
@@ -21,6 +24,20 @@ const App: React.FC = () => {
   );
 
   const t = useCallback(getTranslator(currentLanguage), [currentLanguage]);
+
+  // Load user profile from localStorage on initial mount
+  useEffect(() => {
+    const storedProfile = localStorage.getItem('sparkUserProfile');
+    if (storedProfile) {
+      setUserProfile(JSON.parse(storedProfile));
+    }
+  }, []);
+
+  const handleUpdateUserProfile = (profile: UserProfile) => {
+    setUserProfile(profile);
+    localStorage.setItem('sparkUserProfile', JSON.stringify(profile));
+    setIsUserProfileModalOpen(false);
+  };
 
   const handleUpdateCanvasData = (newData: Partial<CanvasData>) => {
     setCanvasData(prev => ({ ...prev, ...newData }));
@@ -42,6 +59,7 @@ const App: React.FC = () => {
                 onMassUpdate={handleUpdateCanvasData} 
                 language={currentLanguage}
                 t={t}
+                userProfile={userProfile}
              />;
     }
     if (activePage === Page.START && activeSubPage === SubPage.RESEARCH) {
@@ -49,6 +67,7 @@ const App: React.FC = () => {
                 strategyData={canvasData} 
                 language={currentLanguage}
                 t={t}
+                userProfile={userProfile}
               />;
     }
     if (activeSubPage) { 
@@ -81,11 +100,21 @@ const App: React.FC = () => {
         currentLanguage={currentLanguage}
         changeLanguage={changeLanguage}
         t={t}
+        userProfile={userProfile}
+        onOpenProfileModal={() => setIsUserProfileModalOpen(true)}
       />
       <main className="flex-grow container mx-auto px-4 py-8">
         {renderContent()}
       </main>
-      {/* Footer removed */}
+      {isUserProfileModalOpen && (
+        <UserProfileModal
+          isOpen={isUserProfileModalOpen}
+          onClose={() => setIsUserProfileModalOpen(false)}
+          onSave={handleUpdateUserProfile}
+          currentUserProfile={userProfile}
+          t={t}
+        />
+      )}
     </div>
   );
 };

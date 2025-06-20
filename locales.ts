@@ -5,7 +5,8 @@ import { Page, SubPage, CanvasSection, ResearchSection, Language } from './types
 export type TranslationKey =
   | Page
   | SubPage
-  | CanvasSection // Added all CanvasSection enum values
+  | CanvasSection 
+  | ResearchSection // Added ResearchSection here
   | 'export_all_button'
   | 'ai_assistant_canvas_button_tooltip'
   | 'help_canvas_button_tooltip'
@@ -14,10 +15,10 @@ export type TranslationKey =
   | 'ai_modal_q1_label'
   | 'ai_modal_q2_label'
   | 'ai_modal_q3_label'
-  | 'ai_modal_idea_placeholder' // New key
-  | 'ai_modal_q1_placeholder'   // New key
-  | 'ai_modal_q2_placeholder'   // New key
-  | 'ai_modal_q3_placeholder'   // New key
+  | 'ai_modal_idea_placeholder' 
+  | 'ai_modal_q1_placeholder'   
+  | 'ai_modal_q2_placeholder'   
+  | 'ai_modal_q3_placeholder'   
   | 'ai_modal_generate_button_canvas'
   | 'ai_modal_generating_button_canvas'
   | 'help_modal_title_canvas'
@@ -76,7 +77,45 @@ export type TranslationKey =
   | 'welcome_title'
   | 'welcome_message'
   | 'lang_english'
-  | 'lang_amharic';
+  | 'lang_amharic'
+  // PDF Export specific keys
+  | 'exported_on_label'
+  | 'page_x_of_y'
+  | 'no_content_yet_placeholder_pdf'
+  | 'mra_report_set_title'
+  | 'mra_report_goal_label'
+  | 'mra_report_audience_label'
+  | 'mra_report_question_label'
+  | 'mra_report_responses_label'
+  | 'mra_report_pricing_label'
+  | 'mra_report_features_label'
+  | 'mra_report_strengths_label'
+  | 'mra_report_weaknesses_label'
+  | 'mra_report_gaps_label'
+  | 'mra_report_notes_label' // Generic notes label
+  | 'mra_report_description_label'
+  | 'mra_report_source_label'
+  | 'mra_report_timeframe_label'
+  | 'mra_report_location_label'
+  | 'mra_report_impact_label'
+  // User Profile
+  | 'user_profile_button_tooltip'
+  | 'user_profile_modal_title'
+  | 'user_profile_name_label'
+  | 'user_profile_email_label'
+  | 'user_profile_phone_label'
+  | 'user_profile_other_details_label'
+  | 'user_profile_photo_label'
+  | 'user_profile_upload_photo_button'
+  | 'user_profile_change_photo_button'
+  | 'user_profile_save_button'
+  | 'user_profile_name_placeholder'
+  | 'user_profile_email_placeholder'
+  | 'user_profile_phone_placeholder'
+  | 'user_profile_other_details_placeholder'
+  | 'pdf_made_by_title'
+  | 'lang_en_short'
+  | 'lang_am_short';
 
 export type LocalizedContent = Record<TranslationKey, string>;
 
@@ -93,7 +132,6 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [SubPage.LEARN]: 'Learn',
     [SubPage.AI_ADVISOR]: 'AI Advisor',
 
-    // Canvas Section Titles
     [CanvasSection.PROJECT_OVERVIEW]: "Project Overview",
     [CanvasSection.PRODUCT_VISION]: "Product Vision",
     [CanvasSection.NORTH_STAR_METRIC]: "North Star Metric",
@@ -113,6 +151,12 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [CanvasSection.UNIT_ECONOMICS]: "Unit Economics",
     [CanvasSection.BRAND_STYLE_GUIDES]: "Brand & Style Guides",
     [CanvasSection.PRODUCT_MARKET_FIT]: "Product - Market Fit",
+
+    [ResearchSection.QUESTIONS]: "Questions & Responses",
+    [ResearchSection.GENERAL_NOTES_IMPORT]: "General Notes / Import",
+    [ResearchSection.COMPETITOR_ANALYSIS]: "Competitor Analysis",
+    [ResearchSection.TRENDS]: "Industry Trends",
+    [ResearchSection.AI_SUMMARY]: "AI Summary",
 
     export_all_button: 'Export All',
     ai_assistant_canvas_button_tooltip: 'AI Assistant to Fill Canvas',
@@ -186,8 +230,48 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 
     welcome_title: "Welcome to 7set Spark!",
     welcome_message: "Your innovation and training hub for entrepreneurs. Select a section from the navigation bar above to begin your journey.",
-    lang_english: "English",
-    lang_amharic: "Amharic",
+    lang_english: "English", // Full name for dropdown list item
+    lang_amharic: "Amharic", // Full name for dropdown list item
+    lang_en_short: "EN", // Short name for display
+    lang_am_short: "አማ", // Short name for display (Amharic for AM)
+
+    // PDF Export translations
+    exported_on_label: "Exported on",
+    page_x_of_y: "Page {currentPage} of {totalPages}", // Use placeholders for dynamic values
+    no_content_yet_placeholder_pdf: "No content provided.",
+    mra_report_set_title: "Research Set",
+    mra_report_goal_label: "Goal",
+    mra_report_audience_label: "Audience",
+    mra_report_question_label: "Question",
+    mra_report_responses_label: "Responses",
+    mra_report_pricing_label: "Pricing Strategy",
+    mra_report_features_label: "Key Features",
+    mra_report_strengths_label: "Strengths",
+    mra_report_weaknesses_label: "Weaknesses",
+    mra_report_gaps_label: "Market Gaps Addressed",
+    mra_report_notes_label: "Notes",
+    mra_report_description_label: "Description",
+    mra_report_source_label: "Source/Evidence",
+    mra_report_timeframe_label: "Timeframe",
+    mra_report_location_label: "Location/Market",
+    mra_report_impact_label: "Potential Impact",
+
+    // User Profile
+    user_profile_button_tooltip: "User Profile",
+    user_profile_modal_title: "User Profile",
+    user_profile_name_label: "Full Name:",
+    user_profile_email_label: "Email Address:",
+    user_profile_phone_label: "Phone Number:",
+    user_profile_other_details_label: "Other Details:",
+    user_profile_photo_label: "Profile Photo:",
+    user_profile_upload_photo_button: "Upload Photo",
+    user_profile_change_photo_button: "Change Photo",
+    user_profile_save_button: "Save Profile",
+    user_profile_name_placeholder: "Enter your full name",
+    user_profile_email_placeholder: "e.g., yourname@example.com",
+    user_profile_phone_placeholder: "e.g., +251 91 123 4567",
+    user_profile_other_details_placeholder: "e.g., Your Company / Role",
+    pdf_made_by_title: "Prepared by"
   },
   am: {
     [Page.START]: 'ጀምር',
@@ -201,7 +285,6 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [SubPage.LEARN]: 'ይማሩ',
     [SubPage.AI_ADVISOR]: 'የአርቴፊሻል ኢንተለጀንስ አማካሪ',
 
-    // Canvas Section Titles - Amharic
     [CanvasSection.PROJECT_OVERVIEW]: "የፕሮጀክት አጠቃላይ እይታ",
     [CanvasSection.PRODUCT_VISION]: "የምርት ራዕይ",
     [CanvasSection.NORTH_STAR_METRIC]: "የሰሜን ኮከብ መለኪያ",
@@ -221,6 +304,12 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [CanvasSection.UNIT_ECONOMICS]: "የአሃድ ኢኮኖሚክስ",
     [CanvasSection.BRAND_STYLE_GUIDES]: "የምርት ስም እና የቅጥ መመሪያዎች",
     [CanvasSection.PRODUCT_MARKET_FIT]: "የምርት-ገበያ ተስማሚነት",
+
+    [ResearchSection.QUESTIONS]: "ጥያቄዎች እና ምላሾች",
+    [ResearchSection.GENERAL_NOTES_IMPORT]: "አጠቃላይ ማስታወሻዎች / አስገባ",
+    [ResearchSection.COMPETITOR_ANALYSIS]: "የተፎካካሪ ትንተና",
+    [ResearchSection.TRENDS]: "የኢንዱስትሪ አዝማሚያዎች",
+    [ResearchSection.AI_SUMMARY]: "የ AI ማጠቃለያ",
 
     export_all_button: 'ሁሉንም ላክ',
     ai_assistant_canvas_button_tooltip: 'ሸራውን ለመሙላት የ AI ረዳት',
@@ -262,7 +351,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     mra_questions_ai_generate_button: "ለዚህ ስብስብ በ AI ጥያቄዎችን አመንጭ",
     mra_questions_ai_generating_button: "AI እያመነጨ ነው...",
     mra_questions_ai_requires_canvas_note: "ማሳሰቢያ: የ AI ጥያቄ ማመንጨት የቢዝነስ ማስጀመሪያ ሸራ ውሂብ መሞላት ይፈልጋል።",
-    mra_questions_no_questions_placeholder: "እስካሁን ምንም የምርምር ጥያቄዎች ወደዚህ ስብስብ አልተጨመሩም።",
+    mra_questions_no_questions_placeholder:"እስካሁን ምንም የምርምር ጥያቄዎች ወደዚህ ስብስብ አልተጨመሩም።",
     mra_questions_select_set_prompt: "ጥያቄዎችን ለማየት ወይም ለመጨመር እባክዎ ከላይ የምርምር ስብስብ ይምረጡ።",
     mra_questions_no_sets_prompt: "እስካሁን የተፈጠሩ የምርምር ስብስቦች የሉም። ለመጀመር 'አዲስ የምርምር ስብስብ ይፍጠሩ' የሚለውን ይጫኑ።",
     mra_general_notes_title: "አጠቃላይ ማስታወሻዎች እና የጅምላ ውሂብ ማስገባት",
@@ -294,13 +383,61 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 
     welcome_title: "እንኳን ወደ 7ሴት ስፓርክ በደህና መጡ!",
     welcome_message: "የእርስዎ የፈጠራ እና የስልጠና ማዕከል ለስራ ፈጣሪዎች። ጉዞዎን ለመጀመር ከላይ ካለው የማውጫ ቁልፎች አንድ ክፍል ይምረጡ።",
-    lang_english: "English",
-    lang_amharic: "አማርኛ",
+    lang_english: "English", // Full name for dropdown list item
+    lang_amharic: "አማርኛ", // Full name for dropdown list item
+    lang_en_short: "EN", // Short name for display
+    lang_am_short: "አማ", // Short name for display
+
+    // PDF Export translations (Amharic placeholders)
+    exported_on_label: "የተላከበት ቀን",
+    page_x_of_y: "ገጽ {currentPage} ከ {totalPages}",
+    no_content_yet_placeholder_pdf: "ምንም ይዘት አልቀረበም።",
+    mra_report_set_title: "የምርምር ስብስብ",
+    mra_report_goal_label: "ግብ",
+    mra_report_audience_label: "ታዳሚ",
+    mra_report_question_label: "ጥያቄ",
+    mra_report_responses_label: "ምላሾች",
+    mra_report_pricing_label: "የዋጋ አወጣጥ ስትራቴጂ",
+    mra_report_features_label: "ቁልፍ ባህሪዎች",
+    mra_report_strengths_label: "ጥንካሬዎች",
+    mra_report_weaknesses_label: "ድክመቶች",
+    mra_report_gaps_label: "የተሸፈኑ የገበያ ክፍተቶች",
+    mra_report_notes_label: "ማስታወሻዎች",
+    mra_report_description_label: "መግለጫ",
+    mra_report_source_label: "ምንጭ/ማስረጃ",
+    mra_report_timeframe_label: "የጊዜ ገደብ",
+    mra_report_location_label: "ቦታ/ገበያ",
+    mra_report_impact_label: "ሊያስከትል የሚችለው ተጽዕኖ",
+
+    // User Profile
+    user_profile_button_tooltip: "የተጠቃሚ መገለጫ",
+    user_profile_modal_title: "የተጠቃሚ መገለጫ",
+    user_profile_name_label: "ሙሉ ስም:",
+    user_profile_email_label: "የኢሜይል አድራሻ:",
+    user_profile_phone_label: "ስልክ ቁጥር:",
+    user_profile_other_details_label: "ሌሎች ዝርዝሮች:",
+    user_profile_photo_label: "የመገለጫ ፎቶ:",
+    user_profile_upload_photo_button: "ፎቶ ይስቀሉ",
+    user_profile_change_photo_button: "ፎቶ ይቀይሩ",
+    user_profile_save_button: "መገለጫ ያስቀምጡ",
+    user_profile_name_placeholder: "ሙሉ ስምዎን ያስገቡ",
+    user_profile_email_placeholder: "ለምሳሌ፦ yourname@example.com",
+    user_profile_phone_placeholder: "ለምሳሌ፦ +251 91 123 4567",
+    user_profile_other_details_placeholder: "ለምሳሌ፦ የእርስዎ ድርጅት / ሚና",
+    pdf_made_by_title: "የተዘጋጀው በ"
   }
 };
 
 // Helper function for translations
 export const getTranslator = (language: Language) => (key: TranslationKey, defaultText?: string): string => {
-  const text = translations[language]?.[key] || translations.en?.[key]; // Fallback to English if current lang or key is missing
-  return text || defaultText || String(key); // Fallback to key itself if no translation found
+  let text = translations[language]?.[key] || translations.en?.[key];
+  if (!text && defaultText) text = defaultText;
+  if (!text) text = String(key); // Fallback to key itself if no translation found
+
+  // Handle placeholders like {currentPage} and {totalPages} for page_x_of_y
+  if (key === 'page_x_of_y' && typeof text === 'string') {
+      // Allow dynamic replacement if needed, but the current structure doesn't pass these values here.
+      // The calling code in PDF generation will handle replacement.
+  }
+  return text;
 };

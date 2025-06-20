@@ -1,12 +1,13 @@
 
-import { Page, SubPage, CanvasSection, ResearchSection, Language } from './types';
+import { Page, SubPage, CanvasSection, ResearchSection, Language, CopywritingSubSection } from './types';
 
 // Define a more comprehensive type for translation keys
 export type TranslationKey =
   | Page
   | SubPage
   | CanvasSection 
-  | ResearchSection // Added ResearchSection here
+  | ResearchSection 
+  | CopywritingSubSection 
   | 'export_all_button'
   | 'ai_assistant_canvas_button_tooltip'
   | 'help_canvas_button_tooltip'
@@ -25,6 +26,7 @@ export type TranslationKey =
   | 'businessLaunchCanvas_title' 
   | 'edit_button'
   | 'save_button'
+  | 'delete_button'
   | 'cancel_button'
   | 'no_content_yet_placeholder'
   | 'error_ai_failed_generic'
@@ -92,7 +94,7 @@ export type TranslationKey =
   | 'mra_report_strengths_label'
   | 'mra_report_weaknesses_label'
   | 'mra_report_gaps_label'
-  | 'mra_report_notes_label' // Generic notes label
+  | 'mra_report_notes_label' 
   | 'mra_report_description_label'
   | 'mra_report_source_label'
   | 'mra_report_timeframe_label'
@@ -115,7 +117,93 @@ export type TranslationKey =
   | 'user_profile_other_details_placeholder'
   | 'pdf_made_by_title'
   | 'lang_en_short'
-  | 'lang_am_short';
+  | 'lang_am_short'
+  | 'logo_alt_text' // Added for the logo
+  // Copywriting Section Keys
+  | 'copywriting_page_title'
+  | 'copywriting_sidebar_title'
+  | 'copywriting_help_button_tooltip'
+  | 'copywriting_ai_button_tooltip'
+  | 'copywriting_marketing_title'
+  | 'copywriting_pitch_refinement_title'
+  | 'marketing_add_post_button'
+  | 'marketing_no_posts_placeholder'
+  | 'marketing_ai_generate_plan_button' 
+  | 'marketing_ai_generating_plan_button'
+  | 'marketing_post_modal_create_title'
+  | 'marketing_post_modal_edit_title'
+  | 'marketing_post_title_label'
+  | 'marketing_post_content_label'
+  | 'marketing_post_platform_label'
+  | 'marketing_post_scheduled_date_label'
+  | 'marketing_post_visual_recommendation_label'
+  | 'marketing_post_notes_label'
+  | 'marketing_post_status_label'
+  | 'marketing_post_status_todo'
+  | 'marketing_post_status_in_progress'
+  | 'marketing_post_status_done'
+  | 'marketing_post_platform_placeholder'
+  | 'marketing_post_title_placeholder'
+  | 'marketing_post_content_placeholder'
+  | 'marketing_post_visual_placeholder'
+  | 'marketing_post_notes_placeholder'
+  | 'ai_marketing_modal_title'
+  | 'ai_marketing_campaign_goal_label'
+  | 'ai_marketing_target_platforms_label'
+  | 'ai_marketing_content_tone_label'
+  | 'ai_marketing_duration_label'
+  | 'ai_marketing_campaign_goal_placeholder'
+  | 'ai_marketing_target_platforms_placeholder'
+  | 'ai_marketing_content_tone_placeholder'
+  | 'ai_marketing_duration_placeholder'
+  | 'ai_marketing_generate_button'
+  | 'pitch_add_button'
+  | 'pitch_no_pitches_placeholder'
+  | 'pitch_ai_generate_button'
+  | 'pitch_ai_generating_button'
+  | 'pitch_modal_create_title'
+  | 'pitch_modal_edit_title'
+  | 'pitch_type_label'
+  | 'pitch_type_investor'
+  | 'pitch_type_sales'
+  | 'pitch_type_email_campaign'
+  | 'pitch_title_label'
+  | 'pitch_target_audience_label'
+  | 'pitch_key_message_label'
+  | 'pitch_content_label'
+  | 'pitch_notes_label'
+  | 'pitch_title_placeholder'
+  | 'pitch_target_audience_placeholder'
+  | 'pitch_key_message_placeholder'
+  | 'pitch_content_placeholder'
+  | 'ai_pitch_modal_title'
+  | 'ai_pitch_type_label'
+  | 'ai_pitch_target_audience_label'
+  | 'ai_pitch_key_message_label'
+  | 'ai_pitch_num_emails_label' 
+  | 'ai_pitch_generate_button'
+  | 'view_details_button'
+  | 'mark_as_done_button'
+  | 'mark_as_todo_button'
+  | 'export_marketing_plan_button'
+  | 'export_pitches_button'
+  | 'pdf_marketing_plan_title'
+  | 'pdf_marketing_post_title'
+  | 'pdf_platform_label'
+  | 'pdf_scheduled_date_label'
+  | 'pdf_visual_recommendation_label'
+  | 'pdf_status_label'
+  | 'pdf_pitches_title'
+  | 'pdf_pitch_title'
+  | 'pdf_pitch_type_label'
+  | 'pdf_target_audience_label'
+  | 'pdf_key_message_label'
+  // Calendar specific
+  | 'calendar_prev_week'
+  | 'calendar_next_week'
+  | 'calendar_add_post_tooltip'
+  | 'day_sun_short' | 'day_mon_short' | 'day_tue_short' | 'day_wed_short' | 'day_thu_short' | 'day_fri_short' | 'day_sat_short'
+  | 'month_jan' | 'month_feb' | 'month_mar' | 'month_apr' | 'month_may' | 'month_jun' | 'month_jul' | 'month_aug' | 'month_sep' | 'month_oct' | 'month_nov' | 'month_dec';
 
 export type LocalizedContent = Record<TranslationKey, string>;
 
@@ -157,6 +245,9 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [ResearchSection.COMPETITOR_ANALYSIS]: "Competitor Analysis",
     [ResearchSection.TRENDS]: "Industry Trends",
     [ResearchSection.AI_SUMMARY]: "AI Summary",
+    
+    [CopywritingSubSection.MARKETING]: "Marketing Content & Plans",
+    [CopywritingSubSection.PITCH_REFINEMENT]: "Pitch Refinement",
 
     export_all_button: 'Export All',
     ai_assistant_canvas_button_tooltip: 'AI Assistant to Fill Canvas',
@@ -176,6 +267,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     businessLaunchCanvas_title: 'Business Launch Canvas',
     edit_button: 'Edit',
     save_button: 'Save',
+    delete_button: 'Delete',
     cancel_button: 'Cancel',
     no_content_yet_placeholder: "No content yet. Click 'Edit' or use AI to generate.",
     error_ai_failed_generic: "AI generation failed or returned no data. Ensure API key is valid and inputs are clear.",
@@ -230,14 +322,15 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 
     welcome_title: "Welcome to 7set Spark!",
     welcome_message: "Your innovation and training hub for entrepreneurs. Select a section from the navigation bar above to begin your journey.",
-    lang_english: "English", // Full name for dropdown list item
-    lang_amharic: "Amharic", // Full name for dropdown list item
-    lang_en_short: "EN", // Short name for display
-    lang_am_short: "አማ", // Short name for display (Amharic for AM)
+    lang_english: "English", 
+    lang_amharic: "Amharic", 
+    lang_en_short: "EN", 
+    lang_am_short: "አማ", 
+    logo_alt_text: "7set Spark Logo",
 
-    // PDF Export translations
+
     exported_on_label: "Exported on",
-    page_x_of_y: "Page {currentPage} of {totalPages}", // Use placeholders for dynamic values
+    page_x_of_y: "Page {currentPage} of {totalPages}", 
     no_content_yet_placeholder_pdf: "No content provided.",
     mra_report_set_title: "Research Set",
     mra_report_goal_label: "Goal",
@@ -256,7 +349,6 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     mra_report_location_label: "Location/Market",
     mra_report_impact_label: "Potential Impact",
 
-    // User Profile
     user_profile_button_tooltip: "User Profile",
     user_profile_modal_title: "User Profile",
     user_profile_name_label: "Full Name:",
@@ -271,7 +363,91 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     user_profile_email_placeholder: "e.g., yourname@example.com",
     user_profile_phone_placeholder: "e.g., +251 91 123 4567",
     user_profile_other_details_placeholder: "e.g., Your Company / Role",
-    pdf_made_by_title: "Prepared by"
+    pdf_made_by_title: "Prepared by",
+
+    copywriting_page_title: "Copywriting Toolkit",
+    copywriting_sidebar_title: "Copywriting Sections",
+    copywriting_help_button_tooltip: "Copywriting Help",
+    copywriting_ai_button_tooltip: "AI Copywriting Assistant",
+    copywriting_marketing_title: "Marketing Content & Plans",
+    copywriting_pitch_refinement_title: "Pitch Refinement",
+    marketing_add_post_button: "Add New Post Manually",
+    marketing_no_posts_placeholder: "No marketing posts created yet. Add one manually or use AI to generate a plan.",
+    marketing_ai_generate_plan_button: "AI: Generate Marketing Plan",
+    marketing_ai_generating_plan_button: "AI Generating Plan...",
+    marketing_post_modal_create_title: "Create New Marketing Post",
+    marketing_post_modal_edit_title: "Edit Marketing Post",
+    marketing_post_title_label: "Post Title/Headline:",
+    marketing_post_content_label: "Post Content/Body:",
+    marketing_post_platform_label: "Target Platform(s):",
+    marketing_post_scheduled_date_label: "Scheduled Date/Time:",
+    marketing_post_visual_recommendation_label: "Visual Recommendation (Image/Video):",
+    marketing_post_notes_label: "Internal Notes:",
+    marketing_post_status_label: "Status:",
+    marketing_post_status_todo: "To Do",
+    marketing_post_status_in_progress: "In Progress",
+    marketing_post_status_done: "Done",
+    marketing_post_platform_placeholder: "e.g., Facebook, Blog, Telegram",
+    marketing_post_title_placeholder: "Catchy title for your post",
+    marketing_post_content_placeholder: "Write your marketing copy here...",
+    marketing_post_visual_placeholder: "e.g., Photo of product in use, short video testimonial",
+    marketing_post_notes_placeholder: "e.g., Coordinate with design team",
+    ai_marketing_modal_title: "AI Marketing Plan Generator",
+    ai_marketing_campaign_goal_label: "Main Goal of this Marketing Campaign:",
+    ai_marketing_target_platforms_label: "Target Platforms (comma-separated):",
+    ai_marketing_content_tone_label: "Desired Content Tone:",
+    ai_marketing_duration_label: "Campaign Duration (e.g., 1 week, 1 month):",
+    ai_marketing_campaign_goal_placeholder: "e.g., Launch new product, Increase brand awareness in Addis",
+    ai_marketing_target_platforms_placeholder: "e.g., Facebook, Instagram, Telegram, Local Radio",
+    ai_marketing_content_tone_placeholder: "e.g., Professional, Friendly, Humorous, Urgent",
+    ai_marketing_duration_placeholder: "e.g., 7 days, 2 weeks",
+    ai_marketing_generate_button: "Generate Marketing Plan",
+    pitch_add_button: "Add New Pitch/Campaign Manually",
+    pitch_no_pitches_placeholder: "No pitches or campaigns created yet.",
+    pitch_ai_generate_button: "AI: Generate Pitch/Campaign Draft",
+    pitch_ai_generating_button: "AI Generating Draft...",
+    pitch_modal_create_title: "Create New Pitch/Campaign",
+    pitch_modal_edit_title: "Edit Pitch/Campaign",
+    pitch_type_label: "Type:",
+    pitch_type_investor: "Investor Pitch Outline",
+    pitch_type_sales: "Sales Pitch Points",
+    pitch_type_email_campaign: "Email Campaign Sequence",
+    pitch_title_label: "Pitch/Campaign Title:",
+    pitch_target_audience_label: "Target Audience:",
+    pitch_key_message_label: "Key Message/Objective:",
+    pitch_content_label: "Content/Draft:",
+    pitch_notes_label: "Internal Notes:",
+    pitch_title_placeholder: "e.g., Seed Round Investor Deck, Sales Script for SMEs",
+    pitch_target_audience_placeholder: "e.g., Angel Investors in Ethiopian Tech, Restaurant Owners",
+    pitch_key_message_placeholder: "e.g., Secure $50K funding, Convert 10 new clients",
+    pitch_content_placeholder: "Draft your pitch or email sequence here...",
+    ai_pitch_modal_title: "AI Pitch & Campaign Generator",
+    ai_pitch_type_label: "Select Pitch/Campaign Type:",
+    ai_pitch_target_audience_label: "Target Audience for this Pitch/Campaign:",
+    ai_pitch_key_message_label: "Key Message or Objective:",
+    ai_pitch_num_emails_label: "Number of Emails (for Email Campaign):",
+    ai_pitch_generate_button: "Generate Draft",
+    view_details_button: "View Details",
+    mark_as_done_button: "Mark as Done",
+    mark_as_todo_button: "Mark as To Do",
+    export_marketing_plan_button: "Export Marketing Plan",
+    export_pitches_button: "Export Pitches",
+    pdf_marketing_plan_title: "Marketing Plan",
+    pdf_marketing_post_title: "Marketing Post",
+    pdf_platform_label: "Platform(s)",
+    pdf_scheduled_date_label: "Scheduled Date",
+    pdf_visual_recommendation_label: "Visual Recommendation",
+    pdf_status_label: "Status",
+    pdf_pitches_title: "Pitches & Campaigns",
+    pdf_pitch_title: "Pitch/Campaign",
+    pdf_pitch_type_label: "Type",
+    pdf_target_audience_label: "Target Audience",
+    pdf_key_message_label: "Key Message",
+    calendar_prev_week: "Previous Week",
+    calendar_next_week: "Next Week",
+    calendar_add_post_tooltip: "Add post for this day",
+    day_sun_short: "Sun", day_mon_short: "Mon", day_tue_short: "Tue", day_wed_short: "Wed", day_thu_short: "Thu", day_fri_short: "Fri", day_sat_short: "Sat",
+    month_jan: "January", month_feb: "February", month_mar: "March", month_apr: "April", month_may: "May", month_jun: "June", month_jul: "July", month_aug: "August", month_sep: "September", month_oct: "October", month_nov: "November", month_dec: "December",
   },
   am: {
     [Page.START]: 'ጀምር',
@@ -311,6 +487,9 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [ResearchSection.TRENDS]: "የኢንዱስትሪ አዝማሚያዎች",
     [ResearchSection.AI_SUMMARY]: "የ AI ማጠቃለያ",
 
+    [CopywritingSubSection.MARKETING]: "የግብይት ይዘት እና እቅዶች",
+    [CopywritingSubSection.PITCH_REFINEMENT]: "የሀሳብ ማቅረቢያ ማሻሻያ",
+
     export_all_button: 'ሁሉንም ላክ',
     ai_assistant_canvas_button_tooltip: 'ሸራውን ለመሙላት የ AI ረዳት',
     help_canvas_button_tooltip: 'የቢዝነስ ማስጀመሪያ ሸራ መመሪያ',
@@ -329,6 +508,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     businessLaunchCanvas_title: 'የቢዝነስ ማስጀመሪያ ሸራ',
     edit_button: 'አስተካክል',
     save_button: 'አስቀምጥ',
+    delete_button: 'ሰርዝ',
     cancel_button: 'ሰርዝ',
     no_content_yet_placeholder: "እስካሁን ምንም ይዘት የለም። 'አስተካክል' የሚለውን ይጫኑ ወይም AI ይጠቀሙ።",
     error_ai_failed_generic: "የ AI ማመንጨት አልተሳካም ወይም ምንም ውሂብ አልተመለሰም። የኤፒአይ ቁልፍ ትክክል መሆኑን እና ግብአቶች ግልጽ መሆናቸውን ያረጋግጡ።",
@@ -357,7 +537,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     mra_general_notes_title: "አጠቃላይ ማስታወሻዎች እና የጅምላ ውሂብ ማስገባት",
     mra_general_notes_import_csv_label: "የጉግል ቅጾች CSV ምላሾችን አስገባ:",
     mra_general_notes_csv_note: "ማሳሰቢያ: የ CSV ውሂብ ይያያዛል። ቅርጸቱ ሊቀልል ይችላል።",
-    mra_general_notes_placeholder: "አጠቃላይ የምርምር ማስታወሻዎችን ያስገቡ፣ የጅምላ ውሂብ ይለጥፉ፣ ወይም የገባውን ይዘት እዚህ ያጠቃልሉ...",
+    mra_general_notes_placeholder: "አጠቃላይ የምርምር ማስታወሻዎችን ያስገቡ፣ የጅምላ ውሂብ ይለጥፉ、 ወይም የገባውን ይዘት እዚህ ያጠቃልሉ...",
     mra_competitor_analysis_title: "የተፎካካሪ ትንተና",
     mra_competitor_add_button: "ተፎካካሪ ጨምር",
     mra_competitor_no_competitors_placeholder: "እስካሁን ምንም ተፎካካሪዎች አልተጨመሩም።",
@@ -383,12 +563,12 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 
     welcome_title: "እንኳን ወደ 7ሴት ስፓርክ በደህና መጡ!",
     welcome_message: "የእርስዎ የፈጠራ እና የስልጠና ማዕከል ለስራ ፈጣሪዎች። ጉዞዎን ለመጀመር ከላይ ካለው የማውጫ ቁልፎች አንድ ክፍል ይምረጡ።",
-    lang_english: "English", // Full name for dropdown list item
-    lang_amharic: "አማርኛ", // Full name for dropdown list item
-    lang_en_short: "EN", // Short name for display
-    lang_am_short: "አማ", // Short name for display
+    lang_english: "English", 
+    lang_amharic: "አማርኛ", 
+    lang_en_short: "EN", 
+    lang_am_short: "አማ", 
+    logo_alt_text: "7ሴት ስፓርክ አርማ",
 
-    // PDF Export translations (Amharic placeholders)
     exported_on_label: "የተላከበት ቀን",
     page_x_of_y: "ገጽ {currentPage} ከ {totalPages}",
     no_content_yet_placeholder_pdf: "ምንም ይዘት አልቀረበም።",
@@ -409,7 +589,6 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     mra_report_location_label: "ቦታ/ገበያ",
     mra_report_impact_label: "ሊያስከትል የሚችለው ተጽዕኖ",
 
-    // User Profile
     user_profile_button_tooltip: "የተጠቃሚ መገለጫ",
     user_profile_modal_title: "የተጠቃሚ መገለጫ",
     user_profile_name_label: "ሙሉ ስም:",
@@ -424,20 +603,109 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     user_profile_email_placeholder: "ለምሳሌ፦ yourname@example.com",
     user_profile_phone_placeholder: "ለምሳሌ፦ +251 91 123 4567",
     user_profile_other_details_placeholder: "ለምሳሌ፦ የእርስዎ ድርጅት / ሚና",
-    pdf_made_by_title: "የተዘጋጀው በ"
-  }
+    pdf_made_by_title: "የተዘጋጀው በ",
+
+    copywriting_page_title: "የፅሁፍ ዝግጅት መሳሪያዎች",
+    copywriting_sidebar_title: "የፅሁፍ ዝግጅት ክፍሎች",
+    copywriting_help_button_tooltip: "የፅሁፍ ዝግጅት እገዛ",
+    copywriting_ai_button_tooltip: "የ AI የፅሁፍ ዝግጅት ረዳት",
+    copywriting_marketing_title: "የግብይት ይዘት እና እቅዶች",
+    copywriting_pitch_refinement_title: "የሀሳብ ማቅረቢያ ማሻሻያ",
+    marketing_add_post_button: "አዲስ የግብይት ጽሑፍ በእጅ ጨምር",
+    marketing_no_posts_placeholder: "እስካሁን የተፈጠሩ የግብይት ጽሑፎች የሉም። በእጅ ይጨምሩ ወይም በ AI እቅድ ያመንጩ።",
+    marketing_ai_generate_plan_button: "AI: የግብይት እቅድ አመንጭ",
+    marketing_ai_generating_plan_button: "AI እቅድ እያመነጨ ነው...",
+    marketing_post_modal_create_title: "አዲስ የግብይት ጽሑፍ ፍጠር",
+    marketing_post_modal_edit_title: "የግብይት ጽሑፍ አስተካክል",
+    marketing_post_title_label: "የጽሑፍ ርዕስ/ዋና ቃል:",
+    marketing_post_content_label: "የጽሑፍ ይዘት:",
+    marketing_post_platform_label: "ዒላማ መድረክ(ዎች):",
+    marketing_post_scheduled_date_label: "የታቀደ ቀን/ሰዓት:",
+    marketing_post_visual_recommendation_label: "የምስል/ቪዲዮ ምክር:",
+    marketing_post_notes_label: "የውስጥ ማስታወሻዎች:",
+    marketing_post_status_label: "ሁኔታ:",
+    marketing_post_status_todo: "ሊሰራ",
+    marketing_post_status_in_progress: "በሂደት ላይ",
+    marketing_post_status_done: "ተከናውኗል",
+    marketing_post_platform_placeholder: "ለምሳሌ፦ ፌስቡክ፣ ብሎግ፣ ቴሌግራም",
+    marketing_post_title_placeholder: "ለጽሑፍዎ የሚስብ ርዕስ",
+    marketing_post_content_placeholder: "የግብይት ጽሑፍዎን እዚህ ይጻፉ...",
+    marketing_post_visual_placeholder: "ለምሳሌ፦ ጥቅም ላይ የዋለ ምርት ፎቶ፣ አጭር የቪዲዮ ምስክርነት",
+    marketing_post_notes_placeholder: "ለምሳሌ፦ ከዲዛይን ቡድን ጋር ያስተባብሩ",
+    ai_marketing_modal_title: "የ AI የግብይት እቅድ አመንጪ",
+    ai_marketing_campaign_goal_label: "የዚህ የግብይት ዘመቻ ዋና ግብ:",
+    ai_marketing_target_platforms_label: "ዒላማ መድረኮች (በኮማ ይለዩ):",
+    ai_marketing_content_tone_label: "የሚፈለግ የይዘት ቃና:",
+    ai_marketing_duration_label: "የዘመቻው ቆይታ (ለምሳሌ፦ 1 ሳምንት፣ 1 ወር):",
+    ai_marketing_campaign_goal_placeholder: "ለምሳሌ፦ አዲስ ምርት ማስጀመር፣ በአዲስ አበባ የምርት ስም ግንዛቤን መጨመር",
+    ai_marketing_target_platforms_placeholder: "ለምሳሌ፦ ፌስቡክ፣ ኢንስታግራም፣ ቴሌግራም፣ የአካባቢ ሬዲዮ",
+    ai_marketing_content_tone_placeholder: "ለምሳሌ፦ ሙያዊ፣ ተግባቢ፣ አስቂኝ፣ አስቸኳይ",
+    ai_marketing_duration_placeholder: "ለምሳሌ፦ 7 ቀናት፣ 2 ሳምንታት",
+    ai_marketing_generate_button: "የግብይት እቅድ አመንጭ",
+    pitch_add_button: "አዲስ ሀሳብ/ዘመቻ በእጅ ጨምር",
+    pitch_no_pitches_placeholder: "እስካሁን የተፈጠሩ ሀሳቦች ወይም ዘመቻዎች የሉም።",
+    pitch_ai_generate_button: "AI: የሀሳብ/ዘመቻ ረቂቅ አመንጭ",
+    pitch_ai_generating_button: "AI ረቂቅ እያመነጨ ነው...",
+    pitch_modal_create_title: "አዲስ ሀሳብ/ዘመቻ ፍጠር",
+    pitch_modal_edit_title: "ሀሳብ/ዘመቻ አስተካክል",
+    pitch_type_label: "ዓይነት:",
+    pitch_type_investor: "የባለሀብት ሀሳብ ማቅረቢያ ማጠቃለያ",
+    pitch_type_sales: "የሽያጭ ሀሳብ ማቅረቢያ ነጥቦች",
+    pitch_type_email_campaign: "የኢሜል ዘመቻ ቅደም ተከተል",
+    pitch_title_label: "የሀሳብ/ዘመቻ ርዕስ:",
+    pitch_target_audience_label: "ዒላማ ታዳሚ:",
+    pitch_key_message_label: "ቁልፍ መልዕክት/ዓላማ:",
+    pitch_content_label: "ይዘት/ረቂቅ:",
+    pitch_notes_label: "የውስጥ ማስታወሻዎች:",
+    pitch_title_placeholder: "ለምሳሌ፦ የሲድ ዙር ባለሀብት ሰነድ፣ ለአነስተኛና መካከለኛ ንግዶች የሽያጭ ስክሪፕት",
+    pitch_target_audience_placeholder: "ለምሳሌ፦ በኢትዮጵያ ቴክኖሎጂ ዘርፍ ያሉ ባለሀብቶች፣ የምግብ ቤት ባለቤቶች",
+    pitch_key_message_placeholder: "ለምሳሌ፦ $50ሺህ የገንዘብ ድጋፍ ማግኘት፣ 10 አዲስ ደንበኞችን መለወጥ",
+    pitch_content_placeholder: "የሀሳብ ማቅረቢያዎን ወይም የኢሜል ቅደም ተከተልዎን እዚህ ይቅረጹ...",
+    ai_pitch_modal_title: "የ AI ሀሳብ እና ዘመቻ አመንጪ",
+    ai_pitch_type_label: "የሀሳብ/ዘመቻ አይነት ይምረጡ:",
+    ai_pitch_target_audience_label: "ለዚህ ሀሳብ/ዘመቻ ዒላማ ታዳሚ:",
+    ai_pitch_key_message_label: "ቁልፍ መልዕክት ወይም ዓላማ:",
+    ai_pitch_num_emails_label: "የኢሜሎች ብዛት (ለኢሜል ዘመቻ):",
+    ai_pitch_generate_button: "ረቂቅ አመንጭ",
+    view_details_button: "ዝርዝሮችን ይመልከቱ",
+    mark_as_done_button: "እንደተጠናቀቀ ምልክት ያድርጉ",
+    mark_as_todo_button: "እንደሚሰራ ምልክት ያድርጉ",
+    export_marketing_plan_button: "የግብይት እቅድ ላክ",
+    export_pitches_button: "የሀሳብ ማቅረቢያዎችን ላክ",
+    pdf_marketing_plan_title: "የግብይት እቅድ",
+    pdf_marketing_post_title: "የግብይት ጽሑፍ",
+    pdf_platform_label: "መድረክ(ዎች)",
+    pdf_scheduled_date_label: "የታቀደ ቀን",
+    pdf_visual_recommendation_label: "የምስል ምክር",
+    pdf_status_label: "ሁኔታ",
+    pdf_pitches_title: "የሀሳብ ማቅረቢያዎች እና ዘመቻዎች",
+    pdf_pitch_title: "ሀሳብ/ዘመቻ",
+    pdf_pitch_type_label: "ዓይነት",
+    pdf_target_audience_label: "ዒላማ ታዳሚ",
+    pdf_key_message_label: "ቁልፍ መልዕክት",
+    calendar_prev_week: "ያለፈው ሳምንት",
+    calendar_next_week: "የሚቀጥለው ሳምንት",
+    calendar_add_post_tooltip: "ለዚህ ቀን ጽሑፍ ጨምር",
+    day_sun_short: "እሁድ", day_mon_short: "ሰኞ", day_tue_short: "ማክሰ", day_wed_short: "ረቡዕ", day_thu_short: "ሐሙስ", day_fri_short: "አርብ", day_sat_short: "ቅዳሜ",
+    month_jan: "ጥር", month_feb: "የካቲት", month_mar: "መጋቢት", month_apr: "ሚያዝያ", month_may: "ግንቦት", month_jun: "ሰኔ", month_jul: "ሐምሌ", month_aug: "ነሐሴ", month_sep: "መስከረም", month_oct: "ጥቅምት", month_nov: "ኅዳር", month_dec: "ታኅሣሥ",
+  },
 };
 
-// Helper function for translations
 export const getTranslator = (language: Language) => (key: TranslationKey, defaultText?: string): string => {
-  let text = translations[language]?.[key] || translations.en?.[key];
-  if (!text && defaultText) text = defaultText;
-  if (!text) text = String(key); // Fallback to key itself if no translation found
+  let text: string | undefined = translations[language]?.[key];
 
-  // Handle placeholders like {currentPage} and {totalPages} for page_x_of_y
-  if (key === 'page_x_of_y' && typeof text === 'string') {
-      // Allow dynamic replacement if needed, but the current structure doesn't pass these values here.
-      // The calling code in PDF generation will handle replacement.
+  if (text === undefined) { // Not found in current language
+    text = translations.en?.[key]; // Try English
   }
-  return text;
+
+  if (text === undefined) { // Not found in English either
+    if (defaultText !== undefined) {
+      text = defaultText; // Use provided default
+    } else {
+      // Fallback to key itself if no translation and no default
+      console.warn(`Translation key '${String(key)}' not found for language '${language}' and no default text provided.`);
+      text = String(key); 
+    }
+  }
+  return text as string; 
 };

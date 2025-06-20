@@ -3,9 +3,21 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { BusinessLaunchCanvas } from './components/BusinessLaunchCanvas/BusinessLaunchCanvas';
 import { MarketResearchAccelerator } from './components/MarketResearchAccelerator/MarketResearchAccelerator';
+import { CopywritingPage } from './components/CopywritingPage'; // New Import
 import { ComingSoon } from './components/ComingSoon';
 import { UserProfileModal } from './components/UserProfileModal';
-import { Page, SubPage, CanvasData, ALL_CANVAS_SECTIONS, CanvasSection, Language, UserProfile, MarketResearchData, ResearchSection } from './types';
+import { 
+    Page, 
+    SubPage, 
+    CanvasData, 
+    ALL_CANVAS_SECTIONS, 
+    CanvasSection, 
+    Language, 
+    UserProfile, 
+    MarketResearchData, 
+    ResearchSection,
+    CopywritingData // New Import
+} from './types';
 import { NAV_ITEMS } from './constants';
 import { getTranslator, TranslationKey } from './locales';
 
@@ -15,6 +27,11 @@ const initialMarketResearchData: MarketResearchData = {
   [ResearchSection.COMPETITOR_ANALYSIS]: [],
   [ResearchSection.TRENDS]: [],
   [ResearchSection.AI_SUMMARY]: "",
+};
+
+const initialCopywritingData: CopywritingData = {
+  marketingPosts: [],
+  pitches: [],
 };
 
 const App: React.FC = () => {
@@ -29,7 +46,6 @@ const App: React.FC = () => {
     if (storedCanvasData) {
       try {
         const parsedData = JSON.parse(storedCanvasData);
-        // Ensure all sections are present, even if not in stored data
         return ALL_CANVAS_SECTIONS.reduce((acc, section) => {
           acc[section] = parsedData[section] || "";
           return acc;
@@ -48,13 +64,24 @@ const App: React.FC = () => {
     const storedMarketData = localStorage.getItem('sparkMarketResearchData');
     if (storedMarketData) {
       try {
-        // Basic validation could be added here if needed
         return JSON.parse(storedMarketData);
       } catch (e) {
         console.error("Failed to parse marketResearchData from localStorage", e);
       }
     }
     return initialMarketResearchData;
+  });
+
+  const [copywritingData, setCopywritingData] = useState<CopywritingData>(() => {
+    const storedCopywritingData = localStorage.getItem('sparkCopywritingData');
+    if (storedCopywritingData) {
+      try {
+        return JSON.parse(storedCopywritingData);
+      } catch (e) {
+        console.error("Failed to parse copywritingData from localStorage", e);
+      }
+    }
+    return initialCopywritingData;
   });
 
   const t = useCallback(getTranslator(currentLanguage), [currentLanguage]);
@@ -97,6 +124,11 @@ const App: React.FC = () => {
     localStorage.setItem('sparkMarketResearchData', JSON.stringify(updatedData));
   };
 
+  const handleUpdateCopywritingData = (updatedData: CopywritingData) => {
+    setCopywritingData(updatedData);
+    localStorage.setItem('sparkCopywritingData', JSON.stringify(updatedData));
+  };
+
   const changeLanguage = (lang: Language) => {
     setCurrentLanguage(lang);
   };
@@ -122,6 +154,17 @@ const App: React.FC = () => {
                 userProfile={userProfile}
               />;
     }
+    if (activePage === Page.START && activeSubPage === SubPage.COPYWRITING) {
+      return <CopywritingPage
+                initialData={copywritingData}
+                onUpdateData={handleUpdateCopywritingData}
+                strategyData={canvasData}
+                researchData={marketResearchData}
+                language={currentLanguage}
+                t={t}
+                userProfile={userProfile}
+              />;
+    }
     if (activeSubPage) { 
       return <ComingSoon 
                 featureName={t(activeSubPage as TranslationKey, activeSubPage)} 
@@ -131,7 +174,13 @@ const App: React.FC = () => {
     }
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)] text-gray-700">
-        <img src="https://picsum.photos/seed/welcome/400/300" alt="Welcome" className="rounded-lg shadow-md mb-8" />
+        <div className="bg-gradient-to-br from-blue-800 to-blue-900 p-8 rounded-xl shadow-2xl mb-8 inline-block transform hover:scale-105 transition-transform duration-300">
+          <img 
+            src="https://7setspark.com/wp-content/uploads/2023/12/Asset-5-179x35.webp" 
+            alt={t('logo_alt_text')} 
+            className="h-10 sm:h-12 w-auto" // Adjusted height
+          />
+        </div>
         <h1 className="text-4xl font-bold text-blue-700 mb-4">{t('welcome_title')}</h1>
         <p className="text-xl text-center max-w-2xl">
           {t('welcome_message')}

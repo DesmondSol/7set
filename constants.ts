@@ -1,5 +1,5 @@
 
-import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS } from './types';
+import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
   {
@@ -282,6 +282,31 @@ export const RESEARCH_SECTIONS_HELP: ResearchSectionHelp[] = [
     explanation: {
       en: "Leverage AI to synthesize and analyze all the information you've gathered across the Market Research Accelerator sections (Research Questions, General Notes, Competitor Analysis, Trends), viewed through the lens of your Business Launch Canvas strategy for Ethiopia. The AI will provide key insights, identify opportunities, and suggest actionable recommendations tailored for the Ethiopian market. The summary will be in your selected language (English/Amharic).",
       am: "በገበያ ጥናት ማፋጠኛ ክፍሎች (የምርምር ጥያቄዎች፣ አጠቃላይ ማስታወሻዎች፣ የተፎካካሪ ትንተና፣ አዝማሚያዎች) የሰበሰቡትን መረጃ ሁሉ、 ለኢትዮጵያ ባዘጋጁት የቢዝነስ ማስጀመሪያ ሸራ ስትራቴጂ መነጽር በመጠቀም ለማዋሃድ እና ለመተንተን AI ይጠቀሙ። AI ቁልፍ ግንዛቤዎችን ይሰጣል፣ ዕድሎችን ይለያል፣ እና ለኢትዮጵያ ገበያ የተዘጋጁ ተግባራዊ ምክሮችን ይጠቁማል። ማጠቃለያው እርስዎ በመረጡት ቋንቋ (እንግሊዝኛ/አማርኛ) ይሆናል።"
+    }
+  }
+];
+
+export const COPYWRITING_SECTIONS_HELP: CopywritingSectionHelp[] = [
+  {
+    title: CopywritingSubSection.MARKETING,
+    sidebarTitle: {
+      en: "Marketing Content",
+      am: "የግብይት ይዘት"
+    },
+    explanation: {
+      en: "Generate or manually create marketing content for various platforms (social media, blogs, traditional ads) relevant to the Ethiopian market. Plan weekly schedules, get recommendations for visuals (images/videos), and ensure content is SEO-friendly and contextually appropriate for Ethiopia. AI can help draft content based on your strategy and research.",
+      am: "ለተለያዩ መድረኮች (ማህበራዊ ሚዲያ፣ ብሎጎች፣ ባህላዊ ማስታወቂያዎች) ከኢትዮጵያ ገበያ ጋር ተዛማጅነት ያለው የግብይት ይዘት ይፍጠሩ ወይም በእጅ ያዘጋጁ። ሳምንታዊ ዕቅዶችን ያውጡ፣ ለምስሎች/ቪዲዮዎች ምክሮችን ያግኙ፣ እና ይዘቱ ለ SEO ተስማሚ እና ለኢትዮጵያ አውድ ተገቢ መሆኑን ያረጋግጡ። AI በስትራቴጂዎ እና በምርምርዎ ላይ ተመስርቶ ይዘትን ለመቅረጽ ሊረዳ ይችላል።"
+    }
+  },
+  {
+    title: CopywritingSubSection.PITCH_REFINEMENT,
+    sidebarTitle: {
+      en: "Pitch Refinement",
+      am: "የሀሳብ ማቅረቢያ ማሻሻያ"
+    },
+    explanation: {
+      en: "Draft and refine investor pitches, sales pitches, and email campaigns tailored for Ethiopian audiences. Use AI to generate initial drafts or get suggestions based on your business strategy, market research, and specific goals for each pitch or campaign. Focus on clarity, persuasiveness, and cultural relevance for Ethiopia.",
+      am: "ለኢትዮጵያ ታዳሚዎች የተዘጋጁ የባለሀብቶች ሀሳብ ማቅረቢያዎችን፣ የሽያጭ ሀሳብ ማቅረቢያዎችን እና የኢሜል ዘመቻዎችን ይቅረጹ እና ያሻሽሉ። የንግድ ስትራቴጂዎን፣ የገበያ ጥናትዎን እና ለእያንዳንዱ ሀሳብ ማቅረቢያ ወይም ዘመቻ የተለዩ ግቦችዎን መሠረት በማድረግ የመጀመሪያ ረቂቆችን ለማመንጨት ወይም የአስተያየት ጥቆማዎችን ለማግኘት AI ይጠቀሙ። ለኢትዮጵያ ግልጽነት፣ አሳማኝነት እና የባህል ተገቢነት ላይ ያተኩሩ።"
     }
   }
 ];

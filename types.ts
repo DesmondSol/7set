@@ -47,13 +47,12 @@ export enum CanvasSection {
   PRODUCT_MARKET_FIT = "Product - Market Fit",
 }
 
-// Ensure ALL_CANVAS_SECTIONS is defined early and clearly
 export const ALL_CANVAS_SECTIONS: CanvasSection[] = Object.values(CanvasSection);
 
 export type CanvasData = Record<CanvasSection, string>;
 
 export interface CanvasSectionHelp {
-  title: CanvasSection; // This remains the enum key for internal linking
+  title: CanvasSection;
   explanation: Record<Language, string>;
   example?: Record<Language, string>;
 }
@@ -68,7 +67,7 @@ export enum ResearchSection {
 
 export interface ResearchQuestionItem {
   id: string;
-  text: string; // This text could be in the AI-generated language
+  text: string;
   responses: { id: string; text: string }[];
 }
 
@@ -107,12 +106,12 @@ export interface MarketResearchData {
   [ResearchSection.GENERAL_NOTES_IMPORT]: string; 
   [ResearchSection.COMPETITOR_ANALYSIS]: CompetitorProfile[];
   [ResearchSection.TRENDS]: TrendEntry[];
-  [ResearchSection.AI_SUMMARY]: string; // AI summary will be in the selected language
+  [ResearchSection.AI_SUMMARY]: string;
 }
 
 export interface ResearchSectionHelp {
-  title: ResearchSection; // This remains the enum key
-  sidebarTitle: Record<Language, string>; // New field for concise sidebar title
+  title: ResearchSection;
+  sidebarTitle: Record<Language, string>;
   explanation: Record<Language, string>;
 }
 
@@ -121,5 +120,48 @@ export interface UserProfile {
   email: string;
   phone: string;
   otherDetails: string;
-  photo: string | null; // Base64 string for the image, or null if not set
+  photo: string | null; 
 }
+
+// --- Copywriting Section Types ---
+export enum CopywritingSubSection {
+  MARKETING = "Marketing Content & Plans",
+  PITCH_REFINEMENT = "Pitch Refinement",
+}
+
+export type MarketingPostStatus = 'todo' | 'in-progress' | 'done';
+
+export interface MarketingPost {
+  id: string;
+  title: string;
+  content: string;
+  platform: string; // e.g., "Facebook", "Blog", "Instagram"
+  scheduledDate: string; // ISO date-time string or just date string
+  visualRecommendation: string; // Text description
+  notes?: string;
+  status: MarketingPostStatus;
+}
+
+export type PitchType = 'investor_pitch' | 'sales_pitch' | 'email_campaign';
+
+export interface Pitch {
+  id: string;
+  type: PitchType;
+  title: string;
+  targetAudience: string;
+  keyMessage: string;
+  content: string; // Could be JSON string for structured email sequences
+  notes?: string;
+}
+
+export interface CopywritingData {
+  marketingPosts: MarketingPost[];
+  pitches: Pitch[];
+}
+
+export interface CopywritingSectionHelp {
+  title: CopywritingSubSection;
+  sidebarTitle: Record<Language, string>;
+  explanation: Record<Language, string>;
+}
+// --- End Copywriting Section Types ---

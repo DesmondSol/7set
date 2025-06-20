@@ -10,7 +10,11 @@ import {
     TrendEntry, 
     ALL_CANVAS_SECTIONS,
     ResearchQuestionnaireSet,
-    Language
+    Language,
+    MarketingPost, 
+    Pitch, 
+    PitchType, 
+    MarketingPostStatus
 } from '../types';
 import { API_KEY_WARNING } from "../constants";
 
@@ -103,7 +107,7 @@ Ensure the entire output is a single JSON object.
             } else {
                 console.warn(`AI did not generate content for section: ${section}. Setting default.`);
                 result[section] = language === 'am' 
-                  ? "AI ለዚህ ክፍል ይዘት ማመንጨት አልቻለም። እባክዎ በእጅ ይሙሉ ወይም የ AI ጥያቄዎችን ያጥሩ፣ የኢትዮጵያን ሁኔታ ግምት ውስጥ ያስገቡ።"
+                  ? "AI ለዚህ ክፍል ይዘት ማመንጨት አልቻለም። እባክዎ በእጅ ይሙሉ ወይም የ AI ጥያቄዎችን ያጥሩ، የኢትዮጵያን ሁኔታ ግምት ውስጥ ያስገቡ።"
                   : "AI could not generate content for this section. Please fill manually or refine AI prompt inputs, keeping the Ethiopian context in mind.";
             }
         }
@@ -135,23 +139,20 @@ export const generateMarketResearchQuestions = async (
 ): Promise<ResearchQuestionItem[]> => {
   if (!API_KEY) return [];
 
-  const strategyContextString = `
----BEGIN ETHIOPIAN BUSINESS STRATEGY (Language of strategy elements below is as provided by user, AI should process it for context)---
+  const strategyContextString = `---BEGIN ETHIOPIAN BUSINESS STRATEGY (Language of strategy elements below is as provided by user, AI should process it for context)---
 Project Overview: ${strategyData[CanvasSection.PROJECT_OVERVIEW] || "Not defined"}
 Product Vision: ${strategyData[CanvasSection.PRODUCT_VISION] || "Not defined"}
 Problem (in Ethiopian context): ${strategyData[CanvasSection.PROBLEM] || "Not defined"}
 Solution (for Ethiopian market): ${strategyData[CanvasSection.SOLUTION] || "Not defined"}
 Unique Value Proposition (for Ethiopian market): ${strategyData[CanvasSection.UNIQUE_VALUE_PROPOSITION] || "Not defined"}
----END ETHIOPIAN BUSINESS STRATEGY---
-  `.trim();
+---END ETHIOPIAN BUSINESS STRATEGY---`.trim();
 
   const langInstructions = language === 'am'
   ? "The generated market research questions MUST be in Amharic. These questions should be culturally sensitive and easy for Amharic speakers in Ethiopia to understand and respond to."
   : "The generated market research questions should be in English.";
 
 
-  const prompt = `
-You are an expert market research consultant specializing in the Ethiopian market.
+  const prompt = `You are an expert market research consultant specializing in the Ethiopian market.
 You are assisting a client with their business in Ethiopia, detailed in the Business Launch Canvas context provided above.
 ${langInstructions}
 
@@ -166,8 +167,7 @@ generate a list of 5 to 7 key, open-ended market research questions. These quest
 4. Directly help the client achieve their stated research goal and refine their business strategy for success in Ethiopia.
 
 Return the response as a valid JSON array of strings, where each string is a question (in ${language === 'am' ? 'Amharic' : 'English'}).
-For example: ["Question 1?", "Question 2?", "Question 3?"]
-  `;
+For example: ["Question 1?", "Question 2?", "Question 3?"]`;
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: textModel,
@@ -184,9 +184,9 @@ For example: ["Question 1?", "Question 2?", "Question 3?"]
     }
     const questionsArray = parseJsonFromText<string[]>(textResponse); 
     if (questionsArray && Array.isArray(questionsArray)) {
-      return questionsArray.map((q, index) => ({ 
+      return questionsArray.map((qText, index) => ({ 
         id: `q-${Date.now()}-${index}`, 
-        text: q, // Text will be in the AI-generated language
+        text: qText, 
         responses: [] 
       }));
     }
@@ -223,38 +223,45 @@ export const generateMarketResearchSummary = async (
     questionsAndResponsesSummary = allSetsSummaries.join('\n\n');
   }
 
-  // Competitor and Trend summaries would also need conditional Amharic labels if we were fully localizing this data presentation layer.
-  // For now, the data itself is assumed to be in the language it was entered or generated in.
-  let competitorsSummary = "No competitor analysis provided.";
+  let competitorsSummary = language === 'am' ? "ምንም የተፎካካሪ ትንተና አልቀረበም።" : "No competitor analysis provided.";
   if (researchData[ResearchSection.COMPETITOR_ANALYSIS] && researchData[ResearchSection.COMPETITOR_ANALYSIS].length > 0) {
     competitorsSummary = researchData[ResearchSection.COMPETITOR_ANALYSIS].map(c => 
-      `  - Competitor (in Ethiopian market): ${c.name}\n` +
-      `    Pricing (ETB): ${c.pricingStrategy || 'N/A'}\n` // Keep N/A or translate
-      // ... and so on
+      `  - ${language === 'am' ? 'ተፎካካሪ (በኢትዮጵያ ገበያ)' : 'Competitor (in Ethiopian market)'}: ${c.name}\n` +
+      `    ${language === 'am' ? 'የዋጋ አወጣጥ (ብር)' : 'Pricing (ETB)'}: ${c.pricingStrategy || (language === 'am' ? 'N/A' : 'N/A')}\n` +
+      `    ${language === 'am' ? 'ቁልፍ ባህሪዎች' : 'Key Features'}: ${c.keyFeatures || (language === 'am' ? 'N/A' : 'N/A')}\n` +
+      `    ${language === 'am' ? 'ጥንካሬዎች' : 'Strengths'}: ${c.strengths || (language === 'am' ? 'N/A' : 'N/A')}\n` +
+      `    ${language === 'am' ? 'ድክመቶች' : 'Weaknesses'}: ${c.weaknesses || (language === 'am' ? 'N/A' : 'N/A')}`
     ).join('\n\n');
   }
-  // Similar for trendsSummary
+  
+  let trendsSummary = language === 'am' ? "ምንም የኢንዱስትሪ አዝማሚያዎች አልቀረቡም።" : "No industry trends provided.";
+    if (researchData[ResearchSection.TRENDS] && researchData[ResearchSection.TRENDS].length > 0) {
+    trendsSummary = researchData[ResearchSection.TRENDS].map(t => 
+      `  - ${language === 'am' ? 'አዝማሚያ' : 'Trend'}: ${t.title}\n` +
+      `    ${language === 'am' ? 'መግለጫ' : 'Description'}: ${t.description || (language === 'am' ? 'N/A' : 'N/A')}`
+    ).join('\n\n');
+  }
 
-  let strategyContextString = language === 'am' ? "ከቢዝነስ ማስጀመሪያ ሸራ ምንም የተለየ የንግድ ስትራቴጂ አውድ አልቀረበም።" : "No specific business strategy context provided from the Business Launch Canvas.";
+
+  let strategyContextStringForSummary = language === 'am' ? "ከቢዝነስ ማስጀመሪያ ሸራ ምንም የተለየ የንግድ ስትራቴጂ አውድ አልቀረበም።" : "No specific business strategy context provided from the Business Launch Canvas.";
   if (strategyData) {
-     strategyContextString = Object.entries(strategyData)
+     strategyContextStringForSummary = Object.entries(strategyData)
       .filter(([key, value]) => value && value.trim() !== "Not defined")
       .map(([key, value]) => `- ${key} (Ethiopia context): ${value}`)
       .join('\n');
-    if (!strategyContextString) strategyContextString = language === 'am' ? "የስትራቴጂ ሸራ ባዶ ነው።" : "Strategy canvas is empty.";
+    if (!strategyContextStringForSummary) strategyContextStringForSummary = language === 'am' ? "የስትራቴጂ ሸራ ባዶ ነው።" : "Strategy canvas is empty.";
   }
 
   const langInstructions = language === 'am'
   ? "The summary MUST be in Amharic. It should be insightful and actionable for an Ethiopian entrepreneur. Analyze the provided data considering the Ethiopian market and cultural nuances."
   : "The summary should be in English. It should be insightful and actionable for an Ethiopian entrepreneur, analyzing data within the Ethiopian market context.";
 
-  const prompt = `
-As an expert market research analyst with a deep understanding of the Ethiopian market, provide a concise and insightful summary (3-5 paragraphs) 
+  const prompt = `As an expert market research analyst with a deep understanding of the Ethiopian market, provide a concise and insightful summary (3-5 paragraphs) 
 based on the following comprehensive market research data AND the business's strategic context.
 ${langInstructions}
 
 Business Strategic Context (for a business in Ethiopia - content language is as provided by user):
-${strategyContextString}
+${strategyContextStringForSummary}
 
 Market Research Data (gathered with an Ethiopian focus - content language is as provided or generated):
 1. Research Question Sets (including questions and individual responses):
@@ -267,7 +274,7 @@ ${researchData[ResearchSection.GENERAL_NOTES_IMPORT] || (language === 'am' ? '�
 ${competitorsSummary}
 
 4. Key Industry Trends (relevant to Ethiopia):
-${researchData[ResearchSection.TRENDS].length > 0 ? researchData[ResearchSection.TRENDS].map(t => t.title).join(', ') : (language === 'am' ? 'የለም' : "N/A")}
+${trendsSummary}
 
 
 Your summary MUST:
@@ -276,8 +283,7 @@ Your summary MUST:
 3. Identify potential opportunities and critical considerations unique to or pronounced in the Ethiopian market (e.g., leveraging mobile money like Telebirr, addressing logistical challenges, adapting to local digital literacy levels).
 4. Provide strategic recommendations that are actionable and practical for a business in Ethiopia. Financial aspects should implicitly consider Ethiopian Birr (ETB).
 Ensure the summary clearly links research findings back to the business strategy for success in Ethiopia.
-Generate the comprehensive summary:
-  `;
+Generate the comprehensive summary:`;
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: textModel,
@@ -290,5 +296,167 @@ Generate the comprehensive summary:
   } catch (error) {
     console.error("Error generating market research summary:", error);
     return language === 'am' ? "ማጠቃለያ በማመንጨት ላይ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ። የምርምር እና የስትራቴጂ ክፍሎች የኢትዮጵያን አውድ የሚያንጸባርቅ ይዘት እንዳላቸው ያረጋግጡ።" : "Error generating summary. Please try again. Ensure that both research and strategy sections have some content reflecting the Ethiopian context.";
+  }
+};
+
+export const generateMarketingPlan = async (
+  strategyData: Partial<CanvasData>,
+  researchData: Pick<MarketResearchData, ResearchSection.QUESTIONS | ResearchSection.COMPETITOR_ANALYSIS | ResearchSection.TRENDS>,
+  userInputs: { campaignGoal: string; targetPlatforms: string[]; contentTone: string; duration: string },
+  language: Language
+): Promise<MarketingPost[] | null> => {
+  if (!API_KEY) return null;
+
+  const strategyContextString = Object.entries(strategyData)
+    .filter(([, value]) => value && value.trim() !== "Not defined")
+    .map(([key, value]) => `- ${key}: ${value}`)
+    .join('\n');
+
+  const researchContextString = `
+Competitors: ${researchData[ResearchSection.COMPETITOR_ANALYSIS]?.map(c => c.name).join(', ') || 'N/A'}
+Trends: ${researchData[ResearchSection.TRENDS]?.map(t => t.title).join(', ') || 'N/A'}
+Key Customer Insights (from questions): ${researchData[ResearchSection.QUESTIONS]?.[0]?.questions.slice(0,2).map(q => q.text).join('; ') || 'N/A'}
+  `.trim();
+
+  const langInstructions = language === 'am'
+    ? "All generated marketing post content (title, content, visualRecommendation) MUST be in Amharic. The JSON keys and other structural elements like 'platform' and 'status' MUST remain in English as specified. Ensure content is culturally relevant for Ethiopia and SEO-friendly."
+    : "All generated marketing post content should be in English, SEO-friendly, and practical for an Ethiopian entrepreneur targeting the Ethiopian market.";
+
+  const prompt = `You are an expert AI Marketing Strategist specializing in the Ethiopian market. Your writing style is similar to Jasper AI - creative, engaging, and effective.
+${langInstructions}
+
+Business Strategy Context (Ethiopian Focus):
+${strategyContextString || 'No detailed strategy provided.'}
+
+Market Research Insights (Ethiopian Focus):
+${researchContextString}
+
+User Request for Marketing Plan:
+- Campaign Goal: ${userInputs.campaignGoal}
+- Target Platforms: ${userInputs.targetPlatforms.join(', ')}
+- Desired Content Tone: ${userInputs.contentTone}
+- Campaign Duration: ${userInputs.duration}
+
+Based on all the above, generate a list of 3-5 marketing posts for the specified duration and platforms.
+Each post object should have the following fields: "id" (string, generate a unique one like post-timestamp-index), "title" (string, catchy headline), "content" (string, detailed post body, aim for SEO optimization if it's for a blog), "platform" (string, from user's target platforms), "scheduledDate" (string, suggest a relative date within the duration like 'Day 1, Morning' or 'Week 1, Wednesday'. No specific ISO dates needed for now.), "visualRecommendation" (string, description of a suitable image/video for an Ethiopian audience), "status" (string, default to 'todo').
+
+Output: Return a valid JSON array of these MarketingPost objects.
+Example (if English requested):
+[
+  {
+    "id": "post-1721110000-0",
+    "title": "Exciting News for Addis Ababa!",
+    "content": "Discover how our new service is changing lives in Ethiopia... #Ethiopia #AddisAbaba #Innovation",
+    "platform": "Facebook",
+    "scheduledDate": "Week 1, Day 1",
+    "visualRecommendation": "Vibrant photo of diverse Ethiopians benefiting from the service.",
+    "status": "todo"
+  }
+]
+Consider local Ethiopian events, holidays, or cultural moments if relevant for scheduling or content ideas.
+Focus on providing actionable, creative, and "Jasper-style" content suggestions.`;
+
+  try {
+    const response: GenerateContentResponse = await ai.models.generateContent({
+      model: textModel,
+      contents: [{ role: "user", parts: [{text: prompt}] }],
+      config: { responseMimeType: "application/json", temperature: 0.75 }
+    });
+    const textResponse = response.text;
+    if (!textResponse) return null;
+    return parseJsonFromText<MarketingPost[]>(textResponse);
+  } catch (error) {
+    console.error("Error generating marketing plan:", error);
+    return null;
+  }
+};
+
+export const generatePitchContent = async (
+  strategyData: Partial<CanvasData>,
+  researchData: Pick<MarketResearchData, ResearchSection.QUESTIONS | ResearchSection.COMPETITOR_ANALYSIS>,
+  userInputs: { pitchType: PitchType; targetAudience: string; keyMessage: string; numEmails?: number },
+  language: Language
+): Promise<Partial<Pick<Pitch, 'title' | 'content'>> | null> => {
+  if (!API_KEY) return null;
+
+  const strategyContextString = Object.entries(strategyData)
+    .filter(([, value]) => value && value.trim() !== "Not defined")
+    .map(([key, value]) => `- ${key}: ${value}`)
+    .join('\n');
+
+  const langInstructions = language === 'am'
+    ? "The generated pitch content (title and body/details) MUST be in Amharic. JSON keys must remain in English. The content should be persuasive and culturally adapted for the Ethiopian target audience."
+    : "The generated pitch content should be in English, persuasive, and tailored for the Ethiopian target audience.";
+
+  let pitchTypeSpecifics = "";
+  if (userInputs.pitchType === 'investor_pitch') {
+    pitchTypeSpecifics = "Generate a compelling outline for an investor pitch deck, focusing on key slides like Problem (Ethiopian context), Solution, Market Opportunity in Ethiopia, Business Model (revenue in ETB), Team, Financial Projections (ETB), and Ask. The content for each slide should be a few bullet points or short paragraphs.";
+  } else if (userInputs.pitchType === 'sales_pitch') {
+    pitchTypeSpecifics = "Generate 3-5 key talking points for a sales pitch. These points should highlight the main benefits and address potential Ethiopian customer concerns.";
+  } else if (userInputs.pitchType === 'email_campaign') {
+    pitchTypeSpecifics = `Generate a sequence of ${userInputs.numEmails || 3} emails for a campaign. Each email should have a "subject" and "body". The sequence should build interest and lead to a call to action relevant for Ethiopian customers. Return this as a JSON array of objects, where each object has 'subject' and 'body' keys.`;
+  }
+
+  const prompt = `You are an AI Pitching and Communication Coach specializing in the Ethiopian business landscape.
+${langInstructions}
+
+Business Strategy Context (Ethiopian Focus):
+${strategyContextString || 'No detailed strategy provided.'}
+
+User Request for Pitch Content:
+- Pitch Type: ${userInputs.pitchType}
+- Target Audience (in Ethiopia): ${userInputs.targetAudience}
+- Key Message/Objective: ${userInputs.keyMessage}
+
+Task:
+${pitchTypeSpecifics}
+
+The generated content should be highly persuasive and directly address the target audience's needs and interests within the Ethiopian context.
+For the overall pitch, suggest a concise and impactful "title".
+
+Output: Return a valid JSON object with two keys: "title" (string, the overall title for this pitch/campaign) and "content" (string for investor/sales pitch, or a JSON string representing an array of email objects for email_campaign).
+Example for investor_pitch (if English):
+{
+  "title": "Revolutionizing Ethiopian Logistics with Tech",
+  "content": "Slide 1: Problem - Current logistics inefficiencies in Addis Ababa...\\nSlide 2: Solution - Our platform provides real-time tracking..."
+}
+Example for email_campaign (if English):
+{
+  "title": "Exclusive Offer for Ethiopian SMEs",
+  "content": "[{\\"subject\\":\\"Unlock Growth for Your Business\\",\\"body\\":\\"Dear Ethiopian Entrepreneur...\\"}, {\\"subject\\":\\"Don't Miss Out!\\",\\"body\\":\\"Following up on...\\"}]"
+}
+Ensure the content is actionable and reflects an understanding of Ethiopian business communication styles.`;
+
+  try {
+    const response: GenerateContentResponse = await ai.models.generateContent({
+      model: textModel,
+      contents: [{ role: "user", parts: [{text: prompt}] }],
+      config: { responseMimeType: "application/json", temperature: 0.7 }
+    });
+    const textResponse = response.text;
+    if (!textResponse) return null;
+    
+    const parsedData = parseJsonFromText<Pick<Pitch, 'title' | 'content'>>(textResponse);
+    if (parsedData && userInputs.pitchType === 'email_campaign' && typeof parsedData.content === 'string') {
+        try {
+            // Validate if the string content for email campaign is valid JSON
+            JSON.parse(parsedData.content); 
+        } catch (e) {
+            console.warn("AI returned email campaign content as a non-JSON string, or malformed JSON string:", parsedData.content);
+            // Optionally, try to wrap in array if it looks like a single object not in an array
+             if (parsedData.content.trim().startsWith("{") && parsedData.content.trim().endsWith("}")) {
+                try {
+                    JSON.parse('[' + parsedData.content + ']');
+                    // If this works, it means it was a single object not an array
+                    // For now, we'll let the frontend handle it or the user correct it
+                } catch (e2) { /* still not valid */ }
+            }
+        }
+    }
+    return parsedData;
+
+  } catch (error) {
+    console.error("Error generating pitch content:", error);
+    return null;
   }
 };

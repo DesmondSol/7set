@@ -2,9 +2,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { inject } from '@vercel/analytics/next';
 
-inject(); // Initialize Vercel Analytics
+// Vercel Analytics will be auto-injected by Vercel if enabled in project settings.
+// Manual injection (inject()) is often not needed.
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

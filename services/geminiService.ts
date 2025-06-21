@@ -302,7 +302,7 @@ Generate the comprehensive summary:`;
 export const generateMarketingPlan = async (
   strategyData: Partial<CanvasData>,
   researchData: Pick<MarketResearchData, ResearchSection.QUESTIONS | ResearchSection.COMPETITOR_ANALYSIS | ResearchSection.TRENDS>,
-  userInputs: { campaignGoal: string; targetPlatforms: string[]; contentTone: string; duration: string },
+  userInputs: { campaignGoal: string; targetPlatforms: string[]; contentTone: string; duration: string, referenceWeekStartDate: string },
   language: Language
 ): Promise<MarketingPost[] | null> => {
   if (!API_KEY) return null;
@@ -336,20 +336,34 @@ User Request for Marketing Plan:
 - Target Platforms: ${userInputs.targetPlatforms.join(', ')}
 - Desired Content Tone: ${userInputs.contentTone}
 - Campaign Duration: ${userInputs.duration}
+- Reference Week Start Date for Scheduling: ${userInputs.referenceWeekStartDate} (Format: YYYY-MM-DD)
 
 Based on all the above, generate a list of 3-5 marketing posts for the specified duration and platforms.
-Each post object should have the following fields: "id" (string, generate a unique one like post-timestamp-index), "title" (string, catchy headline), "content" (string, detailed post body, aim for SEO optimization if it's for a blog), "platform" (string, from user's target platforms), "scheduledDate" (string, suggest a relative date within the duration like 'Day 1, Morning' or 'Week 1, Wednesday'. No specific ISO dates needed for now.), "visualRecommendation" (string, description of a suitable image/video for an Ethiopian audience), "status" (string, default to 'todo').
+Each post object should have the following fields: "id" (string, generate a unique one like post-timestamp-index), "title" (string, catchy headline), "content" (string, detailed post body, aim for SEO optimization if it's for a blog), "platform" (string, from user's target platforms), "scheduledDate" (string), "visualRecommendation" (string, description of a suitable image/video for an Ethiopian audience), "status" (string, default to 'todo').
+
+IMPORTANT: The "scheduledDate" MUST be an actual date in 'YYYY-MM-DDTHH:mm' format (e.g., '2024-07-29T10:00').
+These dates MUST fall within the 7-day period starting from the 'Reference Week Start Date' (${userInputs.referenceWeekStartDate}).
+Distribute the posts reasonably across this week. Choose appropriate times within those days.
 
 Output: Return a valid JSON array of these MarketingPost objects.
-Example (if English requested):
+Example (if English requested and referenceWeekStartDate was '2024-07-29'):
 [
   {
     "id": "post-1721110000-0",
     "title": "Exciting News for Addis Ababa!",
     "content": "Discover how our new service is changing lives in Ethiopia... #Ethiopia #AddisAbaba #Innovation",
     "platform": "Facebook",
-    "scheduledDate": "Week 1, Day 1",
+    "scheduledDate": "2024-07-29T10:00", 
     "visualRecommendation": "Vibrant photo of diverse Ethiopians benefiting from the service.",
+    "status": "todo"
+  },
+  {
+    "id": "post-1721110000-1",
+    "title": "Blog: Top 5 Benefits for Local Businesses",
+    "content": "Our latest blog post dives deep into how Ethiopian SMEs can leverage...",
+    "platform": "Blog",
+    "scheduledDate": "2024-07-31T14:30",
+    "visualRecommendation": "Infographic summarizing benefits, with Amharic text option.",
     "status": "todo"
   }
 ]

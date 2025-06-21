@@ -144,7 +144,16 @@ export const MarketingPlanner: React.FC<MarketingPlannerProps> = ({
     setIsLoadingAi(true);
     setError(null);
     try {
-      const newPosts = await generateMarketingPlan(strategyData, researchData, inputs, language);
+      const currentWeekStartDate = getWeekStartDate(currentDisplayDate);
+      const referenceDateString = `${currentWeekStartDate.getFullYear()}-${('0' + (currentWeekStartDate.getMonth() + 1)).slice(-2)}-${('0' + currentWeekStartDate.getDate()).slice(-2)}`;
+      
+      const newPosts = await generateMarketingPlan(
+        strategyData, 
+        researchData, 
+        { ...inputs, referenceWeekStartDate: referenceDateString }, 
+        language
+      );
+
       if (newPosts && newPosts.length > 0) {
         onUpdateData({ ...copywritingData, marketingPosts: [...copywritingData.marketingPosts, ...newPosts] });
         setOpenAiModalFlag(false); 

@@ -3,7 +3,7 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import { Modal } from './common/Modal';
 import { Button } from './common/Button';
 import { UserProfile, Language } from '../types';
-import { TranslationKey } from '../locales';
+import { TranslationKey } from '../types';
 
 interface UserProfileModalProps {
   isOpen: boolean;

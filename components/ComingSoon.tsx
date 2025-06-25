@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TranslationKey } from '../locales';
+import { TranslationKey } from '../types';
 import { Language } from '../types';
 
 interface ComingSoonProps {

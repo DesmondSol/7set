@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { NavItem, Page, SubPage, Language, UserProfile } from '../types';
-import { TranslationKey } from '../locales';
+import { TranslationKey } from '../types';
 
 interface NavbarProps {
   navItems: NavItem[];

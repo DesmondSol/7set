@@ -12,14 +12,14 @@ import {
     CanvasSection, 
     ResearchQuestionnaireSet,
     Language,
-    UserProfile
+    UserProfile,
+    TranslationKey
 } from '../../types';
 import { RESEARCH_SECTIONS_HELP, GENERIC_ERROR_MESSAGE } from '../../constants';
 import { generateMarketResearchQuestions, generateMarketResearchSummary } from '../../services/geminiService';
 import { Button } from '../common/Button';
 import { Modal } from '../common/Modal';
 import { FloatingActionButton } from '../common/FloatingActionButton';
-import { TranslationKey } from '../../locales';
 
 // PDF Export Helper Constants
 const A4_WIDTH_MM = 210;
@@ -305,10 +305,21 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
   const [editingTrendId, setEditingTrendId] = useState<string | null>(null);
 
    useEffect(() => {
+    // Default to closed sidebar on mobile initially
     if (window.innerWidth < 768) { 
         setIsSidebarOpen(false);
     }
+    // Auto-select first questionnaire set if available
     if (!activeQuestionnaireSetId && initialData[ResearchSection.QUESTIONS].length > 0) {
+      setActiveQuestionnaireSetId(initialData[ResearchSection.QUESTIONS][0].id);
+    }
+  }, []); // Run only on mount
+
+  // Update active set if data changes and current active set is removed
+   useEffect(() => {
+    if (activeQuestionnaireSetId && !initialData[ResearchSection.QUESTIONS].find(s => s.id === activeQuestionnaireSetId)) {
+      setActiveQuestionnaireSetId(initialData[ResearchSection.QUESTIONS].length > 0 ? initialData[ResearchSection.QUESTIONS][0].id : null);
+    } else if (!activeQuestionnaireSetId && initialData[ResearchSection.QUESTIONS].length > 0) {
       setActiveQuestionnaireSetId(initialData[ResearchSection.QUESTIONS][0].id);
     }
   }, [initialData[ResearchSection.QUESTIONS], activeQuestionnaireSetId]);
@@ -930,8 +941,14 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100vh-8rem-2rem)] relative bg-transparent">
-      <aside className={`fixed md:static top-0 left-0 h-full w-full max-w-xs md:w-[320px] bg-slate-800 text-slate-300 p-6 shadow-2xl transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 z-40 overflow-y-auto border-r border-slate-700`}>
+    <div className="flex flex-col md:flex-row h-full md:h-[calc(100vh-8rem-2rem)] relative bg-transparent">
+      <aside 
+         className={`
+           fixed top-20 right-0 w-full h-[calc(100vh-5rem)] bg-slate-800 z-40 p-6 overflow-y-auto shadow-xl transition-transform duration-300 ease-in-out
+           ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}
+           md:static md:w-[320px] md:h-full md:translate-x-0 md:z-auto md:border-r md:border-slate-700 md:shadow-none md:transition-none md:left-auto md:right-auto md:top-auto
+         `}
+      >
         <div className="flex justify-between items-center mb-8">
           <h3 className="text-xl font-semibold text-slate-100">{t('mra_sidebar_title')}</h3>
           <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-slate-400 hover:text-white">
@@ -953,7 +970,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
                       setCurrentHelpContent(helpInfo || {title: section, sidebarTitle: {[language]:t(section as TranslationKey, section)} as any, explanation: {en: "Error", am: "ስህተት"}});
                       setEditingCompetitorId(null); 
                       setEditingTrendId(null);    
-                      if(window.innerWidth < 768) setIsSidebarOpen(false); 
+                      if(window.innerWidth < 768 && isSidebarOpen) setIsSidebarOpen(false);
                     }}
                     className={`block px-4 py-3 rounded-lg transition-colors duration-200
                       ${activeResearchSection === section 
@@ -970,7 +987,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         </nav>
       </aside>
 
-      <main className={`flex-grow p-4 md:p-8 bg-transparent shadow-inner overflow-y-auto transition-all duration-300 ease-in-out`}> {/* Removed md:mr for static sidebar */}
+      <main className={`flex-grow p-4 md:p-8 bg-transparent shadow-inner overflow-y-auto ${isSidebarOpen && 'md:ml-0'}`}>
          <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-slate-100">{t('market_research_accelerator_page_title')}</h2>
             <div className="flex items-center space-x-3">
@@ -988,7 +1005,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         tooltip={t('help_mra_button_tooltip')}
         onClick={() => openHelpModalForSection(activeResearchSection)}
         className="bottom-6 right-6 z-30" 
-        colorClass="bg-slate-600 hover:bg-slate-500" // Secondary color
+        colorClass="bg-slate-600 hover:bg-slate-500"
         size="md" 
       />
 

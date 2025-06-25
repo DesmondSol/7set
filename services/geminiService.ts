@@ -14,18 +14,26 @@ import {
     MarketingPost, 
     Pitch, 
     PitchType, 
-    MarketingPostStatus
+    MarketingPostStatus,
+    MindsetData, 
+    AssessmentAnswers, 
+    FounderProfileReportData, 
+    GoalSettingData, 
+    AssessmentScores,
+    TranslationKey
 } from '../types';
-import { API_KEY_WARNING } from "../constants";
+import { API_KEY_WARNING, GENERIC_ERROR_MESSAGE } from "../constants";
 
 const API_KEY = process.env.API_KEY;
+let ai: GoogleGenAI | null = null;
+
+const TEXT_MODEL = 'gemini-2.5-flash-preview-04-17';
 
 if (!API_KEY) {
   console.warn(API_KEY_WARNING);
+} else {
+  ai = new GoogleGenAI({ apiKey: API_KEY });
 }
-
-const ai = new GoogleGenAI({ apiKey: API_KEY! });
-const textModel = 'gemini-2.5-flash-preview-04-17';
 
 const parseJsonFromText = <T,>(text: string): T | null => {
   let jsonStr = text.trim();
@@ -51,7 +59,14 @@ export const generateBusinessCanvasContent = async (
   sections: CanvasSection[],
   language: Language
 ): Promise<Partial<CanvasData> | null> => {
-  if (!API_KEY) return null;
+  if (!API_KEY || !ai) {
+    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
+    const errorResult: Partial<CanvasData> = {};
+    sections.forEach(section => {
+      errorResult[section] = language === 'am' ? "የ AI አገልግሎት በአሁኑ ጊዜ አይገኝም።" : "AI service unavailable.";
+    });
+    return errorResult;
+  }
 
   const langInstructions = language === 'am'
   ? "All generated textual content for the sections MUST be in Amharic. The JSON keys themselves (the section names like 'Project Overview', 'Product Vision', etc.) MUST remain in English as provided in the list of sections. Provide rich, culturally relevant Amharic content that is practical for an Ethiopian entrepreneur."
@@ -83,7 +98,7 @@ Ensure the entire output is a single JSON object.
 
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
-      model: textModel,
+      model: TEXT_MODEL,
       contents: [{ role: "user", parts: [{text: prompt}] }],
       config: {
         responseMimeType: "application/json",
@@ -137,7 +152,10 @@ export const generateMarketResearchQuestions = async (
   targetAudience: string,
   language: Language
 ): Promise<ResearchQuestionItem[]> => {
-  if (!API_KEY) return [];
+  if (!API_KEY || !ai) {
+    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
+    return [];
+  }
 
   const strategyContextString = `---BEGIN ETHIOPIAN BUSINESS STRATEGY (Language of strategy elements below is as provided by user, AI should process it for context)---
 Project Overview: ${strategyData[CanvasSection.PROJECT_OVERVIEW] || "Not defined"}
@@ -170,7 +188,7 @@ Return the response as a valid JSON array of strings, where each string is a que
 For example: ["Question 1?", "Question 2?", "Question 3?"]`;
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
-      model: textModel,
+      model: TEXT_MODEL,
       contents: [{ role: "user", parts: [{text: prompt}] }],
       config: {
         responseMimeType: "application/json",
@@ -202,7 +220,10 @@ export const generateMarketResearchSummary = async (
   strategyData: Partial<CanvasData> | null,
   language: Language
 ): Promise<string> => {
-  if (!API_KEY) return language === 'am' ? "የ AI ማጠቃለያ ማመንጨት ተሰናክሏል። የኤፒአይ ቁልፍ ጠፍቷል።" : "AI Summary generation disabled. API key missing.";
+  if (!API_KEY || !ai) {
+    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
+    return language === 'am' ? "የ AI ማጠቃለያ ማመንጨት ተሰናክሏል።" : "AI Summary generation disabled.";
+  }
 
   let questionsAndResponsesSummary = language === 'am' ? "ምንም የምርምር ጥያቄ ስብስቦች አልቀረቡም ወይም በስብስቦች ውስጥ ምንም ጥያቄዎች የሉም።" : "No research question sets provided or no questions within sets.";
   if (researchData[ResearchSection.QUESTIONS] && researchData[ResearchSection.QUESTIONS].length > 0) {
@@ -286,7 +307,7 @@ Ensure the summary clearly links research findings back to the business strategy
 Generate the comprehensive summary:`;
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
-      model: textModel,
+      model: TEXT_MODEL,
       contents: [{ role: "user", parts: [{text: prompt}] }],
        config: {
         temperature: 0.65, 
@@ -305,7 +326,10 @@ export const generateMarketingPlan = async (
   userInputs: { campaignGoal: string; targetPlatforms: string[]; contentTone: string; duration: string, referenceWeekStartDate: string },
   language: Language
 ): Promise<MarketingPost[] | null> => {
-  if (!API_KEY) return null;
+  if (!API_KEY || !ai) {
+    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
+    return null;
+  }
 
   const strategyContextString = Object.entries(strategyData)
     .filter(([, value]) => value && value.trim() !== "Not defined")
@@ -372,7 +396,7 @@ Focus on providing actionable, creative, and "Jasper-style" content suggestions.
 
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
-      model: textModel,
+      model: TEXT_MODEL,
       contents: [{ role: "user", parts: [{text: prompt}] }],
       config: { responseMimeType: "application/json", temperature: 0.75 }
     });
@@ -391,7 +415,10 @@ export const generatePitchContent = async (
   userInputs: { pitchType: PitchType; targetAudience: string; keyMessage: string; numEmails?: number },
   language: Language
 ): Promise<Partial<Pick<Pitch, 'title' | 'content'>> | null> => {
-  if (!API_KEY) return null;
+  if (!API_KEY || !ai) {
+    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
+    return null;
+  }
 
   const strategyContextString = Object.entries(strategyData)
     .filter(([, value]) => value && value.trim() !== "Not defined")
@@ -443,7 +470,7 @@ Ensure the content is actionable and reflects an understanding of Ethiopian busi
 
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
-      model: textModel,
+      model: TEXT_MODEL,
       contents: [{ role: "user", parts: [{text: prompt}] }],
       config: { responseMimeType: "application/json", temperature: 0.7 }
     });
@@ -453,16 +480,12 @@ Ensure the content is actionable and reflects an understanding of Ethiopian busi
     const parsedData = parseJsonFromText<Pick<Pitch, 'title' | 'content'>>(textResponse);
     if (parsedData && userInputs.pitchType === 'email_campaign' && typeof parsedData.content === 'string') {
         try {
-            // Validate if the string content for email campaign is valid JSON
             JSON.parse(parsedData.content); 
         } catch (e) {
             console.warn("AI returned email campaign content as a non-JSON string, or malformed JSON string:", parsedData.content);
-            // Optionally, try to wrap in array if it looks like a single object not in an array
              if (parsedData.content.trim().startsWith("{") && parsedData.content.trim().endsWith("}")) {
                 try {
                     JSON.parse('[' + parsedData.content + ']');
-                    // If this works, it means it was a single object not an array
-                    // For now, we'll let the frontend handle it or the user correct it
                 } catch (e2) { /* still not valid */ }
             }
         }
@@ -473,4 +496,54 @@ Ensure the content is actionable and reflects an understanding of Ethiopian busi
     console.error("Error generating pitch content:", error);
     return null;
   }
+};
+
+// --- Mindset Section AI Functions ---
+
+export const generateFounderProfileReport = async (
+  assessmentAnswers: MindsetData['assessmentAnswers'],
+  language: Language
+): Promise<FounderProfileReportData | null> => {
+  if (!API_KEY || !ai) {
+    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
+    return null;
+  }
+  console.log("AI: Generating Founder Profile Report for language:", language, "with answers:", assessmentAnswers);
+  // Simulate AI response for now as full prompt engineering is complex
+  await new Promise(resolve => setTimeout(resolve, 1500)); 
+
+  const defaultScores: AssessmentScores = {
+    riskTolerance: Math.floor(Math.random() * 60) + 40, leadership: Math.floor(Math.random() * 60) + 40,
+    adaptability: Math.floor(Math.random() * 60) + 40, marketInsight: Math.floor(Math.random() * 50) + 30,
+    financialLiteracy: Math.floor(Math.random() * 50) + 30, strategicThinking: Math.floor(Math.random() * 60) + 40,
+    resilience: Math.floor(Math.random() * 60) + 40, creativity: Math.floor(Math.random() * 60) + 40,
+  };
+  
+  return {
+    founderTypeTitleKey: 'founder_type_visionary_catalyst_title' as TranslationKey,
+    founderTypeDescriptionKey: 'founder_type_visionary_catalyst_desc' as TranslationKey,
+    scores: defaultScores,
+    cofounderPersonaSuggestionKey: 'cofounder_suggestion_operational_excellence' as TranslationKey,
+    keyTakeawaysKeys: ['takeaway_focus_on_execution' as TranslationKey],
+    generatedDate: new Date().toISOString(),
+  };
+};
+
+export const askAiMindsetCoach = async (
+  currentGoals: GoalSettingData,
+  userMessage: string,
+  chatHistory: { role: 'user' | 'model', parts: {text: string}[] }[],
+  language: Language
+): Promise<string> => {
+  if (!API_KEY || !ai) {
+    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
+    return language === 'am' ? "የ AI የአስተሳሰብ አሰልጣኝ ተሰናክሏል።" : "AI Mindset Coach disabled.";
+  }
+  console.log("AI Coach: Received message:", userMessage, "Language:", language, "Goals:", currentGoals, "History:", chatHistory);
+  // Simulate AI response
+  await new Promise(resolve => setTimeout(resolve, 1000)); 
+  if (language === 'am') {
+    return `ስለተላከው መልዕክት እያሰብኩ ነው፡ "${userMessage}". ስለ ራዕይዎ በተለይም ከእነዚህ ግቦች ጋር በተያያዘ የበለጠ ይንገሩኝ።`;
+  }
+  return `Okay, I'm processing your message: "${userMessage}". Tell me more about your vision regarding these goals. For example, what does 'success' in your 6-month goal for 'yourself' look like specifically?`;
 };

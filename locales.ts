@@ -1,209 +1,13 @@
-
-import { Page, SubPage, CanvasSection, ResearchSection, Language, CopywritingSubSection } from './types';
-
-// Define a more comprehensive type for translation keys
-export type TranslationKey =
-  | Page
-  | SubPage
-  | CanvasSection 
-  | ResearchSection 
-  | CopywritingSubSection 
-  | 'export_all_button'
-  | 'ai_assistant_canvas_button_tooltip'
-  | 'help_canvas_button_tooltip'
-  | 'ai_assistant_modal_title_canvas'
-  | 'ai_modal_idea_label'
-  | 'ai_modal_q1_label'
-  | 'ai_modal_q2_label'
-  | 'ai_modal_q3_label'
-  | 'ai_modal_idea_placeholder' 
-  | 'ai_modal_q1_placeholder'   
-  | 'ai_modal_q2_placeholder'   
-  | 'ai_modal_q3_placeholder'   
-  | 'ai_modal_generate_button_canvas'
-  | 'ai_modal_generating_button_canvas'
-  | 'help_modal_title_canvas'
-  | 'businessLaunchCanvas_title' 
-  | 'edit_button'
-  | 'save_button'
-  | 'delete_button'
-  | 'cancel_button'
-  | 'no_content_yet_placeholder'
-  | 'error_ai_failed_generic'
-  | 'error_ai_no_idea'
-  | 'market_research_accelerator_page_title'
-  | 'export_current_view_button'
-  | 'help_mra_button_tooltip'
-  | 'mra_help_modal_title_prefix'
-  | 'mra_sidebar_title'
-  | 'mra_questions_create_set_button'
-  | 'mra_questions_active_set_label'
-  | 'mra_questions_select_set_placeholder'
-  | 'mra_questions_delete_set_button_title'
-  | 'mra_questions_working_on_prefix'
-  | 'mra_questions_goal_prefix'
-  | 'mra_questions_audience_prefix'
-  | 'mra_questions_add_manual_label'
-  | 'mra_questions_add_manual_button'
-  | 'mra_questions_ai_generate_button'
-  | 'mra_questions_ai_generating_button'
-  | 'mra_questions_ai_requires_canvas_note'
-  | 'mra_questions_no_questions_placeholder'
-  | 'mra_questions_select_set_prompt'
-  | 'mra_questions_no_sets_prompt'
-  | 'mra_general_notes_title'
-  | 'mra_general_notes_import_csv_label'
-  | 'mra_general_notes_csv_note'
-  | 'mra_general_notes_placeholder'
-  | 'mra_competitor_analysis_title'
-  | 'mra_competitor_add_button'
-  | 'mra_competitor_no_competitors_placeholder'
-  | 'mra_trends_title'
-  | 'mra_trends_add_button'
-  | 'mra_trends_no_trends_placeholder'
-  | 'mra_ai_summary_title'
-  | 'mra_ai_summary_generate_button'
-  | 'mra_ai_summary_generating_button'
-  | 'mra_ai_summary_placeholder'
-  | 'mra_create_set_modal_title'
-  | 'mra_create_set_name_label'
-  | 'mra_create_set_goal_label'
-  | 'mra_create_set_audience_label'
-  | 'mra_create_set_button'
-  | 'mra_error_fill_all_fields'
-  | 'mra_error_select_or_create_set'
-  | 'coming_soon_title'
-  | 'coming_soon_feature_text_prefix'
-  | 'coming_soon_feature_text_suffix'
-  | 'coming_soon_message'
-  | 'welcome_title'
-  | 'welcome_message'
-  | 'lang_english'
-  | 'lang_amharic'
-  // PDF Export specific keys
-  | 'exported_on_label'
-  | 'page_x_of_y'
-  | 'no_content_yet_placeholder_pdf'
-  | 'mra_report_set_title'
-  | 'mra_report_goal_label'
-  | 'mra_report_audience_label'
-  | 'mra_report_question_label'
-  | 'mra_report_responses_label'
-  | 'mra_report_pricing_label'
-  | 'mra_report_features_label'
-  | 'mra_report_strengths_label'
-  | 'mra_report_weaknesses_label'
-  | 'mra_report_gaps_label'
-  | 'mra_report_notes_label' 
-  | 'mra_report_description_label'
-  | 'mra_report_source_label'
-  | 'mra_report_timeframe_label'
-  | 'mra_report_location_label'
-  | 'mra_report_impact_label'
-  // User Profile
-  | 'user_profile_button_tooltip'
-  | 'user_profile_modal_title'
-  | 'user_profile_name_label'
-  | 'user_profile_email_label'
-  | 'user_profile_phone_label'
-  | 'user_profile_other_details_label'
-  | 'user_profile_photo_label'
-  | 'user_profile_upload_photo_button'
-  | 'user_profile_change_photo_button'
-  | 'user_profile_save_button'
-  | 'user_profile_name_placeholder'
-  | 'user_profile_email_placeholder'
-  | 'user_profile_phone_placeholder'
-  | 'user_profile_other_details_placeholder'
-  | 'pdf_made_by_title'
-  | 'lang_en_short'
-  | 'lang_am_short'
-  | 'logo_alt_text' // Added for the logo
-  // Copywriting Section Keys
-  | 'copywriting_page_title'
-  | 'copywriting_sidebar_title'
-  | 'copywriting_help_button_tooltip'
-  | 'copywriting_ai_button_tooltip'
-  | 'copywriting_marketing_title'
-  | 'copywriting_pitch_refinement_title'
-  | 'marketing_add_post_button'
-  | 'marketing_no_posts_placeholder'
-  | 'marketing_ai_generate_plan_button' 
-  | 'marketing_ai_generating_plan_button'
-  | 'marketing_post_modal_create_title'
-  | 'marketing_post_modal_edit_title'
-  | 'marketing_post_title_label'
-  | 'marketing_post_content_label'
-  | 'marketing_post_platform_label'
-  | 'marketing_post_scheduled_date_label'
-  | 'marketing_post_visual_recommendation_label'
-  | 'marketing_post_notes_label'
-  | 'marketing_post_status_label'
-  | 'marketing_post_status_todo'
-  | 'marketing_post_status_in_progress'
-  | 'marketing_post_status_done'
-  | 'marketing_post_platform_placeholder'
-  | 'marketing_post_title_placeholder'
-  | 'marketing_post_content_placeholder'
-  | 'marketing_post_visual_placeholder'
-  | 'marketing_post_notes_placeholder'
-  | 'ai_marketing_modal_title'
-  | 'ai_marketing_campaign_goal_label'
-  | 'ai_marketing_target_platforms_label'
-  | 'ai_marketing_content_tone_label'
-  | 'ai_marketing_duration_label'
-  | 'ai_marketing_campaign_goal_placeholder'
-  | 'ai_marketing_target_platforms_placeholder'
-  | 'ai_marketing_content_tone_placeholder'
-  | 'ai_marketing_duration_placeholder'
-  | 'ai_marketing_generate_button'
-  | 'pitch_add_button'
-  | 'pitch_no_pitches_placeholder'
-  | 'pitch_ai_generate_button'
-  | 'pitch_ai_generating_button'
-  | 'pitch_modal_create_title'
-  | 'pitch_modal_edit_title'
-  | 'pitch_type_label'
-  | 'pitch_type_investor'
-  | 'pitch_type_sales'
-  | 'pitch_type_email_campaign'
-  | 'pitch_title_label'
-  | 'pitch_target_audience_label'
-  | 'pitch_key_message_label'
-  | 'pitch_content_label'
-  | 'pitch_notes_label'
-  | 'pitch_title_placeholder'
-  | 'pitch_target_audience_placeholder'
-  | 'pitch_key_message_placeholder'
-  | 'pitch_content_placeholder'
-  | 'ai_pitch_modal_title'
-  | 'ai_pitch_type_label'
-  | 'ai_pitch_target_audience_label'
-  | 'ai_pitch_key_message_label'
-  | 'ai_pitch_num_emails_label' 
-  | 'ai_pitch_generate_button'
-  | 'view_details_button'
-  | 'mark_as_done_button'
-  | 'mark_as_todo_button'
-  | 'export_marketing_plan_button'
-  | 'export_pitches_button'
-  | 'pdf_marketing_plan_title'
-  | 'pdf_marketing_post_title'
-  | 'pdf_platform_label'
-  | 'pdf_scheduled_date_label'
-  | 'pdf_visual_recommendation_label'
-  | 'pdf_status_label'
-  | 'pdf_pitches_title'
-  | 'pdf_pitch_title'
-  | 'pdf_pitch_type_label'
-  | 'pdf_target_audience_label'
-  | 'pdf_key_message_label'
-  // Calendar specific
-  | 'calendar_prev_week'
-  | 'calendar_next_week'
-  | 'calendar_add_post_tooltip'
-  | 'day_sun_short' | 'day_mon_short' | 'day_tue_short' | 'day_wed_short' | 'day_thu_short' | 'day_fri_short' | 'day_sat_short'
-  | 'month_jan' | 'month_feb' | 'month_mar' | 'month_apr' | 'month_may' | 'month_jun' | 'month_jul' | 'month_aug' | 'month_sep' | 'month_oct' | 'month_nov' | 'month_dec';
+import { 
+    Page, 
+    SubPage, 
+    CanvasSection, 
+    ResearchSection, 
+    Language, 
+    CopywritingSubSection, 
+    MindsetSubSection,
+    TranslationKey // Import TranslationKey from types.ts
+} from './types';
 
 export type LocalizedContent = Record<TranslationKey, string>;
 
@@ -212,6 +16,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [Page.START]: 'Start',
     [Page.BUILD]: 'Build',
     [Page.GROW]: 'Grow',
+    [SubPage.MINDSET]: 'Mindset',
     [SubPage.STRATEGY]: 'Strategy',
     [SubPage.RESEARCH]: 'Research',
     [SubPage.COPYWRITING]: 'Copywriting',
@@ -248,6 +53,10 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     
     [CopywritingSubSection.MARKETING]: "Marketing Content & Plans",
     [CopywritingSubSection.PITCH_REFINEMENT]: "Pitch Refinement",
+
+    [MindsetSubSection.ENTREPRENEURIAL_ASSESSMENT]: "Entrepreneurial Assessment",
+    [MindsetSubSection.PROFILE_REPORT]: "Profile Report",
+    [MindsetSubSection.GOAL_SETTING]: "Goal Setting",
 
     export_all_button: 'Export All',
     ai_assistant_canvas_button_tooltip: 'AI Assistant to Fill Canvas',
@@ -289,7 +98,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     mra_questions_add_manual_button: "Add Q",
     mra_questions_ai_generate_button: "Generate Questions with AI for this Set",
     mra_questions_ai_generating_button: "AI Generating...",
-    mra_questions_ai_requires_canvas_note: "Note: AI question generation requires Business Launch Canvas data to be filled.",
+    mra_questions_ai_requires_canvas_note: "Note: AI generation requires Business Launch Canvas data to be filled for context.",
     mra_questions_no_questions_placeholder:"No research questions added to this set yet.",
     mra_questions_select_set_prompt: "Please select a Research Set above to view or add questions.",
     mra_questions_no_sets_prompt: "No Research Sets created yet. Click 'Create New Research Set' to begin.",
@@ -448,11 +257,138 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     calendar_add_post_tooltip: "Add post for this day",
     day_sun_short: "Sun", day_mon_short: "Mon", day_tue_short: "Tue", day_wed_short: "Wed", day_thu_short: "Thu", day_fri_short: "Fri", day_sat_short: "Sat",
     month_jan: "January", month_feb: "February", month_mar: "March", month_apr: "April", month_may: "May", month_jun: "June", month_jul: "July", month_aug: "August", month_sep: "September", month_oct: "October", month_nov: "November", month_dec: "December",
+    
+    infographic_title: "Ignite Your Vision",
+    infographic_subtitle: "The 7set Spark Entrepreneurial Journey: Transforming Ethiopian Ideas into Global Impact",
+    infographic_blueprint_title: "The Program Blueprint",
+    infographic_blueprint_desc: "Our action-led curriculum is a structured 3-stage journey, guiding you from initial idea to investor-ready venture.",
+    infographic_stage1_name: "START",
+    infographic_stage1_desc: "1 Month: Forge your mindset & validate your idea.",
+    infographic_stage2_name: "BUILD",
+    infographic_stage2_desc: "2 Months: Develop your MVP & find first customers.",
+    infographic_stage3_name: "GROW",
+    infographic_stage3_desc: "2 Months: Scale your company & secure investment.",
+    infographic_deepdive_start_title: "Deep Dive: START Package",
+    infographic_deepdive_start_desc: "The first month focuses on building a strong foundation. The curriculum is evenly distributed across four critical weeks, moving from mindset to a polished initial pitch.",
+    infographic_chart_start_week1: "Week 1: Mindset & Vision",
+    infographic_chart_start_week2: "Week 2: Strategy & Value Prop",
+    infographic_chart_start_week3: "Week 3: Market Research & Team",
+    infographic_chart_start_week4: "Week 4: Pitch Fundamentals",
+    infographic_deepdive_build_title: "Deep Dive: BUILD Package",
+    infographic_deepdive_build_desc: "This two-month stage is intensely practical, focusing on bringing your product to life and into the market, with a strong emphasis on digital skills and financial literacy.",
+    infographic_chart_build_mvp: "AI & MVP Dev",
+    infographic_chart_build_finance: "Financial Literacy",
+    infographic_chart_build_marketing: "Digital Marketing & Sales",
+    infographic_chart_build_legal: "Legal Basics",
+    infographic_deepdive_grow_title: "Deep Dive: GROW Package",
+    infographic_deepdive_grow_desc: "The final two months are dedicated to scaling your venture. This stage covers the advanced, multifaceted skills needed to build a sustainable company and attract serious investment.",
+    infographic_chart_grow_legal: "Company Formation & Legal",
+    infographic_chart_grow_finance: "Advanced Finance & Investment",
+    infographic_chart_grow_ops: "Operations & Scalability",
+    infographic_chart_grow_hr: "Recruiting & Team Culture",
+    infographic_chart_grow_negotiation: "Advanced Negotiation",
+    infographic_chart_grow_kpi: "KPI Management",
+    infographic_actionled_title: "The Action-Led Difference",
+    infographic_actionled_desc: "We fundamentally believe in learning by doing. Our curriculum dramatically minimizes passive lectures in favor of hands-on, practical application. You won't just learn theory; you'll build, test, and execute from day one.",
+    infographic_actionled_workshops: "Workshops",
+    infographic_actionled_app: "App Integration",
+    infographic_actionled_projects: "Real-World Projects",
+    infographic_chart_learning_action: "Action-Led Practical Application (>60%)",
+    infographic_chart_learning_theory: "Lecture & Theory (<40%)",
+    infographic_chart_learning_title: "Learning Model Breakdown",
+    infographic_weekly_title: "Your Weekly Rhythm",
+    infographic_weekly_desc: "The program is designed to fit your life. Evening sessions cover core concepts, while intensive weekend workshops are dedicated to hands-on project work and real-life execution, totaling over 10 hours of immersive learning each week.",
+    infographic_chart_hours_weekday: "Weekday Sessions (Lecture/Interactive)",
+    infographic_chart_hours_weekend: "Weekend Workshops (Hands-On)",
+    infographic_chart_hours_title: "Total Weekly Learning Hours: 10.5",
+    infographic_ecosystem_title: "More Than a Classroom: Join the Ecosystem",
+    infographic_eco_networking_title: "Networking Events",
+    infographic_eco_networking_desc: "Connect with peers, mentors, and industry leaders at our bi-weekly open events.",
+    infographic_eco_speakers_title: "Guest Speakers",
+    infographic_eco_speakers_desc: "Gain insights from successful Ethiopian entrepreneurs and global experts.",
+    infographic_eco_amas_title: "Investor AMAs",
+    infographic_eco_amas_desc: "Ask candid questions and get direct feedback from venture capitalists and angel investors.",
+    infographic_eco_gamenights_title: "Game Nights",
+    infographic_eco_gamenights_desc: "Build team synergy and problem-solving skills in a fun, collaborative setting.",
+    infographic_goal_title: "The Ultimate Goal: Funding Your Future",
+    infographic_goal_prizes_amount: "100K+ Birr in Pitch Prizes",
+    infographic_goal_prizes_desc: "Win non-dilutive capital to fuel your MVP and early-stage growth through our regular pitch competitions.",
+    infographic_goal_investment_amount: "1M+ Birr Seed Investment Opportunity",
+    infographic_goal_investment_desc: "Graduates of the Grow package pitch for significant seed grants and gain direct access to our network of investors.",
+    infographic_footer_copyright: "© {currentYear} 7set Spark. All rights reserved. Addis Ababa, Ethiopia.",
+    infographic_footer_address: "Dembel city center 3rd floor +251923214663",
+    infographic_footer_poweredby: "Powered by: Solomon T",
+
+    // Mindset Section Translations
+    mindset_page_title: "Mindset & Self-Discovery",
+    mindset_sidebar_title: "Mindset Sections",
+    mindset_assessment_title: "Entrepreneurial Assessment",
+    mindset_profile_report_title: "Profile Report",
+    mindset_goal_setting_title: "Goal Setting",
+    mindset_assessment_explanation: "Understand your strengths, weaknesses, and entrepreneurial tendencies through guided assessments. This insight is crucial for personal growth and building a balanced team.",
+    mindset_profile_report_explanation: "Receive an AI-generated profile based on your assessments. Discover your core founder type, see a visual map of your traits, and get recommendations for co-founder compatibility and development areas.",
+    mindset_goal_setting_explanation: "Define your vision and set clear, actionable goals for yourself, your family, and the impact you want to create in the world. Use the AI coach to refine your aspirations.",
+    mindset_assessment_personality_button: "Personality Assessment",
+    mindset_assessment_acumen_button: "Business Acumen Assessment",
+    mindset_assessment_knowledge_button: "Startup Knowledge Assessment",
+    mindset_assessment_modal_title_personality: "Personality Assessment",
+    mindset_assessment_modal_title_acumen: "Business Acumen Assessment",
+    mindset_assessment_modal_title_knowledge: "Startup Knowledge Assessment",
+    mindset_assessment_progress_label: "Progress",
+    mindset_assessment_question_count_label: "Question {current} of {total}",
+    mindset_assessment_questions_remaining_label: "{remaining} questions remaining",
+    mindset_assessment_next_button: "Next",
+    mindset_assessment_prev_button: "Previous",
+    mindset_assessment_submit_button: "Submit Assessment",
+    mindset_assessment_start_prompt: "Click a button above to start an assessment.",
+    mindset_profile_report_generate_button: "Generate My Profile Report",
+    mindset_profile_report_generating_button: "Generating Report...",
+    mindset_profile_report_prompt_complete_assessments: "Please complete all three entrepreneurial assessments to generate your profile report.",
+    mindset_profile_report_founder_type_title: "Your Core Founder Type",
+    mindset_profile_report_strengths_weaknesses_title: "Strengths & Development Areas",
+    mindset_profile_report_cofounder_title: "Who You Are, Who You Might Need",
+    mindset_profile_report_key_takeaways_title: "Key Insights & Recommendations",
+    mindset_goal_setting_6_month_title: "6-Month Goals",
+    mindset_goal_setting_2_year_title: "2-Year Goals",
+    mindset_goal_setting_5_year_title: "5-Year Goals",
+    mindset_goal_setting_10_year_title: "10-Year Goals",
+    mindset_goal_setting_self_label: "For Myself:",
+    mindset_goal_setting_family_label: "For My Family:",
+    mindset_goal_setting_world_label: "For the World/Impact:",
+    mindset_goal_setting_self_placeholder: "What personal growth or achievement?",
+    mindset_goal_setting_family_placeholder: "How will this benefit your loved ones?",
+    mindset_goal_setting_world_placeholder: "What broader change do you envision?",
+    mindset_goal_setting_ai_coach_button_tooltip: "AI Mindset Coach - Refine Your Goals",
+    mindset_ai_coach_modal_title: "AI Mindset Coach",
+    mindset_ai_coach_input_placeholder: "Tell me about your vision or ask for help...",
+    mindset_ai_coach_welcome_message: "Hello! I'm here to help you articulate and refine your goals. What's on your mind?",
+    mindset_help_button_tooltip: "Mindset Section Help",
+    // Placeholder for actual question keys - to be filled extensively
+    q_personality_1_text: "How comfortable are you with ambiguity and uncertainty on a scale of 1 (Not at all) to 5 (Very comfortable)?",
+    q_acumen_1_text: "Which of the following best describes your approach to financial management in a new venture?", // Example
+    q_acumen_1_options_key: "q_acumen_1_options_key_placeholder", // Placeholder, actual options would be separate keys
+    q_knowledge_1_text: "A competitor launches a similar product at a lower price. What is your immediate strategic reaction?", // Example
+    q_knowledge_1_options_key: "q_knowledge_1_options_key_placeholder", // Placeholder
+    founder_type_visionary_catalyst_title: "The Visionary Catalyst",
+    founder_type_visionary_catalyst_desc: "You are driven by a strong vision and excel at inspiring others. You see possibilities where others don't and are passionate about bringing groundbreaking ideas to life.",
+    cofounder_suggestion_operational_excellence: "Consider a co-founder with a strong bias for action, operational excellence, and attention to detail to complement your visionary strengths.",
+    takeaway_focus_on_execution: "While your vision is a key asset, ensure you also focus on disciplined execution and building robust processes.",
+    radar_chart_risk_tolerance: 'Risk Tolerance',
+    radar_chart_leadership: 'Leadership',
+    radar_chart_adaptability: 'Adaptability',
+    radar_chart_market_insight: 'Market Insight',
+    radar_chart_financial_literacy: 'Financial Literacy',
+    radar_chart_strategic_thinking: 'Strategic Thinking',
+    radar_chart_technical_skills: 'Technical Skills',
+    radar_chart_sales_ability: 'Sales Ability',
+    radar_chart_resilience: 'Resilience',
+    radar_chart_creativity: 'Creativity',
   },
   am: {
     [Page.START]: 'ጀምር',
     [Page.BUILD]: 'ገንባ',
     [Page.GROW]: 'አሳድግ',
+    [SubPage.MINDSET]: 'አስተሳሰብ',
     [SubPage.STRATEGY]: 'ስትራቴጂ',
     [SubPage.RESEARCH]: 'ምርምር',
     [SubPage.COPYWRITING]: 'የፅሁፍ ዝግጅት',
@@ -489,6 +425,10 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 
     [CopywritingSubSection.MARKETING]: "የግብይት ይዘት እና እቅዶች",
     [CopywritingSubSection.PITCH_REFINEMENT]: "የሀሳብ ማቅረቢያ ማሻሻያ",
+
+    [MindsetSubSection.ENTREPRENEURIAL_ASSESSMENT]: "የስራ ፈጠራ ምዘና",
+    [MindsetSubSection.PROFILE_REPORT]: "የመገለጫ ሪፖርት",
+    [MindsetSubSection.GOAL_SETTING]: "ግብ ማውጣት",
 
     export_all_button: 'ሁሉንም ላክ',
     ai_assistant_canvas_button_tooltip: 'ሸራውን ለመሙላት የ AI ረዳት',
@@ -530,7 +470,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     mra_questions_add_manual_button: "ጥያቄ ጨምር",
     mra_questions_ai_generate_button: "ለዚህ ስብስብ በ AI ጥያቄዎችን አመንጭ",
     mra_questions_ai_generating_button: "AI እያመነጨ ነው...",
-    mra_questions_ai_requires_canvas_note: "ማሳሰቢያ: የ AI ጥያቄ ማመንጨት የቢዝነስ ማስጀመሪያ ሸራ ውሂብ መሞላት ይፈልጋል።",
+    mra_questions_ai_requires_canvas_note: "ማሳሰቢያ: የ AI ማመንጨት ለዐውደ-ጽሑፍ የቢዝነስ ማስጀመሪያ ሸራ መረጃ መሞላትን ይጠይቃል።",
     mra_questions_no_questions_placeholder:"እስካሁን ምንም የምርምር ጥያቄዎች ወደዚህ ስብስብ አልተጨመሩም።",
     mra_questions_select_set_prompt: "ጥያቄዎችን ለማየት ወይም ለመጨመር እባክዎ ከላይ የምርምር ስብስብ ይምረጡ።",
     mra_questions_no_sets_prompt: "እስካሁን የተፈጠሩ የምርምር ስብስቦች የሉም። ለመጀመር 'አዲስ የምርምር ስብስብ ይፍጠሩ' የሚለውን ይጫኑ።",
@@ -688,24 +628,156 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     calendar_add_post_tooltip: "ለዚህ ቀን ጽሑፍ ጨምር",
     day_sun_short: "እሁድ", day_mon_short: "ሰኞ", day_tue_short: "ማክሰ", day_wed_short: "ረቡዕ", day_thu_short: "ሐሙስ", day_fri_short: "አርብ", day_sat_short: "ቅዳሜ",
     month_jan: "ጥር", month_feb: "የካቲት", month_mar: "መጋቢት", month_apr: "ሚያዝያ", month_may: "ግንቦት", month_jun: "ሰኔ", month_jul: "ሐምሌ", month_aug: "ነሐሴ", month_sep: "መስከረም", month_oct: "ጥቅምት", month_nov: "ኅዳር", month_dec: "ታኅሣሥ",
+
+    infographic_title: "ራዕይዎን ያብሩ",
+    infographic_subtitle: "የ7ሴት ስፓርክ የስራ ፈጠራ ጉዞ፦ የኢትዮጵያ ሀሳቦችን ወደ ዓለም አቀፍ ተጽዕኖ መለወጥ",
+    infographic_blueprint_title: "የፕሮግራሙ ዋና እቅድ",
+    infographic_blueprint_desc: "በተግባር ላይ የተመሰረተው ሥርዓተ ትምህርታችን ከመጀመሪያ ሀሳብ አንስቶ ለባለሀብት ዝግጁ እስከሆነ ድርጅት ድረስ የሚመራ የተዋቀረ ባለ 3-ደረጃ ጉዞ ነው።",
+    infographic_stage1_name: "ጀምር",
+    infographic_stage1_desc: "1 ወር፦ አስተሳሰብዎን ይቅረጹ እና ሀሳብዎን ያረጋግጡ።",
+    infographic_stage2_name: "ገንባ",
+    infographic_stage2_desc: "2 ወራት፦ የእርስዎን MVP (አነስተኛ ትግበራ) ያዳብሩ እና የመጀመሪያ ደንበኞችን ያግኙ።",
+    infographic_stage3_name: "አሳድግ",
+    infographic_stage3_desc: "2 ወራት፦ ኩባንያዎን ያስፉ እና የገንዘብ ድጋፍ ያግኙ።",
+    infographic_deepdive_start_title: "ዝርዝር እይታ፦ የጀምር ጥቅል",
+    infographic_deepdive_start_desc: "የመጀመሪያው ወር ጠንካራ መሠረት በመገንባት ላይ ያተኩራል። ሥርዓተ ትምህርቱ በአራት ወሳኝ ሳምንታት ላይ በእኩል ይከፋፈላል፣ ከአስተሳሰብ ጀምሮ እስከ ተወለወለ የመጀመሪያ የሀሳብ ማቅረቢያ ድረስ።",
+    infographic_chart_start_week1: "ሳምንት 1፦ አስተሳሰብ እና ራዕይ",
+    infographic_chart_start_week2: "ሳምንት 2፦ ስትራቴጂ እና የእሴት አቅርቦት",
+    infographic_chart_start_week3: "ሳምንት 3፦ የገበያ ጥናት እና ቡድን",
+    infographic_chart_start_week4: "ሳምንት 4፦ የሀሳብ ማቅረቢያ መሰረታዊ ነገሮች",
+    infographic_deepdive_build_title: "ዝርዝር እይታ፦ የገንባ ጥቅል",
+    infographic_deepdive_build_desc: "ይህ የሁለት ወር ደረጃ በጣም ተግባራዊ ሲሆን፣ ምርትዎን ወደ ህይወት በማምጣትና ወደ ገበያ በማስገባት ላይ ያተኩራል፣ በዲጂታል ክህሎቶችና በፋይናንስ እውቀት ላይ ጠንካራ ትኩረት በመስጠት።",
+    infographic_chart_build_mvp: "AI እና MVP ልማት",
+    infographic_chart_build_finance: "የፋይናንስ እውቀት",
+    infographic_chart_build_marketing: "ዲጂታል ግብይት እና ሽያጭ",
+    infographic_chart_build_legal: "የህግ መሰረታዊ ነገሮች",
+    infographic_deepdive_grow_title: "ዝርዝር እይታ፦ የአሳድግ ጥቅል",
+    infographic_deepdive_grow_desc: "የመጨረሻዎቹ ሁለት ወራት ድርጅትዎን ለማሳደግ የተሰጡ ናቸው። ይህ ደረጃ ዘላቂ ኩባንያ ለመገንባትና ከባድ ኢንቨስትመንትን ለመሳብ የሚያስፈልጉ የላቁ፣ ሁለገብ ክህሎቶችን ይሸፍናል።",
+    infographic_chart_grow_legal: "የኩባንያ ምስረታ እና ህግ",
+    infographic_chart_grow_finance: "የላቀ ፋይናንስ እና ኢንቨስትመንት",
+    infographic_chart_grow_ops: "የአሰራር ሂደቶች እና የማስፋፊያ አቅም",
+    infographic_chart_grow_hr: "ቅጥር እና የቡድን ባህል",
+    infographic_chart_grow_negotiation: "የላቀ ድርድር",
+    infographic_chart_grow_kpi: "የ KPI አስተዳደር",
+    infographic_actionled_title: "በተግባር የመማር ልዩነት",
+    infographic_actionled_desc: "በመሠረቱ፣ በመሥራት እንማራለን ብለን እናምናለን። የእኛ ሥርዓተ ትምህርት በንድፈ ሃሳብ ላይ ያተኮሩ ትምህርቶችን በእጅጉ በመቀነስ በተግባራዊ ልምምድ ላይ ያተኩራል። ንድፈ ሃሳብ ብቻ አይማሩም፤ ከመጀመሪያው ቀን ጀምሮ ይገነባሉ፣ ይፈትሻሉ፣ እና ይተገብራሉ።",
+    infographic_actionled_workshops: "ዎርክሾፖች",
+    infographic_actionled_app: "የመተግበሪያ ውህደት",
+    infographic_actionled_projects: "ተጨባጭ ፕሮጀክቶች",
+    infographic_chart_learning_action: "በተግባር ላይ የተመሰረተ ትግበራ (>60%)",
+    infographic_chart_learning_theory: "ትምህርት እና ንድፈ ሃሳብ (<40%)",
+    infographic_chart_learning_title: "የትምህርት ሞዴል ዝርዝር",
+    infographic_weekly_title: "የሳምንታዊ ፕሮግራምዎ",
+    infographic_weekly_desc: "ፕሮግራሙ ከህይወትዎ ጋር እንዲስማማ ተደርጎ የተዘጋጀ ነው። የማታ ክፍለ ጊዜዎች ዋና ዋና ፅንሰ ሀሳቦችን ይሸፍናሉ፣ ቅዳሜና እሁድ የሚካሄዱ የተጠናከሩ ዎርክሾፖች ደግሞ በተግባራዊ የፕሮጀክት ስራ እና በእውነተኛ ህይወት አፈፃፀም ላይ ያተኮሩ ሲሆኑ፣ በሳምንት ከ10 ሰዓታት በላይ የተጠናከረ ትምህርት ይሰጣሉ።",
+    infographic_chart_hours_weekday: "የሳምንቱ ቀናት ክፍለ ጊዜዎች (ትምህርት/ውይይት)",
+    infographic_chart_hours_weekend: "የሳምንት መጨረሻ ዎርክሾፖች (ተግባራዊ)",
+    infographic_chart_hours_title: "ጠቅላላ ሳምንታዊ የትምህርት ሰዓታት: 10.5",
+    infographic_ecosystem_title: "ከክፍል በላይ፦ ስነ-ምህዳሩን ይቀላቀሉ",
+    infographic_eco_networking_title: "የግንኙነት ዝግጅቶች",
+    infographic_eco_networking_desc: "በየሁለት ሳምንቱ በሚደረጉ ክፍት ዝግጅቶቻችን ላይ ከእኩዮች፣ አማካሪዎች እና የኢንዱስትሪ መሪዎች ጋር ይገናኙ።",
+    infographic_eco_speakers_title: "እንግዳ ተናጋሪዎች",
+    infographic_eco_speakers_desc: "ከተሳካላቸው ኢትዮጵያውያን ስራ ፈጣሪዎች እና ዓለም አቀፍ ባለሙያዎች ግንዛቤ ያግኙ።",
+    infographic_eco_amas_title: "የባለሀብቶች ጥያቄና መልስ",
+    infographic_eco_amas_desc: "ግልጽ ጥያቄዎችን ይጠይቁ እና ከቬንቸር ካፒታሊስቶች እና ከመላእክት ባለሀብቶች ቀጥተኛ አስተያየት ያግኙ።",
+    infographic_eco_gamenights_title: "የጨዋታ ምሽቶች",
+    infographic_eco_gamenights_desc: "አዝናኝ በሆነ የትብብር ሁኔታ ውስጥ የቡድን ቅንጅትን እና የችግር አፈታት ክህሎቶችን ይገንቡ።",
+    infographic_goal_title: "ዋናው ግብ፦ የወደፊትዎን ፋይናንስ ማድረግ",
+    infographic_goal_prizes_amount: "100ሺህ+ ብር የሀሳብ ማቅረቢያ ሽልማቶች",
+    infographic_goal_prizes_desc: "በመደበኛ የሀሳብ ማቅረቢያ ውድድሮቻችን አማካኝነት የእርስዎን MVP እና የመጀመሪያ ደረጃ እድገት ለማፋጠን የማይቀነስ ካፒታል ያሸንፉ።",
+    infographic_goal_investment_amount: "1ሚሊዮን+ ብር የመነሻ ኢንቨስትመንት ዕድል",
+    infographic_goal_investment_desc: "የአሳድግ ጥቅል ተመራቂዎች ለትልቅ የመነሻ ድጎማዎች ሀሳባቸውን ያቀርባሉ እና ከባለሀብቶች መረባችን ጋር ቀጥተኛ ግንኙነት ያገኛሉ።",
+    infographic_footer_copyright: "© {currentYear} 7ሴት ስፓርክ። ሁሉም መብቶች የተጠበቁ ናቸው። አዲስ አበባ፣ ኢትዮጵያ።",
+    infographic_footer_address: "ደምበል ሲቲ ሴንተር 3ኛ ፎቅ +251923214663",
+    infographic_footer_poweredby: "የቀረበው በ፦ ሰለሞን ቲ",
+
+    // Mindset Section Translations (Amharic)
+    mindset_page_title: "አስተሳሰብ እና ራስን የማግኘት ጉዞ",
+    mindset_sidebar_title: "የአስተሳሰብ ክፍሎች",
+    mindset_assessment_title: "የስራ ፈጠራ ምዘና",
+    mindset_profile_report_title: "የመገለጫ ሪፖርት",
+    mindset_goal_setting_title: "ግብ ማውጣት",
+    mindset_assessment_explanation: "በተመሩ ምዘናዎች አማካኝነት ጥንካሬዎችዎን፣ ድክመቶችዎን እና የስራ ፈጠራ ዝንባሌዎችዎን ይረዱ። ይህ ግንዛቤ ለግል እድገት እና ሚዛናዊ ቡድን ለመገንባት ወሳኝ ነው።",
+    mindset_profile_report_explanation: "በምዘናዎችዎ ላይ የተመሰረተ በ AI የተፈጠረ መገለጫ ይቀበሉ። ዋና የስራ ፈጣሪ አይነትዎን ያግኙ፣ የባህርያትዎን ምስላዊ ካርታ ይመልከቱ፣ እና ለአብሮ መስራች ተስማሚነት እና የእድገት መስኮች ምክሮችን ያግኙ።",
+    mindset_goal_setting_explanation: "ራዕይዎን ይግለጹ እና ለራስዎ፣ ለቤተሰብዎ፣ እና በአለም ላይ መፍጠር ለሚፈልጉት ተጽዕኖ ግልጽ፣ ተግባራዊ ግቦችን ያውጡ። ምኞቶችዎን ለማጥራት የ AI አሰልጣኝን ይጠቀሙ።",
+    mindset_assessment_personality_button: "የስብዕና ምዘና",
+    mindset_assessment_acumen_button: "የንግድ ብቃት ምዘና",
+    mindset_assessment_knowledge_button: "የסטาร์ትአፕ እውቀት ምዘና",
+    mindset_assessment_modal_title_personality: "የስብዕና ምዘና",
+    mindset_assessment_modal_title_acumen: "የንግድ ብቃት ምዘና",
+    mindset_assessment_modal_title_knowledge: "የסטาร์ትአፕ እውቀት ምዘና",
+    mindset_assessment_progress_label: "ሂደት",
+    mindset_assessment_question_count_label: "ጥያቄ {current} ከ {total}",
+    mindset_assessment_questions_remaining_label: "{remaining} ጥያቄዎች ቀርተዋል",
+    mindset_assessment_next_button: "ቀጣይ",
+    mindset_assessment_prev_button: "ቀዳሚ",
+    mindset_assessment_submit_button: "ምዘና አስገባ",
+    mindset_assessment_start_prompt: "ምዘና ለመጀመር ከላይ ያለውን አንድ አዝራር ይጫኑ።",
+    mindset_profile_report_generate_button: "የመገለጫ ሪፖርቴን አመንጭ",
+    mindset_profile_report_generating_button: "ሪፖርት እያመነጨ ነው...",
+    mindset_profile_report_prompt_complete_assessments: "የመገለጫ ሪፖርትዎን ለማመንጨት እባክዎ ሶስቱንም የስራ ፈጠራ ምዘናዎች ያጠናቅቁ።",
+    mindset_profile_report_founder_type_title: "የእርስዎ ዋና የስራ ፈጣሪ አይነት",
+    mindset_profile_report_strengths_weaknesses_title: "ጥንካሬዎች እና የእድገት መስኮች",
+    mindset_profile_report_cofounder_title: "እርስዎ ማን ነዎት፣ ማን ሊያስፈልግዎት ይችላል",
+    mindset_profile_report_key_takeaways_title: "ቁልፍ ግንዛቤዎች እና ምክሮች",
+    mindset_goal_setting_6_month_title: "የ6-ወር ግቦች",
+    mindset_goal_setting_2_year_title: "የ2-ዓመት ግቦች",
+    mindset_goal_setting_5_year_title: "የ5-ዓመት ግቦች",
+    mindset_goal_setting_10_year_title: "የ10-ዓመት ግቦች",
+    mindset_goal_setting_self_label: "ለራሴ:",
+    mindset_goal_setting_family_label: "ለቤተሰቤ:",
+    mindset_goal_setting_world_label: "ለዓለም/ተጽዕኖ:",
+    mindset_goal_setting_self_placeholder: "ምን ዓይነት የግል እድገት ወይም ስኬት?",
+    mindset_goal_setting_family_placeholder: "ይህ ለወዳጆችዎ እንዴት ይጠቅማል?",
+    mindset_goal_setting_world_placeholder: "ምን ዓይነት ሰፊ ለውጥ ያስባሉ?",
+    mindset_goal_setting_ai_coach_button_tooltip: "AI የአስተሳሰብ አሰልጣኝ - ግቦችዎን ያጥሩ",
+    mindset_ai_coach_modal_title: "AI የአስተሳሰብ አሰልጣኝ",
+    mindset_ai_coach_input_placeholder: "ስለ ራዕይዎ ይንገሩኝ ወይም እርዳታ ይጠይቁ...",
+    mindset_ai_coach_welcome_message: "ሰላም! ግቦችዎን እንዲገልጹ እና እንዲያጠሩ ለመርዳት እዚህ ነኝ። ምን እያሰቡ ነው?",
+    mindset_help_button_tooltip: "የአስተሳሰብ ክፍል እገዛ",
+    q_personality_1_text: "ከ1 (በፍጹም) እስከ 5 (በጣም ምቹ) ባለው ልኬት፣ ከድብቅነት እና እርግጠኛ ካለመሆን ጋር ምን ያህል ምቾት ይሰማዎታል?",
+    q_acumen_1_text: "ከሚከተሉት ውስጥ በአዲስ ሥራ ፈጠራ ውስጥ ያለዎትን የገንዘብ አያያዝ አካሄድ በተሻለ የሚገልጸው የትኛው ነው?", // ምሳሌ
+    q_acumen_1_options_key: "q_acumen_1_options_key_placeholder_am", // ምሳሌ፣ ትክክለኛ አማራጮች የተለዩ ቁልፎች ይሆናሉ
+    q_knowledge_1_text: "ተፎካካሪ ድርጅት ተመሳሳይ ምርት በዝቅተኛ ዋጋ ለገበያ አቀረበ። የእርስዎ ፈጣን ስልታዊ ምላሽ ምንድን ነው?", // ምሳሌ
+    q_knowledge_1_options_key: "q_knowledge_1_options_key_placeholder_am", // ምሳሌ
+    founder_type_visionary_catalyst_title: "ባለራዕይ ቀስቃሽ",
+    founder_type_visionary_catalyst_desc: "በጠንካራ ራዕይ የሚመሩ እና ሌሎችን በማነሳሳት የተካኑ ነዎት። ሌሎች በማያዩበት ቦታ እድሎችን ያያሉ እና አዳዲስ ሀሳቦችን ወደ ህይወት ለማምጣት ከፍተኛ ፍላጎት አለዎት።",
+    cofounder_suggestion_operational_excellence: "የእርስዎን የራዕይ ጥንካሬዎች ለማሟላት ጠንካራ የተግባር ዝንባሌ፣ የአሰራር ብቃት እና ለዝርዝር ትኩረት ያለው አብሮ መስራች ያስቡ።",
+    takeaway_focus_on_execution: "ራዕይዎ ቁልፍ ሀብት ቢሆንም፣ በስነስርዓት ባለው አፈፃፀም እና ጠንካራ ሂደቶችን በመገንባት ላይም ትኩረት ማድረግዎን ያረጋግጡ።",
+    radar_chart_risk_tolerance: 'የአደጋ ተጋላጭነት',
+    radar_chart_leadership: 'አመራር',
+    radar_chart_adaptability: 'ተለዋዋጭነት',
+    radar_chart_market_insight: 'የገበያ ግንዛቤ',
+    radar_chart_financial_literacy: 'የገንዘብ እውቀት',
+    radar_chart_strategic_thinking: 'ስልታዊ አስተሳሰብ',
+    radar_chart_technical_skills: 'የቴክኒክ ክህሎቶች',
+    radar_chart_sales_ability: 'የሽያጭ ችሎታ',
+    radar_chart_resilience: 'ፅናት',
+    radar_chart_creativity: 'ፈጠራ',
   },
 };
 
 export const getTranslator = (language: Language) => (key: TranslationKey, defaultText?: string): string => {
   let text: string | undefined = translations[language]?.[key];
 
-  if (text === undefined) { // Not found in current language
-    text = translations.en?.[key]; // Try English
+  if (text === undefined) { 
+    text = translations.en?.[key]; 
   }
 
-  if (text === undefined) { // Not found in English either
+  if (text === undefined) { 
     if (defaultText !== undefined) {
-      text = defaultText; // Use provided default
+      text = defaultText; 
     } else {
-      // Fallback to key itself if no translation and no default
       console.warn(`Translation key '${String(key)}' not found for language '${language}' and no default text provided.`);
       text = String(key); 
     }
   }
+  
+  if (key === 'infographic_footer_copyright' && text) {
+    return text.replace('{currentYear}', new Date().getFullYear().toString());
+  }
+  if (key === 'mindset_assessment_question_count_label' && text) { 
+    // Placeholder, actual replacement done in component
+  }
+
   return text as string; 
 };

@@ -1,10 +1,10 @@
 
-import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp } from './types';
+import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
   {
     label: Page.START,
-    subItems: [SubPage.STRATEGY, SubPage.RESEARCH, SubPage.COPYWRITING],
+    subItems: [SubPage.MINDSET, SubPage.STRATEGY, SubPage.RESEARCH, SubPage.COPYWRITING],
   },
   {
     label: Page.BUILD,
@@ -270,7 +270,7 @@ export const RESEARCH_SECTIONS_HELP: ResearchSectionHelp[] = [
     },
     explanation: {
       en: "Identify and document key industry, technological, or consumer behavior trends relevant to your business domain in Ethiopia. For each trend, note its description, source/evidence, timeframe, observed location (e.g. Addis Ababa tech scene, rural mobile adoption), and potential impact on your business within the Ethiopian context.",
-      am: "በኢትዮጵያ ውስጥ ከንግድዎ መስክ ጋር ተዛማጅነት ያላቸውን ቁልፍ የኢንዱስትሪ፣ የቴክኖሎጂ ወይም የተጠቃሚ ባህሪ አዝማሚያዎችን ይለዩ እና ይመዝግቡ። ለእያንዳንዱ አዝማሚያ መግለጫውን፣ ምንጩን/ማስረጃውን、 የጊዜ ገደቡን፣ የታየበትን ቦታ (ለምሳሌ የአዲስ አበባ የቴክኖሎጂ ትዕይንት፣ የገጠር የሞባይል ተጠቃሚነት) እና በኢትዮጵያ አውድ ውስጥ በንግድዎ ላይ ሊኖረው የሚችለውን ተጽዕኖ ልብ ይበሉ።"
+      am: "በኢትዮጵያ ውስጥ ከንግድዎ መስክ ጋር ተዛማጅነት ያላቸውን ቁልፍ የኢንዱስትሪ፣ የቴክኖሎጂ ወይም የተጠቃሚ ባህሪ አዝማሚያዎችን ይለዩ እና ይመዝግቡ። ለእያንዳንዱ አዝማሚያ መግለጫውን、 ምንጩን/ማስረጃውን、 የጊዜ ገደቡን፣ የታየበትን ቦታ (ለምሳሌ የአዲስ አበባ የቴክኖሎጂ ትዕይንት፣ የገጠር የሞባይል ተጠቃሚነት) እና በኢትዮጵያ አውድ ውስጥ በንግድዎ ላይ ሊኖረው የሚችለውን ተጽዕኖ ልብ ይበሉ።"
     }
   },
   {
@@ -310,6 +310,25 @@ export const COPYWRITING_SECTIONS_HELP: CopywritingSectionHelp[] = [
     }
   }
 ];
+
+export const MINDSET_SECTIONS_HELP: MindsetSectionHelp[] = [
+  {
+    title: MindsetSubSection.ENTREPRENEURIAL_ASSESSMENT,
+    sidebarTitle: { en: 'mindset_assessment_title' as TranslationKey, am: 'mindset_assessment_title' as TranslationKey },
+    explanationKey: 'mindset_assessment_explanation' as TranslationKey,
+  },
+  {
+    title: MindsetSubSection.PROFILE_REPORT,
+    sidebarTitle: { en: 'mindset_profile_report_title' as TranslationKey, am: 'mindset_profile_report_title' as TranslationKey },
+    explanationKey: 'mindset_profile_report_explanation' as TranslationKey,
+  },
+  {
+    title: MindsetSubSection.GOAL_SETTING,
+    sidebarTitle: { en: 'mindset_goal_setting_title' as TranslationKey, am: 'mindset_goal_setting_title' as TranslationKey },
+    explanationKey: 'mindset_goal_setting_explanation' as TranslationKey,
+  },
+];
+
 
 export const API_KEY_WARNING = "API_KEY environment variable is not set. AI features will be disabled.";
 export const GENERIC_ERROR_MESSAGE = "An unexpected error occurred. Please try again.";

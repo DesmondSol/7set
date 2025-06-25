@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { BusinessLaunchCanvas } from './components/BusinessLaunchCanvas/BusinessLaunchCanvas';
 import { MarketResearchAccelerator } from './components/MarketResearchAccelerator/MarketResearchAccelerator';
 import { CopywritingPage } from './components/CopywritingPage'; 
+import MindsetPage from './components/MindsetPage'; // New Mindset Page
 import { ComingSoon } from './components/ComingSoon';
 import { UserProfileModal } from './components/UserProfileModal';
 import InfographicPage from './components/InfographicPage'; 
@@ -17,10 +18,12 @@ import {
     UserProfile, 
     MarketResearchData, 
     ResearchSection,
-    CopywritingData
+    CopywritingData,
+    MindsetData, // New Mindset Data type
+    TranslationKey
 } from './types';
 import { NAV_ITEMS } from './constants';
-import { getTranslator, TranslationKey } from './locales';
+import { getTranslator } from './locales';
 
 const initialMarketResearchData: MarketResearchData = {
   [ResearchSection.QUESTIONS]: [], 
@@ -34,6 +37,28 @@ const initialCopywritingData: CopywritingData = {
   marketingPosts: [],
   pitches: [],
 };
+
+const initialMindsetData: MindsetData = {
+  assessmentAnswers: {
+    personality: {},
+    businessAcumen: {},
+    startupKnowledge: {},
+  },
+  assessmentStatus: {
+    personality: 'not-started',
+    businessAcumen: 'not-started',
+    startupKnowledge: 'not-started',
+  },
+  profileReport: null,
+  goals: {
+    '6-month': { self: '', family: '', world: '' },
+    '2-year': { self: '', family: '', world: '' },
+    '5-year': { self: '', family: '', world: '' },
+    '10-year': { self: '', family: '', world: '' },
+  },
+  goalSettingAiChatHistory: [],
+};
+
 
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<Page | null>(null);
@@ -85,6 +110,35 @@ const App: React.FC = () => {
     return initialCopywritingData;
   });
 
+  const [mindsetData, setMindsetData] = useState<MindsetData>(() => {
+    const storedMindsetData = localStorage.getItem('sparkMindsetData');
+    if (storedMindsetData) {
+      try {
+        // Basic merge to ensure new fields in initialMindsetData are included if not in stored
+        const parsed = JSON.parse(storedMindsetData);
+        return {
+          ...initialMindsetData,
+          ...parsed,
+          assessmentAnswers: {
+            ...initialMindsetData.assessmentAnswers,
+            ...(parsed.assessmentAnswers || {}),
+          },
+          assessmentStatus: {
+            ...initialMindsetData.assessmentStatus,
+            ...(parsed.assessmentStatus || {}),
+          },
+          goals: {
+            ...initialMindsetData.goals,
+            ...(parsed.goals || {}),
+          },
+        };
+      } catch (e) {
+        console.error("Failed to parse mindsetData from localStorage", e);
+      }
+    }
+    return initialMindsetData;
+  });
+
   const t = useCallback(getTranslator(currentLanguage), [currentLanguage]);
 
   useEffect(() => {
@@ -130,11 +184,25 @@ const App: React.FC = () => {
     localStorage.setItem('sparkCopywritingData', JSON.stringify(updatedData));
   };
 
+  const handleUpdateMindsetData = (updatedData: MindsetData) => {
+    setMindsetData(updatedData);
+    localStorage.setItem('sparkMindsetData', JSON.stringify(updatedData));
+  };
+
   const changeLanguage = (lang: Language) => {
     setCurrentLanguage(lang);
   };
 
   const renderContent = () => {
+    if (activePage === Page.START && activeSubPage === SubPage.MINDSET) {
+      return <MindsetPage
+                initialData={mindsetData}
+                onUpdateData={handleUpdateMindsetData}
+                language={currentLanguage}
+                t={t}
+                userProfile={userProfile}
+             />;
+    }
     if (activePage === Page.START && activeSubPage === SubPage.STRATEGY) {
       return <BusinessLaunchCanvas 
                 canvasData={canvasData} 
@@ -174,11 +242,11 @@ const App: React.FC = () => {
               />;
     }
     
-    return <InfographicPage />;
+    return <InfographicPage language={currentLanguage} t={t} />;
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-transparent"> {/* Updated: bg-transparent as body sets base */}
+    <div className="min-h-screen flex flex-col bg-transparent"> 
       <Navbar
         navItems={NAV_ITEMS}
         onSelectPage={(page: Page | null, subPage: SubPage | null) => {
@@ -192,7 +260,7 @@ const App: React.FC = () => {
         userProfile={userProfile}
         onOpenProfileModal={() => setIsUserProfileModalOpen(true)}
       />
-      <main className="flex-grow container mx-auto px-2 sm:px-4 md:px-6 py-4 md:py-8 flex flex-col"> {/* Adjusted padding */}
+      <main className="flex-grow container mx-auto px-2 sm:px-4 md:px-6 py-4 md:py-8 flex flex-col"> 
         <div className="flex-grow w-full h-full"> 
             {renderContent()}
         </div>

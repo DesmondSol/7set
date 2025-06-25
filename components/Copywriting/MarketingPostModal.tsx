@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { MarketingPost, MarketingPostStatus, Language } from '../../types';
-import { TranslationKey } from '../../locales';
+import { TranslationKey } from '../../types';
 
 interface MarketingPostModalProps {
   isOpen: boolean;

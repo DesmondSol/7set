@@ -8,9 +8,9 @@ import {
     CanvasData, 
     MarketResearchData,
     MarketingPostStatus,
-    CanvasSection
+    CanvasSection,
+    TranslationKey
 } from '../../types';
-import { TranslationKey } from '../../locales';
 import { Button } from '../common/Button';
 import { MarketingPostModal } from './MarketingPostModal';
 import { AiMarketingModal } from './AiMarketingModal';

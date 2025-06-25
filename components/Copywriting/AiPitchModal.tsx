@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { PitchType, Language } from '../../types';
-import { TranslationKey } from '../../locales';
+import { TranslationKey } from '../../types';
 
 interface AiPitchModalProps {
   isOpen: boolean;

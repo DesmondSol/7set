@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { Pitch, PitchType, Language } from '../../types';
-import { TranslationKey } from '../../locales';
+import { TranslationKey } from '../../types';
 
 interface PitchModalProps {
   isOpen: boolean;

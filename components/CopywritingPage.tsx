@@ -1,22 +1,21 @@
 
 import React, { useState, useEffect } from 'react';
-import {
-  CopywritingData,
-  CopywritingSubSection,
-  Language,
-  UserProfile,
-  CanvasData,
-  MarketResearchData,
-  CopywritingSectionHelp
-} from '../types'; // Updated path to match the correct location
-import { TranslationKey } from '../locales'; // Path to locales from components/ is ../../locales
-import { COPYWRITING_SECTIONS_HELP } from '../constants'; // Path to constants from components/ is ../../constants
+import { 
+    CopywritingData, 
+    CopywritingSubSection, 
+    Language, 
+    UserProfile, 
+    CanvasData, 
+    MarketResearchData,
+    CopywritingSectionHelp,
+    TranslationKey
+} from '../../types'; // Path to types from components/ is ../../types
+import { COPYWRITING_SECTIONS_HELP } from '../../constants'; // Path to constants from components/ is ../../constants
 import { MarketingPlanner } from './Copywriting/MarketingPlanner';
 import { PitchRefiner } from './Copywriting/PitchRefiner';
-import { FloatingActionButton } from './common/FloatingActionButton'; // Corrected path
-import { Modal } from './common/Modal'; // Corrected path
-import { Button } from './common/Button'; // Corrected path
-import { TranslationKey } from '../types';
+import { FloatingActionButton } from './common/FloatingActionButton'; 
+import { Modal } from './common/Modal'; 
+import { Button } from './common/Button'; 
 
 interface CopywritingPageProps {
   initialData: CopywritingData;
@@ -40,32 +39,39 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
   const [activeSubSection, setActiveSubSection] = useState<CopywritingSubSection>(CopywritingSubSection.MARKETING);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
-  const [isAiModalTriggered, setIsAiModalTriggered] = useState(false);
+  const [isAiModalTriggered, setIsAiModalTriggered] = useState(false); 
 
 
   useEffect(() => {
+    // Default to closed sidebar on mobile initially
     if (window.innerWidth < 768) {
       setIsSidebarOpen(false);
     }
-  }, []);
+  }, []); // Run only on mount
 
   const currentHelpContent = COPYWRITING_SECTIONS_HELP.find(h => h.title === activeSubSection) || COPYWRITING_SECTIONS_HELP[0];
 
   const handleSubSectionSelect = (subSection: CopywritingSubSection) => {
     setActiveSubSection(subSection);
-    if (window.innerWidth < 768) {
+    if (window.innerWidth < 768 && isSidebarOpen) { // Close on mobile after selection if it was open
       setIsSidebarOpen(false);
     }
   };
 
   const openAiModal = () => {
-    setIsAiModalTriggered(true);
+    setIsAiModalTriggered(true); 
   };
 
 
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100vh-8rem-2rem)] relative bg-transparent">
-      <aside className={`fixed md:static top-0 left-0 h-full w-full max-w-xs md:w-[320px] bg-slate-800 text-slate-300 p-6 shadow-2xl transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 z-40 overflow-y-auto border-r border-slate-700`}>
+    <div className="flex flex-col md:flex-row h-full md:h-[calc(100vh-8rem-2rem)] relative bg-transparent">
+      <aside 
+        className={`
+          fixed top-20 right-0 w-full h-[calc(100vh-5rem)] bg-slate-800 z-40 p-6 overflow-y-auto shadow-xl transition-transform duration-300 ease-in-out
+          ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}
+          md:static md:w-[320px] md:h-full md:translate-x-0 md:z-auto md:border-r md:border-slate-700 md:shadow-none md:transition-none md:left-auto md:right-auto md:top-auto
+        `}
+      >
         <div className="flex justify-between items-center mb-8">
           <h3 className="text-xl font-semibold text-slate-100">{t('copywriting_sidebar_title')}</h3>
           <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-slate-400 hover:text-white">
@@ -81,13 +87,13 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
                 <li key={subSection}>
                   <a
                     href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
+                    onClick={(e) => { 
+                      e.preventDefault(); 
                       handleSubSectionSelect(subSection);
                     }}
                     className={`block px-4 py-3 rounded-lg transition-colors duration-200
-                      ${activeSubSection === subSection
-                        ? 'bg-blue-600 text-white font-semibold shadow-md'
+                      ${activeSubSection === subSection 
+                        ? 'bg-blue-600 text-white font-semibold shadow-md' 
                         : 'hover:bg-slate-700 hover:text-slate-100'
                       }`}
                   >
@@ -100,12 +106,13 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
         </nav>
       </aside>
 
-      <main className={`flex-grow p-4 md:p-8 bg-transparent shadow-inner overflow-y-auto transition-all duration-300 ease-in-out`}>
+      {/* Main content area */}
+      <main className={`flex-grow p-4 md:p-8 bg-transparent shadow-inner overflow-y-auto ${isSidebarOpen && 'md:ml-0'}`}>
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-slate-100">{t('copywriting_page_title')}</h2>
-          <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden">
-            {isSidebarOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
-          </Button>
+            <h2 className="text-3xl font-bold text-slate-100">{t('copywriting_page_title')}</h2>
+            <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden">
+                {isSidebarOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
+            </Button>
         </div>
 
         {activeSubSection === CopywritingSubSection.MARKETING && (
@@ -117,8 +124,8 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
             language={language}
             t={t}
             userProfile={userProfile}
-            openAiModalFlag={isAiModalTriggered && activeSubSection === CopywritingSubSection.MARKETING}
-            setOpenAiModalFlag={setIsAiModalTriggered}
+            openAiModalFlag={isAiModalTriggered && activeSubSection === CopywritingSubSection.MARKETING} 
+            setOpenAiModalFlag={setIsAiModalTriggered} 
           />
         )}
         {activeSubSection === CopywritingSubSection.PITCH_REFINEMENT && (
@@ -130,12 +137,12 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
             language={language}
             t={t}
             userProfile={userProfile}
-            openAiModalFlag={isAiModalTriggered && activeSubSection === CopywritingSubSection.PITCH_REFINEMENT}
-            setOpenAiModalFlag={setIsAiModalTriggered}
+            openAiModalFlag={isAiModalTriggered && activeSubSection === CopywritingSubSection.PITCH_REFINEMENT} 
+            setOpenAiModalFlag={setIsAiModalTriggered} 
           />
         )}
       </main>
-
+      
       <FloatingActionButton
         icon={<HelpIcon className="h-6 w-6" />}
         tooltip={t('copywriting_help_button_tooltip')}
@@ -145,9 +152,9 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
         size="md"
       />
       <FloatingActionButton
-        icon={<SparklesIcon className="h-7 w-7" />}
+        icon={<SparklesIcon className="h-7 w-7"/>}
         tooltip={t('copywriting_ai_button_tooltip')}
-        onClick={openAiModal}
+        onClick={openAiModal} 
         className="bottom-6 right-6 z-30"
         colorClass="bg-blue-600 hover:bg-blue-500"
         size="lg"
@@ -155,7 +162,7 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
 
       <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title={`${t('mra_help_modal_title_prefix')}: ${currentHelpContent?.sidebarTitle[language] || currentHelpContent?.title || ''}`} size="xl">
         <div className="prose prose-sm prose-invert max-w-none text-slate-300 whitespace-pre-line max-h-[70vh] overflow-y-auto pr-2">
-          {currentHelpContent?.explanation[language] || currentHelpContent?.explanation.en}
+            {currentHelpContent?.explanation[language] || currentHelpContent?.explanation.en}
         </div>
       </Modal>
     </div>

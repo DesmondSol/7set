@@ -1,5 +1,5 @@
 
-import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey } from './types';
+import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey, AssessmentQuestion } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
   {
@@ -326,6 +326,97 @@ export const MINDSET_SECTIONS_HELP: MindsetSectionHelp[] = [
     title: MindsetSubSection.GOAL_SETTING,
     sidebarTitle: { en: 'mindset_goal_setting_title' as TranslationKey, am: 'mindset_goal_setting_title' as TranslationKey },
     explanationKey: 'mindset_goal_setting_explanation' as TranslationKey,
+  },
+];
+
+// Assessment Questions
+export const PERSONALITY_QUESTIONS: AssessmentQuestion[] = [
+  { id: 'p1', textKey: 'q_p1_text', type: 'multiple-choice-scale', scaleMin: 1, scaleMax: 5, category: 'personality' },
+  { 
+    id: 'p2', textKey: 'q_p2_text', type: 'multiple-choice-options', category: 'personality',
+    options: [
+      { value: 'analyze', labelKey: 'q_p2_opt_analyze' }, { value: 'action', labelKey: 'q_p2_opt_action' },
+      { value: 'seek_help', labelKey: 'q_p2_opt_seek_help' }, { value: 'wait', labelKey: 'q_p2_opt_wait' }
+    ]
+  },
+  { 
+    id: 'p3', textKey: 'q_p3_text', type: 'multiple-choice-options', category: 'personality',
+    options: [
+      { value: 'delegate', labelKey: 'q_p3_opt_delegate' }, { value: 'control', labelKey: 'q_p3_opt_control' },
+      { value: 'collaborate', labelKey: 'q_p3_opt_collaborate' }, { value: 'avoid', labelKey: 'q_p3_opt_avoid' }
+    ]
+  },
+  { id: 'p4', textKey: 'q_p4_text', type: 'multiple-choice-scale', scaleMin: 1, scaleMax: 5, category: 'personality' },
+  { 
+    id: 'p5', textKey: 'q_p5_text', type: 'multiple-choice-options', category: 'personality',
+    options: [
+      { value: 'data', labelKey: 'q_p5_opt_data' }, { value: 'intuition', labelKey: 'q_p5_opt_intuition' },
+      { value: 'advice', labelKey: 'q_p5_opt_advice' }, { value: 'trial_error', labelKey: 'q_p5_opt_trial_error' }
+    ]
+  },
+];
+
+export const BUSINESS_ACUMEN_QUESTIONS: AssessmentQuestion[] = [
+  { 
+    id: 'ba1', textKey: 'q_ba1_text', type: 'multiple-choice-options', category: 'business_acumen',
+    options: [
+      { value: 'detailed_plan', labelKey: 'q_ba1_opt_detailed_plan' }, { value: 'flexible_approach', labelKey: 'q_ba1_opt_flexible_approach' },
+      { value: 'customer_feedback', labelKey: 'q_ba1_opt_customer_feedback' }, { value: 'competitor_focus', labelKey: 'q_ba1_opt_competitor_focus' }
+    ]
+  },
+  { 
+    id: 'ba2', textKey: 'q_ba2_text', type: 'multiple-choice-options', category: 'business_acumen',
+    options: [
+      { value: 'revenue_first', labelKey: 'q_ba2_opt_revenue_first' }, { value: 'profit_first', labelKey: 'q_ba2_opt_profit_first' },
+      { value: 'growth_first', labelKey: 'q_ba2_opt_growth_first' }, { value: 'balance', labelKey: 'q_ba2_opt_balance' }
+    ]
+  },
+  { id: 'ba3', textKey: 'q_ba3_text', type: 'multiple-choice-scale', scaleMin: 1, scaleMax: 5, category: 'business_acumen' },
+  { 
+    id: 'ba4', textKey: 'q_ba4_text', type: 'multiple-choice-options', category: 'business_acumen',
+    options: [
+      { value: 'organic', labelKey: 'q_ba4_opt_organic' }, { value: 'paid_ads', labelKey: 'q_ba4_opt_paid_ads' },
+      { value: 'partnerships', labelKey: 'q_ba4_opt_partnerships' }, { value: 'sales_team', labelKey: 'q_ba4_opt_sales_team' }
+    ]
+  },
+  { 
+    id: 'ba5', textKey: 'q_ba5_text', type: 'scenario-options', category: 'business_acumen',
+    options: [
+      { value: 'cut_costs', labelKey: 'q_ba5_opt_cut_costs' }, { value: 'increase_marketing', labelKey: 'q_ba5_opt_increase_marketing' },
+      { value: 'pivot_product', labelKey: 'q_ba5_opt_pivot_product' }, { value: 'seek_funding', labelKey: 'q_ba5_opt_seek_funding' }
+    ]
+  },
+];
+
+export const STARTUP_KNOWLEDGE_QUESTIONS: AssessmentQuestion[] = [
+  { 
+    id: 'sk1', textKey: 'q_sk1_text', type: 'multiple-choice-options', category: 'startup_knowledge',
+    options: [
+      { value: 'mvp_basic', labelKey: 'q_sk1_opt_mvp_basic' }, { value: 'mvp_polished', labelKey: 'q_sk1_opt_mvp_polished' },
+      { value: 'mvp_many_features', labelKey: 'q_sk1_opt_mvp_many_features' }, { value: 'mvp_no_need', labelKey: 'q_sk1_opt_mvp_no_need' }
+    ]
+  },
+  { id: 'sk2', textKey: 'q_sk2_text', type: 'multiple-choice-scale', scaleMin: 1, scaleMax: 5, category: 'startup_knowledge' },
+  { 
+    id: 'sk3', textKey: 'q_sk3_text', type: 'multiple-choice-options', category: 'startup_knowledge',
+    options: [
+      { value: 'bootstrapping', labelKey: 'q_sk3_opt_bootstrapping' }, { value: 'friends_family', labelKey: 'q_sk3_opt_friends_family' },
+      { value: 'angel_investors', labelKey: 'q_sk3_opt_angel_investors' }, { value: 'venture_capital', labelKey: 'q_sk3_opt_venture_capital' }
+    ]
+  },
+  { 
+    id: 'sk4', textKey: 'q_sk4_text', type: 'scenario-options', category: 'startup_knowledge',
+    options: [
+      { value: 'surveys', labelKey: 'q_sk4_opt_surveys' }, { value: 'interviews', labelKey: 'q_sk4_opt_interviews' },
+      { value: 'presales', labelKey: 'q_sk4_opt_presales' }, { value: 'analytics', labelKey: 'q_sk4_opt_analytics' }
+    ]
+  },
+  { 
+    id: 'sk5', textKey: 'q_sk5_text', type: 'multiple-choice-options', category: 'startup_knowledge',
+    options: [
+      { value: 'solo', labelKey: 'q_sk5_opt_solo' }, { value: 'complementary', labelKey: 'q_sk5_opt_complementary' },
+      { value: 'similar_skills', labelKey: 'q_sk5_opt_similar_skills' }, { value: 'friends', labelKey: 'q_sk5_opt_friends' }
+    ]
   },
 ];
 

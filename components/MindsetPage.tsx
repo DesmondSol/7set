@@ -49,6 +49,17 @@ const MindsetPage: React.FC<MindsetPageProps> = ({
     }
   };
 
+  const handleNavigateAndTriggerReport = () => {
+    setActiveSubSection(MindsetSubSection.PROFILE_REPORT);
+    onUpdateData({
+      ...initialData,
+      shouldAutoGenerateReport: true,
+    });
+    if (window.innerWidth < 768 && isSidebarOpen) { // Close sidebar on mobile after action
+      setIsSidebarOpen(false);
+    }
+  };
+
   const renderSubSectionContent = () => {
     switch (activeSubSection) {
       case MindsetSubSection.ENTREPRENEURIAL_ASSESSMENT:
@@ -56,6 +67,7 @@ const MindsetPage: React.FC<MindsetPageProps> = ({
           mindsetData={initialData}
           onUpdateMindsetData={onUpdateData}
           language={language} t={t}
+          onNavigateAndTriggerReport={handleNavigateAndTriggerReport}
         />;
       case MindsetSubSection.PROFILE_REPORT:
         return <ProfileReport

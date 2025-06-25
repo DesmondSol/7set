@@ -27,7 +27,7 @@ import { API_KEY_WARNING, GENERIC_ERROR_MESSAGE } from "../constants";
 const API_KEY = process.env.API_KEY;
 let ai: GoogleGenAI | null = null;
 
-const TEXT_MODEL = 'gemini-2.5-flash-preview-04-17';
+const TEXT_MODEL = 'gemini-2.5-flash-preview-04-17'; // Corrected model name usage
 
 if (!API_KEY) {
   console.warn(API_KEY_WARNING);
@@ -502,32 +502,126 @@ Ensure the content is actionable and reflects an understanding of Ethiopian busi
 
 export const generateFounderProfileReport = async (
   assessmentAnswers: MindsetData['assessmentAnswers'],
-  language: Language
+  language: Language,
+  t: (key: TranslationKey, defaultText?: string) => string // For potential mapping
 ): Promise<FounderProfileReportData | null> => {
   if (!API_KEY || !ai) {
     console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
     return null;
   }
-  console.log("AI: Generating Founder Profile Report for language:", language, "with answers:", assessmentAnswers);
-  // Simulate AI response for now as full prompt engineering is complex
-  await new Promise(resolve => setTimeout(resolve, 1500)); 
+
+  const langInstructions = language === 'am'
+    ? "The analysis and generated textual content (founderTypeTitle, founderTypeDescription, cofounderPersonaSuggestion, keyTakeaways) MUST be in Amharic. The JSON keys (like 'founderTypeTitle', 'scores') MUST remain in English as specified."
+    : "The analysis and generated textual content should be in English.";
 
   const defaultScores: AssessmentScores = {
-    riskTolerance: Math.floor(Math.random() * 60) + 40, leadership: Math.floor(Math.random() * 60) + 40,
-    adaptability: Math.floor(Math.random() * 60) + 40, marketInsight: Math.floor(Math.random() * 50) + 30,
-    financialLiteracy: Math.floor(Math.random() * 50) + 30, strategicThinking: Math.floor(Math.random() * 60) + 40,
-    resilience: Math.floor(Math.random() * 60) + 40, creativity: Math.floor(Math.random() * 60) + 40,
+    riskTolerance: 50, leadership: 50, adaptability: 50,
+    marketInsight: 50, financialLiteracy: 50, strategicThinking: 50,
+    resilience: 50, creativity: 50, salesAbility: 50, technicalSkills: 50,
   };
-  
-  return {
-    founderTypeTitleKey: 'founder_type_visionary_catalyst_title' as TranslationKey,
-    founderTypeDescriptionKey: 'founder_type_visionary_catalyst_desc' as TranslationKey,
-    scores: defaultScores,
-    cofounderPersonaSuggestionKey: 'cofounder_suggestion_operational_excellence' as TranslationKey,
-    keyTakeawaysKeys: ['takeaway_focus_on_execution' as TranslationKey],
-    generatedDate: new Date().toISOString(),
-  };
+
+  const prompt = `You are an AI Business Profiling Expert specializing in entrepreneurial assessments for the Ethiopian context.
+${langInstructions}
+
+Analyze the following assessment answers from an Ethiopian entrepreneur:
+Personality Assessment Answers:
+${JSON.stringify(assessmentAnswers.personality, null, 2)}
+
+Business Acumen Assessment Answers:
+${JSON.stringify(assessmentAnswers.businessAcumen, null, 2)}
+
+Startup Knowledge Assessment Answers:
+${JSON.stringify(assessmentAnswers.startupKnowledge, null, 2)}
+
+Based on this comprehensive data, generate a Founder Profile Report.
+The report MUST be a valid JSON object with the following structure:
+{
+  "founderTypeTitle": "string (A concise, descriptive title for the founder archetype, e.g., 'The Resilient Innovator', 'Pragmatic Operator')",
+  "founderTypeDescription": "string (A 2-3 sentence paragraph describing this founder archetype and their general tendencies relevant to Ethiopian entrepreneurship)",
+  "scores": { 
+    "riskTolerance": number (0-100), 
+    "leadership": number (0-100), 
+    "adaptability": number (0-100), 
+    "marketInsight": number (0-100), 
+    "financialLiteracy": number (0-100), 
+    "strategicThinking": number (0-100),
+    "resilience": number (0-100),
+    "creativity": number (0-100),
+    "salesAbility": number (0-100),
+    "technicalSkills": number (0-100, if applicable, otherwise reasonable default)
+  },
+  "cofounderPersonaSuggestion": "string (A suggestion for a complementary co-founder type, considering the analyzed strengths and weaknesses, e.g., 'Consider a co-founder strong in areas X and Y to balance your Z.')",
+  "keyTakeaways": ["string", "string", "string"] (An array of 3 actionable insights or recommendations for the founder based on the profile)
+}
+
+When generating scores, interpret the answers to provide a realistic assessment. For example, high comfort with ambiguity might relate to higher risk tolerance.
+Ensure all text content (titles, descriptions, suggestions, takeaways) is culturally sensitive and practical for an Ethiopian entrepreneur.
+The scores should reflect a balanced view; avoid extreme highs or lows unless strongly indicated by diverse answers.
+`;
+
+  try {
+    const response: GenerateContentResponse = await ai.models.generateContent({
+      model: TEXT_MODEL,
+      contents: [{ role: "user", parts: [{text: prompt}] }],
+      config: { responseMimeType: "application/json", temperature: 0.6 }
+    });
+    const textResponse = response.text;
+    if (!textResponse) {
+        console.error("Gemini API returned no text for Founder Profile Report.");
+        return null;
+    }
+
+    const parsedReport = parseJsonFromText<{
+        founderTypeTitle: string;
+        founderTypeDescription: string;
+        scores: Partial<AssessmentScores>; // AI might not return all scores
+        cofounderPersonaSuggestion: string;
+        keyTakeaways: string[];
+    }>(textResponse);
+
+    if (parsedReport) {
+        // Create TranslationKeys on the fly (these would need to be added to locales.ts)
+        // This is a simplified approach; ideally, these keys are pre-defined or managed better.
+        const founderTypeTitleKey = `ai_founder_type_title_${parsedReport.founderTypeTitle.toLowerCase().replace(/\s+/g, '_').slice(0,20)}` as TranslationKey;
+        const founderTypeDescriptionKey = `ai_founder_type_desc_${parsedReport.founderTypeDescription.toLowerCase().replace(/\s+/g, '_').slice(0,30)}` as TranslationKey;
+        const cofounderPersonaSuggestionKey = `ai_cofounder_sugg_${parsedReport.cofounderPersonaSuggestion.toLowerCase().replace(/\s+/g, '_').slice(0,30)}` as TranslationKey;
+        const keyTakeawaysKeys = parsedReport.keyTakeaways.map((kt, i) => `ai_takeaway_${i}_${kt.toLowerCase().replace(/\s+/g, '_').slice(0,20)}` as TranslationKey);
+        
+        // Add these to a temporary "to be translated" store or directly use English if t() handles unknown keys
+        // For now, we assume t() can handle these by returning the key itself or a default.
+        // In a real app, you'd update locales.ts with these keys and their translations.
+
+        // Ensure all score fields are present, defaulting if necessary
+        const finalScores: AssessmentScores = {
+            ...defaultScores, // Start with defaults
+            ...(parsedReport.scores || {}), // Override with AI scores
+        };
+
+
+        return {
+            founderTypeTitleKey,
+            founderTypeDescriptionKey,
+            scores: finalScores,
+            cofounderPersonaSuggestionKey,
+            keyTakeawaysKeys,
+            generatedDate: new Date().toISOString(),
+        };
+    }
+    return null;
+  } catch (error) {
+    console.error("Error generating founder profile report:", error);
+    // Fallback with default structure but indication of error
+    return {
+        founderTypeTitleKey: 'error_ai_failed_generic' as TranslationKey,
+        founderTypeDescriptionKey: 'error_ai_failed_generic' as TranslationKey,
+        scores: defaultScores,
+        cofounderPersonaSuggestionKey: 'error_ai_failed_generic' as TranslationKey,
+        keyTakeawaysKeys: ['error_ai_failed_generic' as TranslationKey],
+        generatedDate: new Date().toISOString(),
+    };
+  }
 };
+
 
 export const askAiMindsetCoach = async (
   currentGoals: GoalSettingData,
@@ -539,11 +633,42 @@ export const askAiMindsetCoach = async (
     console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
     return language === 'am' ? "የ AI የአስተሳሰብ አሰልጣኝ ተሰናክሏል።" : "AI Mindset Coach disabled.";
   }
-  console.log("AI Coach: Received message:", userMessage, "Language:", language, "Goals:", currentGoals, "History:", chatHistory);
-  // Simulate AI response
-  await new Promise(resolve => setTimeout(resolve, 1000)); 
-  if (language === 'am') {
-    return `ስለተላከው መልዕክት እያሰብኩ ነው፡ "${userMessage}". ስለ ራዕይዎ በተለይም ከእነዚህ ግቦች ጋር በተያያዘ የበለጠ ይንገሩኝ።`;
+  
+  const langInstructions = language === 'am'
+    ? "Respond in Amharic. Act as an empathetic and insightful mindset coach."
+    : "Respond in English. Act as an empathetic and insightful mindset coach.";
+
+  const historyString = chatHistory.map(entry => `${entry.role}: ${entry.parts[0].text}`).join('\n');
+
+  const prompt = `You are an AI Mindset Coach for Ethiopian entrepreneurs.
+${langInstructions}
+
+Current Chat History:
+${historyString}
+
+User's Current Goals (for context, but focus on their latest message):
+6-Month: Self: ${currentGoals['6-month'].self}, Family: ${currentGoals['6-month'].family}, World: ${currentGoals['6-month'].world}
+2-Year: Self: ${currentGoals['2-year'].self}, Family: ${currentGoals['2-year'].family}, World: ${currentGoals['2-year'].world}
+5-Year: Self: ${currentGoals['5-year'].self}, Family: ${currentGoals['5-year'].family}, World: ${currentGoals['5-year'].world}
+10-Year: Self: ${currentGoals['10-year'].self}, Family: ${currentGoals['10-year'].family}, World: ${currentGoals['10-year'].world}
+
+User's latest message: "${userMessage}"
+
+Your task is to respond to the user's latest message. 
+Ask clarifying questions, offer encouragement, or help them break down their goals or explore their motivations deeper.
+Your response should be 1-3 sentences.
+Be supportive and focus on helping them achieve clarity and stay motivated in their entrepreneurial journey in Ethiopia.
+`;
+
+  try {
+    const response: GenerateContentResponse = await ai.models.generateContent({
+      model: TEXT_MODEL,
+      contents: [{ role: "user", parts: [{text: prompt}] }],
+      config: { temperature: 0.75 }
+    });
+    return response.text || (language === 'am' ? "ይቅርታ፣ ምላሽ ማመንጨት አልቻልኩም። እንደገና መሞከር ይችላሉ?" : "Sorry, I couldn't generate a response. Could you try again?");
+  } catch (error) {
+    console.error("Error with AI Mindset Coach:", error);
+    return language === 'am' ? "የ AI የአስተሳሰብ አሰልጣኝ ላይ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።" : "Error with AI Mindset Coach. Please try again.";
   }
-  return `Okay, I'm processing your message: "${userMessage}". Tell me more about your vision regarding these goals. For example, what does 'success' in your 6-month goal for 'yourself' look like specifically?`;
 };

@@ -4,7 +4,8 @@ import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { MindsetData, Language, AssessmentQuestion, AssessmentCategory } from '../../types';
 import { TranslationKey } from '../../types';
-// import { getAssessmentQuestions } from '../../services/geminiService'; // Or from constants
+import { PERSONALITY_QUESTIONS, BUSINESS_ACUMEN_QUESTIONS, STARTUP_KNOWLEDGE_QUESTIONS } from '../../constants';
+
 
 interface AssessmentModalProps {
   isOpen: boolean;
@@ -15,20 +16,6 @@ interface AssessmentModalProps {
   language: Language;
   t: (key: TranslationKey, defaultText?: string) => string;
 }
-
-// Placeholder questions - these would ideally come from a service or constants.ts
-const ALL_QUESTIONS_TEMP: AssessmentQuestion[] = [
-    // Personality
-    { id: 'p1', textKey: 'q_personality_1_text', type: 'multiple-choice-scale', scaleMin: 1, scaleMax: 5, category: 'personality' },
-    // ... add 9 more for personality
-    // Business Acumen
-    { id: 'b1', textKey: 'q_acumen_1_text', type: 'multiple-choice-options', optionsKey: 'q_acumen_1_options_key', category: 'business_acumen' },
-    // ... add 9 more for acumen
-    // Startup Knowledge
-    { id: 's1', textKey: 'q_knowledge_1_text', type: 'scenario-options', optionsKey: 'q_knowledge_1_options_key', category: 'startup_knowledge' },
-    // ... add 9 more for knowledge
-];
-
 
 const AssessmentModal: React.FC<AssessmentModalProps> = ({
   isOpen,
@@ -45,10 +32,17 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      // const fetchedQuestions = getAssessmentQuestions(assessmentType); // Replace with actual fetch/get
-      const fetchedQuestions = ALL_QUESTIONS_TEMP.filter(q => q.category === assessmentType).slice(0,10); // Temp: slice to 10
-      setQuestions(fetchedQuestions);
+      let fetchedQuestions: AssessmentQuestion[] = [];
+      if (assessmentType === 'personality') {
+        fetchedQuestions = PERSONALITY_QUESTIONS;
+      } else if (assessmentType === 'business_acumen') {
+        fetchedQuestions = BUSINESS_ACUMEN_QUESTIONS;
+      } else if (assessmentType === 'startup_knowledge') {
+        fetchedQuestions = STARTUP_KNOWLEDGE_QUESTIONS;
+      }
+      setQuestions(fetchedQuestions.slice(0, 10)); // Ensure max 10 questions
       setCurrentQuestionIndex(0);
+      // Load existing answers for this assessment type or initialize empty
       setAnswers(mindsetData.assessmentAnswers[assessmentType] || {});
     }
   }, [isOpen, assessmentType, mindsetData.assessmentAnswers]);
@@ -87,9 +81,8 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t(modalTitleKey)} size="xl">
-      {totalQuestions === 0 ? <p>{t('coming_soon_message')}</p> : (
+      {totalQuestions === 0 && !currentQuestion ? <p className="text-slate-300">{t('coming_soon_message')}</p> : (
         <div className="space-y-6">
-          {/* Progress Bar and Counter */}
           <div className="mb-4">
             <div className="flex justify-between text-sm text-slate-300 mb-1">
               <span>{t('mindset_assessment_progress_label')}</span>
@@ -104,48 +97,62 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({
             </div>
              <p className="text-xs text-slate-400 mt-1 text-right">
                 {t('mindset_assessment_questions_remaining_label', `${totalQuestions - (currentQuestionIndex + 1)} questions remaining`)
-                    .replace('{remaining}', (totalQuestions - (currentQuestionIndex + 1)).toString())}
+                    .replace('{remaining}', Math.max(0, totalQuestions - (currentQuestionIndex + 1)).toString())}
             </p>
           </div>
 
-          {/* Question Area */}
           {currentQuestion && (
             <div className="p-4 bg-slate-700/50 rounded-lg">
               <p className="text-lg font-medium text-slate-100 mb-4">{t(currentQuestion.textKey)}</p>
-              {/* Render options based on currentQuestion.type */}
-              {/* This part needs to be fleshed out with actual option rendering logic */}
-              <div className="text-slate-400">(Options rendering to be implemented here based on question type)</div>
+              
               {currentQuestion.type === 'multiple-choice-scale' && currentQuestion.scaleMin && currentQuestion.scaleMax && (
-                  <div className="flex justify-between mt-2">
+                  <div className="flex flex-wrap justify-around items-center mt-2 space-y-2 sm:space-y-0 sm:space-x-2">
                       {Array.from({ length: (currentQuestion.scaleMax - currentQuestion.scaleMin + 1) }, (_, i) => currentQuestion.scaleMin! + i).map(val => (
-                          <label key={val} className="flex flex-col items-center space-x-2 text-slate-300 cursor-pointer">
+                          <label key={val} className="flex flex-col items-center p-2 rounded-md cursor-pointer hover:bg-slate-600 transition-colors w-16">
                                <input 
                                   type="radio" 
                                   name={currentQuestion.id} 
                                   value={val}
                                   checked={answers[currentQuestion.id] === val}
                                   onChange={() => handleAnswerChange(currentQuestion.id, val)}
-                                  className="form-radio h-5 w-5 text-blue-500 bg-slate-600 border-slate-500 focus:ring-blue-500"
+                                  className="form-radio h-5 w-5 text-blue-500 bg-slate-700 border-slate-500 focus:ring-blue-500"
                                 />
-                               <span className="text-xs mt-1">{val}</span>
+                               <span className="text-sm text-slate-200 mt-1">{val}</span>
                           </label>
                       ))}
                   </div>
               )}
+
+              {(currentQuestion.type === 'multiple-choice-options' || currentQuestion.type === 'scenario-options') && currentQuestion.options && (
+                <div className="space-y-3 mt-2">
+                    {currentQuestion.options.map(option => (
+                        <label key={option.value} className="flex items-center space-x-3 p-3 bg-slate-600/50 rounded-md hover:bg-slate-600 transition-colors cursor-pointer">
+                            <input 
+                                type="radio" 
+                                name={currentQuestion.id} 
+                                value={option.value}
+                                checked={answers[currentQuestion.id] === option.value}
+                                onChange={() => handleAnswerChange(currentQuestion.id, option.value)}
+                                className="form-radio h-5 w-5 text-blue-500 bg-slate-700 border-slate-500 focus:ring-blue-500"
+                            />
+                            <span className="text-slate-200 text-sm">{t(option.labelKey)}</span>
+                        </label>
+                    ))}
+                </div>
+              )}
             </div>
           )}
 
-          {/* Navigation */}
           <div className="flex justify-between items-center pt-4 border-t border-slate-700">
             <Button onClick={handlePrev} disabled={currentQuestionIndex === 0} variant="outline">
               {t('mindset_assessment_prev_button')}
             </Button>
             {currentQuestionIndex < totalQuestions - 1 ? (
-              <Button onClick={handleNext} variant="primary">
+              <Button onClick={handleNext} variant="primary" disabled={answers[currentQuestion?.id] === undefined}>
                 {t('mindset_assessment_next_button')}
               </Button>
             ) : (
-              <Button onClick={handleSubmit} variant="primary" className="bg-green-600 hover:bg-green-500">
+              <Button onClick={handleSubmit} variant="primary" className="bg-green-600 hover:bg-green-500" disabled={answers[currentQuestion?.id] === undefined}>
                 {t('mindset_assessment_submit_button')}
               </Button>
             )}

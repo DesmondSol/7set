@@ -303,12 +303,31 @@ export type TranslationKey =
   | 'mindset_ai_coach_input_placeholder'
   | 'mindset_ai_coach_welcome_message'
   | 'mindset_help_button_tooltip'
-  | 'q_personality_1_text' | 'q_personality_1_opt1' | 'q_personality_1_opt2' 
-  | 'q_acumen_1_text' | 'q_acumen_1_options_key'
-  | 'q_knowledge_1_text' | 'q_knowledge_1_options_key'
-  | 'founder_type_visionary_catalyst_title' | 'founder_type_visionary_catalyst_desc'
-  | 'cofounder_suggestion_operational_excellence'
-  | 'takeaway_focus_on_execution'
+  // Personality Questions
+  | 'q_p1_text' | 'q_p1_opt_very_uncomfortable' | 'q_p1_opt_uncomfortable' | 'q_p1_opt_neutral' | 'q_p1_opt_comfortable' | 'q_p1_opt_very_comfortable'
+  | 'q_p2_text' | 'q_p2_opt_analyze' | 'q_p2_opt_action' | 'q_p2_opt_seek_help' | 'q_p2_opt_wait'
+  | 'q_p3_text' | 'q_p3_opt_delegate' | 'q_p3_opt_control' | 'q_p3_opt_collaborate' | 'q_p3_opt_avoid'
+  | 'q_p4_text' // Scale 1-5
+  | 'q_p5_text' | 'q_p5_opt_data' | 'q_p5_opt_intuition' | 'q_p5_opt_advice' | 'q_p5_opt_trial_error'
+  // Business Acumen Questions
+  | 'q_ba1_text' | 'q_ba1_opt_detailed_plan' | 'q_ba1_opt_flexible_approach' | 'q_ba1_opt_customer_feedback' | 'q_ba1_opt_competitor_focus'
+  | 'q_ba2_text' | 'q_ba2_opt_revenue_first' | 'q_ba2_opt_profit_first' | 'q_ba2_opt_growth_first' | 'q_ba2_opt_balance'
+  | 'q_ba3_text' // Scale 1-5
+  | 'q_ba4_text' | 'q_ba4_opt_organic' | 'q_ba4_opt_paid_ads' | 'q_ba4_opt_partnerships' | 'q_ba4_opt_sales_team'
+  | 'q_ba5_text' // Scenario
+    | 'q_ba5_opt_cut_costs' | 'q_ba5_opt_increase_marketing' | 'q_ba5_opt_pivot_product' | 'q_ba5_opt_seek_funding'
+  // Startup Knowledge Questions
+  | 'q_sk1_text' | 'q_sk1_opt_mvp_basic' | 'q_sk1_opt_mvp_polished' | 'q_sk1_opt_mvp_many_features' | 'q_sk1_opt_mvp_no_need'
+  | 'q_sk2_text' // Scale 1-5 (Understanding of pivoting)
+  | 'q_sk3_text' | 'q_sk3_opt_bootstrapping' | 'q_sk3_opt_friends_family' | 'q_sk3_opt_angel_investors' | 'q_sk3_opt_venture_capital'
+  | 'q_sk4_text' // Scenario: Validating product-market fit
+    | 'q_sk4_opt_surveys' | 'q_sk4_opt_interviews' | 'q_sk4_opt_presales' | 'q_sk4_opt_analytics'
+  | 'q_sk5_text' | 'q_sk5_opt_solo' | 'q_sk5_opt_complementary' | 'q_sk5_opt_similar_skills' | 'q_sk5_opt_friends'
+  // AI Generated Report Keys (placeholders for dynamic content)
+  | 'founder_type_visionary_catalyst_title' | 'founder_type_visionary_catalyst_desc' // Example
+  | 'cofounder_suggestion_operational_excellence' // Example
+  | 'takeaway_focus_on_execution' // Example
+  // Radar Chart Labels
   | 'radar_chart_risk_tolerance'
   | 'radar_chart_leadership'
   | 'radar_chart_adaptability'
@@ -492,14 +511,13 @@ export type AssessmentCategory = 'personality' | 'business_acumen' | 'startup_kn
 
 export interface AssessmentQuestionOption {
   value: string;
-  labelKey: TranslationKey; // Use the full TranslationKey
+  labelKey: TranslationKey; 
 }
 export interface AssessmentQuestion {
   id: string;
-  textKey: TranslationKey; // Use the full TranslationKey
+  textKey: TranslationKey; 
   type: 'multiple-choice-scale' | 'multiple-choice-options' | 'scenario-options';
-  optionsKey?: TranslationKey; // Use the full TranslationKey
-  options?: AssessmentQuestionOption[];
+  options?: AssessmentQuestionOption[]; // optionsKey removed, options directly used
   category: AssessmentCategory;
   scaleMin?: number;
   scaleMax?: number;
@@ -521,11 +539,11 @@ export interface AssessmentScores {
 }
 
 export interface FounderProfileReportData {
-  founderTypeTitleKey: TranslationKey; // Use the full TranslationKey
-  founderTypeDescriptionKey: TranslationKey; // Use the full TranslationKey
+  founderTypeTitleKey: TranslationKey; 
+  founderTypeDescriptionKey: TranslationKey; 
   scores: AssessmentScores;
-  cofounderPersonaSuggestionKey: TranslationKey; // Use the full TranslationKey
-  keyTakeawaysKeys: TranslationKey[]; // Use the full TranslationKey
+  cofounderPersonaSuggestionKey: TranslationKey; 
+  keyTakeawaysKeys: TranslationKey[]; 
   generatedDate: string;
 }
 
@@ -557,12 +575,13 @@ export interface MindsetData {
   };
   profileReport: FounderProfileReportData | null;
   goals: GoalSettingData;
+  shouldAutoGenerateReport: boolean; // Added this field
   goalSettingAiChatHistory: { role: 'user' | 'model', parts: {text: string}[] }[];
 }
 
 export interface MindsetSectionHelp {
   title: MindsetSubSection;
-  sidebarTitle: Record<Language, TranslationKey>; // Use the full TranslationKey
-  explanationKey: TranslationKey; // Use the full TranslationKey
+  sidebarTitle: Record<Language, TranslationKey>; 
+  explanationKey: TranslationKey; 
   icon?: React.FC<React.SVGProps<SVGSVGElement>>;
 }

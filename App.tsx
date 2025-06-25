@@ -56,6 +56,7 @@ const initialMindsetData: MindsetData = {
     '5-year': { self: '', family: '', world: '' },
     '10-year': { self: '', family: '', world: '' },
   },
+  shouldAutoGenerateReport: false,
   goalSettingAiChatHistory: [],
 };
 
@@ -72,6 +73,7 @@ const App: React.FC = () => {
     if (storedCanvasData) {
       try {
         const parsedData = JSON.parse(storedCanvasData);
+        // Ensure all sections are present, defaulting to empty string if missing
         return ALL_CANVAS_SECTIONS.reduce((acc, section) => {
           acc[section] = parsedData[section] || "";
           return acc;
@@ -80,6 +82,7 @@ const App: React.FC = () => {
         console.error("Failed to parse canvasData from localStorage", e);
       }
     }
+    // Default initialization if no stored data or parsing failed
     return ALL_CANVAS_SECTIONS.reduce((acc, section) => {
       acc[section] = ""; 
       return acc;
@@ -90,7 +93,15 @@ const App: React.FC = () => {
     const storedMarketData = localStorage.getItem('sparkMarketResearchData');
     if (storedMarketData) {
       try {
-        return JSON.parse(storedMarketData);
+        const parsed = JSON.parse(storedMarketData);
+        // Ensure structure matches MarketResearchData, defaulting parts if necessary
+        return {
+          [ResearchSection.QUESTIONS]: parsed[ResearchSection.QUESTIONS] || [],
+          [ResearchSection.GENERAL_NOTES_IMPORT]: parsed[ResearchSection.GENERAL_NOTES_IMPORT] || "",
+          [ResearchSection.COMPETITOR_ANALYSIS]: parsed[ResearchSection.COMPETITOR_ANALYSIS] || [],
+          [ResearchSection.TRENDS]: parsed[ResearchSection.TRENDS] || [],
+          [ResearchSection.AI_SUMMARY]: parsed[ResearchSection.AI_SUMMARY] || "",
+        };
       } catch (e) {
         console.error("Failed to parse marketResearchData from localStorage", e);
       }
@@ -102,7 +113,11 @@ const App: React.FC = () => {
     const storedCopywritingData = localStorage.getItem('sparkCopywritingData');
     if (storedCopywritingData) {
       try {
-        return JSON.parse(storedCopywritingData);
+        const parsed = JSON.parse(storedCopywritingData);
+        return {
+          marketingPosts: parsed.marketingPosts || [],
+          pitches: parsed.pitches || [],
+        };
       } catch (e) {
         console.error("Failed to parse copywritingData from localStorage", e);
       }
@@ -114,23 +129,32 @@ const App: React.FC = () => {
     const storedMindsetData = localStorage.getItem('sparkMindsetData');
     if (storedMindsetData) {
       try {
-        // Basic merge to ensure new fields in initialMindsetData are included if not in stored
         const parsed = JSON.parse(storedMindsetData);
+        // Deep merge with defaults to ensure all keys are present
         return {
-          ...initialMindsetData,
-          ...parsed,
           assessmentAnswers: {
-            ...initialMindsetData.assessmentAnswers,
-            ...(parsed.assessmentAnswers || {}),
+            personality: parsed.assessmentAnswers?.personality || {},
+            businessAcumen: parsed.assessmentAnswers?.businessAcumen || {},
+            startupKnowledge: parsed.assessmentAnswers?.startupKnowledge || {},
           },
           assessmentStatus: {
-            ...initialMindsetData.assessmentStatus,
-            ...(parsed.assessmentStatus || {}),
+            personality: parsed.assessmentStatus?.personality || 'not-started',
+            businessAcumen: parsed.assessmentStatus?.businessAcumen || 'not-started',
+            startupKnowledge: parsed.assessmentStatus?.startupKnowledge || 'not-started',
           },
+          profileReport: parsed.profileReport || null,
           goals: {
-            ...initialMindsetData.goals,
-            ...(parsed.goals || {}),
+            '6-month': parsed.goals?.['6-month'] || { self: '', family: '', world: '' },
+            '2-year': parsed.goals?.['2-year'] || { self: '', family: '', world: '' },
+            '5-year': parsed.goals?.['5-year'] || { self: '', family: '', world: '' },
+            '10-year': parsed.goals?.['10-year'] || { self: '', family: '', world: '' },
           },
+          shouldAutoGenerateReport: typeof parsed.shouldAutoGenerateReport === 'boolean' 
+                                      ? parsed.shouldAutoGenerateReport 
+                                      : false,
+          goalSettingAiChatHistory: Array.isArray(parsed.goalSettingAiChatHistory) 
+                                      ? parsed.goalSettingAiChatHistory 
+                                      : [],
         };
       } catch (e) {
         console.error("Failed to parse mindsetData from localStorage", e);

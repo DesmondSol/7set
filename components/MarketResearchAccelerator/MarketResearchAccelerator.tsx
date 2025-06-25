@@ -26,12 +26,12 @@ const A4_WIDTH_MM = 210;
 const A4_HEIGHT_MM = 297;
 const MARGIN_MM = 15;
 const CONTENT_WIDTH_MM = A4_WIDTH_MM - 2 * MARGIN_MM;
-const LINE_HEIGHT_NORMAL = 7; 
-const LINE_HEIGHT_TITLE = 9; 
+const LINE_HEIGHT_NORMAL = 6; 
+const LINE_HEIGHT_TITLE = 10; 
 const LINE_HEIGHT_SECTION_TITLE = 8; 
 
-const TITLE_FONT_SIZE = 18;
-const SECTION_TITLE_FONT_SIZE = 14;
+const TITLE_FONT_SIZE = 20;
+const SECTION_TITLE_FONT_SIZE = 16;
 const TEXT_FONT_SIZE = 10;
 const FOOTER_FONT_SIZE = 8;
 const USER_PHOTO_SIZE_MM = 25;
@@ -71,49 +71,49 @@ const ResearchQuestionCard: React.FC<ResearchQuestionCardProps> = ({
   };
 
   return (
-    <div className="p-4 bg-blue-50 rounded-lg shadow mb-4">
-      <div className="flex justify-between items-start mb-2">
+    <div className="p-4 bg-slate-700/50 rounded-lg shadow-md mb-4 border border-slate-600">
+      <div className="flex justify-between items-start mb-3">
         {isEditingQuestion ? (
           <div className="flex-grow mr-2">
             <textarea 
               value={editText} 
               onChange={(e) => setEditText(e.target.value)}
-              className="w-full p-2 border border-blue-300 rounded-md text-sm"
+              className="w-full p-2 bg-slate-600 border border-slate-500 rounded-md text-slate-200 text-sm focus:ring-blue-500 focus:border-blue-500"
               rows={2}
             />
-            <Button size="sm" onClick={handleSaveQuestion} className="mt-1 mr-1">{t('save_button', 'Save Q')}</Button>
-            <Button size="sm" variant="outline" onClick={() => {setIsEditingQuestion(false); setEditText(item.text);}} className="mt-1">{t('cancel_button')}</Button>
+            <Button size="sm" onClick={handleSaveQuestion} className="mt-2 mr-2">{t('save_button', 'Save Q')}</Button>
+            <Button size="sm" variant="outline" onClick={() => {setIsEditingQuestion(false); setEditText(item.text);}} className="mt-2">{t('cancel_button')}</Button>
           </div>
         ) : (
-          <p className="text-gray-800 font-medium flex-grow mr-2 text-sm whitespace-pre-wrap">{item.text}</p>
+          <p className="text-slate-200 font-medium flex-grow mr-2 text-sm whitespace-pre-wrap">{item.text}</p>
         )}
-        <div className="flex-shrink-0 flex items-center space-x-1">
-          {!isEditingQuestion && <Button variant="outline" size="sm" onClick={() => setIsEditingQuestion(true)} className="p-1"><PencilIcon className="h-4 w-4"/></Button>}
-          <Button variant="danger" size="sm" onClick={() => onRemoveQuestion(questionSetId, item.id)} className="p-1"><TrashIcon className="h-4 w-4"/></Button>
+        <div className="flex-shrink-0 flex items-center space-x-2">
+          {!isEditingQuestion && <Button variant="outline" size="sm" onClick={() => setIsEditingQuestion(true)} className="p-1.5"><PencilIcon className="h-4 w-4"/></Button>}
+          <Button variant="danger" size="sm" onClick={() => onRemoveQuestion(questionSetId, item.id)} className="p-1.5"><TrashIcon className="h-4 w-4"/></Button>
         </div>
       </div>
       
-      <div className="ml-4 mt-2">
-        <h4 className="text-xs font-semibold text-gray-600 mb-1">{language === 'am' ? 'የግል ምላሾች፡' : 'Individual Responses:'}</h4>
+      <div className="ml-4 mt-3 border-t border-slate-600 pt-3">
+        <h4 className="text-xs font-semibold text-slate-400 mb-2">{language === 'am' ? 'የግል ምላሾች፡' : 'Individual Responses:'}</h4>
         {item.responses.length > 0 ? (
           item.responses.map((resp) => ( 
-            <div key={resp.id} className="text-xs text-gray-700 bg-white p-1.5 rounded shadow-sm mb-1 flex justify-between items-center">
+            <div key={resp.id} className="text-xs text-slate-300 bg-slate-600/70 p-2 rounded shadow-sm mb-1.5 flex justify-between items-center">
               <span className="whitespace-pre-wrap flex-grow">{resp.text}</span>
-              <Button size="sm" variant="danger" onClick={() => onRemoveResponse(questionSetId, item.id, resp.id)} className="p-0.5 ml-2"><TrashIcon className="h-3 w-3"/></Button>
+              <Button size="sm" variant="danger" onClick={() => onRemoveResponse(questionSetId, item.id, resp.id)} className="p-1 ml-2 opacity-70 hover:opacity-100"><TrashIcon className="h-3 w-3"/></Button>
             </div>
           ))
         ) : (
-          <p className="text-xs text-gray-400 italic">{language === 'am' ? 'እስካሁን ምንም የግል ምላሾች አልተመዘገቡም።' : 'No individual responses recorded yet.'}</p>
+          <p className="text-xs text-slate-500 italic">{language === 'am' ? 'እስካሁን ምንም የግል ምላሾች አልተመዘገቡም።' : 'No individual responses recorded yet.'}</p>
         )}
-        <div className="flex items-center mt-2">
+        <div className="flex items-center mt-3">
           <input 
             type="text" 
             value={newResponse} 
             onChange={(e) => setNewResponse(e.target.value)} 
             placeholder={language === 'am' ? 'የግል ምላሽ አክል...' : "Add individual response..."}
-            className="flex-grow p-1 border border-gray-300 rounded-l-md text-xs"
+            className="flex-grow p-2 bg-slate-600 border border-slate-500 rounded-l-md text-slate-200 text-xs focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400"
           />
-          <Button size="sm" onClick={handleAddResponse} className="rounded-l-none text-xs px-2 py-1.5" disabled={!newResponse.trim()}>
+          <Button size="sm" onClick={handleAddResponse} className="rounded-l-none text-xs px-3 py-2" disabled={!newResponse.trim()} variant="secondary">
             {language === 'am' ? 'ምላሽ ጨምር' : 'Add Resp.'}
           </Button>
         </div>
@@ -149,10 +149,10 @@ const CompetitorProfileEditor: React.FC<CompetitorProfileEditorProps> = ({ profi
     ];
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow mb-4">
+        <div className="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700 mb-6">
             {fieldLabels.map(field => field.key !== 'id' && (
-                <div key={field.key} className="mb-3">
-                    <label htmlFor={`${profile.id}-${field.key}`} className="block text-sm font-medium text-gray-700 mb-1">{field.label}:</label>
+                <div key={field.key} className="mb-4">
+                    <label htmlFor={`${profile.id}-${field.key}`} className="block text-sm font-medium text-slate-300 mb-1">{field.label}:</label>
                     {field.type === 'textarea' ? (
                         <textarea
                             id={`${profile.id}-${field.key}`}
@@ -160,7 +160,7 @@ const CompetitorProfileEditor: React.FC<CompetitorProfileEditorProps> = ({ profi
                             value={localProfile[field.key] as string}
                             onChange={handleChange}
                             rows={3}
-                            className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-slate-400"
                         />
                     ) : (
                         <input
@@ -169,14 +169,14 @@ const CompetitorProfileEditor: React.FC<CompetitorProfileEditorProps> = ({ profi
                             name={field.key}
                             value={localProfile[field.key] as string}
                             onChange={handleChange}
-                            className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-slate-400"
                         />
                     )}
                 </div>
             ))}
-            <div className="flex justify-end space-x-2 mt-3">
-                <Button variant="danger" size="sm" onClick={() => onDelete(profile.id)}>{language === 'am' ? 'መገለጫ ሰርዝ' : 'Delete Profile'}</Button>
-                <Button variant="primary" size="sm" onClick={() => onSave(localProfile)}>{language === 'am' ? 'መገለጫ አስቀምጥ' : 'Save Profile'}</Button>
+            <div className="flex justify-end space-x-3 mt-4">
+                <Button variant="danger" size="md" onClick={() => onDelete(profile.id)}>{language === 'am' ? 'መገለጫ ሰርዝ' : 'Delete Profile'}</Button>
+                <Button variant="primary" size="md" onClick={() => onSave(localProfile)}>{language === 'am' ? 'መገለጫ አስቀምጥ' : 'Save Profile'}</Button>
             </div>
         </div>
     );
@@ -208,10 +208,10 @@ const TrendEntryEditor: React.FC<TrendEntryEditorProps> = ({ entry, onSave, onDe
     ];
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow mb-4">
+        <div className="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700 mb-6">
              {fieldLabels.map(field => field.key !== 'id' && (
-                <div key={field.key} className="mb-3">
-                    <label htmlFor={`${entry.id}-${field.key}`} className="block text-sm font-medium text-gray-700 mb-1">{field.label}:</label>
+                <div key={field.key} className="mb-4">
+                    <label htmlFor={`${entry.id}-${field.key}`} className="block text-sm font-medium text-slate-300 mb-1">{field.label}:</label>
                     {field.type === 'textarea' ? (
                         <textarea
                             id={`${entry.id}-${field.key}`}
@@ -219,7 +219,7 @@ const TrendEntryEditor: React.FC<TrendEntryEditorProps> = ({ entry, onSave, onDe
                             value={localEntry[field.key] as string}
                             onChange={handleChange}
                             rows={3}
-                            className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-slate-400"
                         />
                     ) : (
                         <input
@@ -228,14 +228,14 @@ const TrendEntryEditor: React.FC<TrendEntryEditorProps> = ({ entry, onSave, onDe
                             name={field.key}
                             value={localEntry[field.key] as string}
                             onChange={handleChange}
-                            className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-slate-400"
                         />
                     )}
                 </div>
             ))}
-            <div className="flex justify-end space-x-2 mt-3">
-                <Button variant="danger" size="sm" onClick={() => onDelete(entry.id)}>{language === 'am' ? 'አዝማሚያ ሰርዝ' : 'Delete Trend'}</Button>
-                <Button variant="primary" size="sm" onClick={() => onSave(localEntry)}>{language === 'am' ? 'አዝማሚያ አስቀምጥ' : 'Save Trend'}</Button>
+            <div className="flex justify-end space-x-3 mt-4">
+                <Button variant="danger" size="md" onClick={() => onDelete(entry.id)}>{language === 'am' ? 'አዝማሚያ ሰርዝ' : 'Delete Trend'}</Button>
+                <Button variant="primary" size="md" onClick={() => onSave(localEntry)}>{language === 'am' ? 'አዝማሚያ አስቀምጥ' : 'Save Trend'}</Button>
             </div>
         </div>
     );
@@ -252,12 +252,12 @@ interface MarketResearchAcceleratorProps {
 
 const addPageFooterToDoc = (doc: jsPDF, lang: Language, translator: Function, pageNumber: number, totalPages: number) => {
     doc.setFontSize(FOOTER_FONT_SIZE);
-    doc.setTextColor(100);
+    doc.setTextColor(120, 120, 120); 
     const footerText = translator('page_x_of_y', `Page ${pageNumber} of ${totalPages}`)
                         .replace('{currentPage}', String(pageNumber))
                         .replace('{totalPages}', String(totalPages));
     doc.text(footerText, MARGIN_MM, A4_HEIGHT_MM - MARGIN_MM / 2); 
-    doc.setTextColor(0);
+    doc.setTextColor(50, 50, 50);
 };
 
 const addTextWithPageBreakToDoc = (
@@ -483,6 +483,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
     };
     onUpdateData({ ...initialData, [ResearchSection.COMPETITOR_ANALYSIS]: [...initialData[ResearchSection.COMPETITOR_ANALYSIS], newCompetitor] });
     setEditingCompetitorId(newCompetitor.id); 
+    setEditingTrendId(null); // Ensure only one editor is active
   };
 
   const handleSaveCompetitor = (updatedProfile: CompetitorProfile) => {
@@ -510,6 +511,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
     };
     onUpdateData({ ...initialData, [ResearchSection.TRENDS]: [...initialData[ResearchSection.TRENDS], newTrend] });
     setEditingTrendId(newTrend.id); 
+    setEditingCompetitorId(null); // Ensure only one editor is active
   };
 
   const handleSaveTrend = (updatedEntry: TrendEntry) => {
@@ -573,10 +575,10 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
   
   const handleExport = () => {
     const doc = new jsPDF();
+    doc.setTextColor(50, 50, 50);
     const currentYRef = { value: MARGIN_MM };
     const totalPagesRef = { current: 1 };
 
-    // Add User Profile Section
     if (userProfile) {
         doc.setFontSize(SECTION_TITLE_FONT_SIZE);
         doc.setFont("helvetica", "bold");
@@ -623,7 +625,6 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         }
     }
 
-
     const activeSectionHelp = RESEARCH_SECTIONS_HELP.find(h => h.title === activeResearchSection);
     const translatedSectionTitleForFileName = activeSectionHelp?.sidebarTitle[language] || activeResearchSection;
     const translatedSectionTitleForDisplay = activeSectionHelp?.sidebarTitle[language] || t(activeResearchSection as TranslationKey, activeResearchSection);
@@ -645,37 +646,37 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
     switch (activeResearchSection) {
       case ResearchSection.QUESTIONS:
         initialData[ResearchSection.QUESTIONS].forEach(set => {
-          doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+          doc.setFontSize(SECTION_TITLE_FONT_SIZE - 2); // Slightly smaller for sets
           doc.setFont("helvetica", "bold");
           const setTitleText = `${t('mra_report_set_title', 'Research Set')}: ${set.name} (${t('mra_report_goal_label', 'Goal')}: ${set.researchGoal}, ${t('mra_report_audience_label', 'Audience')}: ${set.targetAudience})`;
-          addTextWithPageBreakToDoc(doc, setTitleText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, language, t);
+          addTextWithPageBreakToDoc(doc, setTitleText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE * 0.9, totalPagesRef, language, t);
           doc.setFont("helvetica", "normal");
           doc.setFontSize(TEXT_FONT_SIZE);
 
           set.questions.forEach(q => {
             const qText = `${t('mra_report_question_label', 'Question')}: ${q.text}`;
-            addTextWithPageBreakToDoc(doc, qText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+            addTextWithPageBreakToDoc(doc, qText, MARGIN_MM + 2, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t); // Indent question
             if (q.responses.length > 0) {
               const rTitle = `  ${t('mra_report_responses_label', 'Responses')}:`;
-              addTextWithPageBreakToDoc(doc, rTitle, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+              addTextWithPageBreakToDoc(doc, rTitle, MARGIN_MM + 2, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t);
               q.responses.forEach(r => {
-                addTextWithPageBreakToDoc(doc, `    - ${r.text}`, MARGIN_MM + 5, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+                addTextWithPageBreakToDoc(doc, `    - ${r.text}`, MARGIN_MM + 4, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t); // Further indent responses
               });
             }
-            currentYRef.value += LINE_HEIGHT_NORMAL * 0.5; // Space after question
+            currentYRef.value += LINE_HEIGHT_NORMAL * 0.5; 
           });
-          currentYRef.value += LINE_HEIGHT_NORMAL; // Space after set
+          currentYRef.value += LINE_HEIGHT_NORMAL; 
         });
         break;
       case ResearchSection.GENERAL_NOTES_IMPORT:
         const notes = initialData[ResearchSection.GENERAL_NOTES_IMPORT] || t('no_content_yet_placeholder_pdf', 'No content provided.');
-        addTextWithPageBreakToDoc(doc, notes, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+        addTextWithPageBreakToDoc(doc, notes, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t);
         break;
       case ResearchSection.COMPETITOR_ANALYSIS:
         initialData[ResearchSection.COMPETITOR_ANALYSIS].forEach(comp => {
-          doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+          doc.setFontSize(SECTION_TITLE_FONT_SIZE -2 );
           doc.setFont("helvetica", "bold");
-          addTextWithPageBreakToDoc(doc, comp.name, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, language, t);
+          addTextWithPageBreakToDoc(doc, comp.name, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE * 0.9, totalPagesRef, language, t);
           doc.setFont("helvetica", "normal");
           doc.setFontSize(TEXT_FONT_SIZE);
           
@@ -690,7 +691,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
           fields.forEach(field => {
             if (field.value) {
               const fieldText = `${t(field.labelKey as TranslationKey, field.defaultLabel)}: ${field.value}`;
-              addTextWithPageBreakToDoc(doc, fieldText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+              addTextWithPageBreakToDoc(doc, fieldText, MARGIN_MM + 2, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t);
             }
           });
           currentYRef.value += LINE_HEIGHT_NORMAL;
@@ -698,9 +699,9 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         break;
       case ResearchSection.TRENDS:
         initialData[ResearchSection.TRENDS].forEach(trend => {
-          doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+          doc.setFontSize(SECTION_TITLE_FONT_SIZE - 2);
           doc.setFont("helvetica", "bold");
-          addTextWithPageBreakToDoc(doc, trend.title, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, language, t);
+          addTextWithPageBreakToDoc(doc, trend.title, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE * 0.9, totalPagesRef, language, t);
           doc.setFont("helvetica", "normal");
           doc.setFontSize(TEXT_FONT_SIZE);
           const fields = [
@@ -714,7 +715,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
           fields.forEach(field => {
             if (field.value) {
               const fieldText = `${t(field.labelKey as TranslationKey, field.defaultLabel)}: ${field.value}`;
-              addTextWithPageBreakToDoc(doc, fieldText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+              addTextWithPageBreakToDoc(doc, fieldText, MARGIN_MM + 2, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t);
             }
           });
           currentYRef.value += LINE_HEIGHT_NORMAL;
@@ -722,7 +723,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         break;
       case ResearchSection.AI_SUMMARY:
         const summary = initialData[ResearchSection.AI_SUMMARY] || t('no_content_yet_placeholder_pdf', 'No summary generated.');
-        addTextWithPageBreakToDoc(doc, summary, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef, language, t);
+        addTextWithPageBreakToDoc(doc, summary, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t);
         break;
     }
 
@@ -758,37 +759,37 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
     switch (activeResearchSection) {
       case ResearchSection.QUESTIONS:
         return (
-          <div className="space-y-4">
-            <div className="flex flex-wrap justify-between items-center gap-4 mb-4 p-4 bg-gray-100 rounded-lg shadow">
+          <div className="space-y-6">
+            <div className="flex flex-wrap justify-between items-center gap-4 mb-6 p-5 bg-slate-800 rounded-xl shadow-lg border border-slate-700">
                 <div>
-                    <h3 className="text-xl font-semibold text-blue-700">{RESEARCH_SECTIONS_HELP.find(h => h.title === ResearchSection.QUESTIONS)?.sidebarTitle[language] || "Research Question Sets"}</h3>
-                    <p className="text-sm text-gray-600">{language === 'am' ? 'የተለያዩ ግቦች ወይም ታዳሚዎች ላሏቸው የተለያዩ የምርምር ጥያቄ ስብስቦችን ያስተዳድሩ።' : 'Manage different sets of research questions for various goals or audiences.'}</p>
+                    <h3 className="text-xl font-semibold text-blue-400">{RESEARCH_SECTIONS_HELP.find(h => h.title === ResearchSection.QUESTIONS)?.sidebarTitle[language] || "Research Question Sets"}</h3>
+                    <p className="text-sm text-slate-400 mt-1">{language === 'am' ? 'የተለያዩ ግቦች ወይም ታዳሚዎች ላሏቸው የተለያዩ የምርምር ጥያቄ ስብስቦችን ያስተዳድሩ።' : 'Manage different sets of research questions for various goals or audiences.'}</p>
                 </div>
-                <Button onClick={() => { setIsCreateSetModalOpen(true); setError(null); }} leftIcon={<PlusIcon className="h-5 w-5"/>}>
+                <Button onClick={() => { setIsCreateSetModalOpen(true); setError(null); }} leftIcon={<PlusIcon className="h-5 w-5"/>} variant="secondary">
                     {t('mra_questions_create_set_button')}
                 </Button>
             </div>
 
-            {error && <p className="text-red-500 bg-red-100 p-3 rounded-md mb-4">{error}</p>}
+            {error && <p className="text-red-400 bg-red-900/30 p-3 rounded-lg mb-4 text-sm">{error}</p>}
 
             {initialData[ResearchSection.QUESTIONS].length > 0 && (
-                <div className="mb-6">
-                    <label htmlFor="activeQuestionnaireSet" className="block text-sm font-medium text-gray-700 mb-1">{t('mra_questions_active_set_label')}</label>
+                <div className="mb-6 p-4 bg-slate-800 rounded-xl shadow-md border border-slate-700">
+                    <label htmlFor="activeQuestionnaireSet" className="block text-sm font-medium text-slate-300 mb-1">{t('mra_questions_active_set_label')}</label>
                     <div className="flex items-center space-x-2">
                         <select 
                             id="activeQuestionnaireSet"
                             value={activeQuestionnaireSetId || ""}
                             onChange={(e) => setActiveQuestionnaireSetId(e.target.value)}
-                            className="flex-grow p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            className="flex-grow p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
-                            <option value="" disabled>{t('mra_questions_select_set_placeholder')}</option>
+                            <option value="" disabled className="text-slate-500">{t('mra_questions_select_set_placeholder')}</option>
                             {initialData[ResearchSection.QUESTIONS].map(set => (
-                                <option key={set.id} value={set.id}>{set.name} ({set.researchGoal})</option>
+                                <option key={set.id} value={set.id} className="text-slate-200">{set.name} ({set.researchGoal})</option>
                             ))}
                         </select>
                         {activeQuestionnaireSetId && (
-                             <Button variant="danger" size="sm" onClick={() => handleDeleteQuestionnaireSet(activeQuestionnaireSetId)} title={t('mra_questions_delete_set_button_title')}>
-                                <TrashIcon className="h-4 w-4"/>
+                             <Button variant="danger" size="md" onClick={() => handleDeleteQuestionnaireSet(activeQuestionnaireSetId)} title={t('mra_questions_delete_set_button_title')} className="p-3">
+                                <TrashIcon className="h-5 w-5"/>
                             </Button>
                         )}
                     </div>
@@ -796,28 +797,28 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
             )}
 
             {currentActiveSet ? (
-              <div className="p-4 border border-blue-200 rounded-lg bg-white shadow-md">
-                <h4 className="text-lg font-semibold text-red-700 mb-1">{t('mra_questions_working_on_prefix')}: "{currentActiveSet.name}"</h4>
-                <p className="text-xs text-gray-500 mb-1">{t('mra_questions_goal_prefix')}: {currentActiveSet.researchGoal}</p>
-                <p className="text-xs text-gray-500 mb-3">{t('mra_questions_audience_prefix')}: {currentActiveSet.targetAudience}</p>
+              <div className="p-5 bg-slate-800 rounded-xl shadow-lg border border-slate-700">
+                <h4 className="text-lg font-semibold text-blue-400 mb-1">{t('mra_questions_working_on_prefix')}: "{currentActiveSet.name}"</h4>
+                <p className="text-xs text-slate-400 mb-1">{t('mra_questions_goal_prefix')}: {currentActiveSet.researchGoal}</p>
+                <p className="text-xs text-slate-400 mb-4">{t('mra_questions_audience_prefix')}: {currentActiveSet.targetAudience}</p>
                 
-                <div className="bg-blue-50 p-3 rounded-md shadow-inner mb-4">
-                  <label htmlFor="manualQuestion" className="block text-sm font-medium text-gray-700 mb-1">{t('mra_questions_add_manual_label')}</label>
-                  <div className="flex space-x-2">
+                <div className="bg-slate-700/50 p-4 rounded-lg shadow-inner mb-6 border border-slate-600">
+                  <label htmlFor="manualQuestion" className="block text-sm font-medium text-slate-300 mb-1">{t('mra_questions_add_manual_label')}</label>
+                  <div className="flex space-x-3">
                     <input
                       type="text" id="manualQuestion" value={manualQuestion} onChange={(e) => setManualQuestion(e.target.value)}
-                      className="flex-grow p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="flex-grow p-3 bg-slate-600 border border-slate-500 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400"
                       placeholder={language === 'am' ? 'የምርምር ጥያቄዎን ያስገቡ' : "Enter your research question"}
                     />
-                    <Button onClick={handleAddManualQuestion} disabled={!manualQuestion.trim()}>{t('mra_questions_add_manual_button')}</Button>
+                    <Button onClick={handleAddManualQuestion} disabled={!manualQuestion.trim()} variant="secondary">{t('mra_questions_add_manual_button')}</Button>
                   </div>
                 </div>
-                <Button variant="secondary" onClick={() => {handleAiGenerateQuestions(); setError(null);}} leftIcon={<SparklesIcon className="h-5 w-5"/>} disabled={isLoadingAi || !strategyData || Object.keys(strategyData).filter(k=>strategyData[k as CanvasSection]?.trim()).length === 0}>
+                <Button variant="primary" onClick={() => {handleAiGenerateQuestions(); setError(null);}} leftIcon={<SparklesIcon className="h-5 w-5"/>} disabled={isLoadingAi || !strategyData || Object.keys(strategyData).filter(k=>strategyData[k as CanvasSection]?.trim()).length === 0}>
                   {isLoadingAi ? t('mra_questions_ai_generating_button') : t('mra_questions_ai_generate_button')}
                 </Button>
-                {(!strategyData || Object.keys(strategyData).filter(k=>strategyData[k as CanvasSection]?.trim()).length === 0) && <p className="text-xs text-orange-600 mt-1">{t('mra_questions_ai_requires_canvas_note')}</p>}
+                {(!strategyData || Object.keys(strategyData).filter(k=>strategyData[k as CanvasSection]?.trim()).length === 0) && <p className="text-xs text-amber-400 mt-2">{t('mra_questions_ai_requires_canvas_note')}</p>}
 
-                <div className="mt-4 space-y-2">
+                <div className="mt-6 space-y-4">
                   {currentActiveSet.questions.length > 0 ? (
                     currentActiveSet.questions.map(q => (
                       <ResearchQuestionCard 
@@ -832,12 +833,12 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
                       />
                     ))
                   ) : (
-                    <p className="text-gray-500 italic mt-3">{t('mra_questions_no_questions_placeholder')}</p>
+                    <p className="text-slate-500 italic mt-4 text-center py-4">{t('mra_questions_no_questions_placeholder')}</p>
                   )}
                 </div>
               </div>
             ) : (
-                <p className="text-gray-500 italic p-4 text-center">
+                <p className="text-slate-500 italic p-6 text-center bg-slate-800 rounded-xl shadow-md border border-slate-700">
                     {initialData[ResearchSection.QUESTIONS].length > 0 
                         ? t('mra_questions_select_set_prompt')
                         : t('mra_questions_no_sets_prompt')
@@ -848,19 +849,19 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         );
       case ResearchSection.GENERAL_NOTES_IMPORT:
         return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-blue-700">{translatedSectionTitle}</h3>
-             <div className="bg-white p-4 rounded-lg shadow">
-                <label htmlFor="csvUpload" className="block text-sm font-medium text-gray-700 mb-2">{t('mra_general_notes_import_csv_label')}</label>
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-blue-400">{translatedSectionTitle}</h3>
+             <div className="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700">
+                <label htmlFor="csvUpload" className="block text-sm font-medium text-slate-300 mb-2">{t('mra_general_notes_import_csv_label')}</label>
                 <input type="file" id="csvUpload" accept=".csv" onChange={handleFileUpload} 
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
-                <p className="text-xs text-gray-500 mt-1">{t('mra_general_notes_csv_note')}</p>
+                    className="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-700 file:text-blue-300 hover:file:bg-slate-600 cursor-pointer"/>
+                <p className="text-xs text-slate-500 mt-1">{t('mra_general_notes_csv_note')}</p>
              </div>
             <textarea
               value={initialData[ResearchSection.GENERAL_NOTES_IMPORT]}
               onChange={(e) => handleGeneralNotesChange(e.target.value)}
-              rows={10}
-              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              rows={15}
+              className="w-full p-4 bg-slate-800 border border-slate-700 rounded-xl text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-lg placeholder-slate-500"
               placeholder={t('mra_general_notes_placeholder')}
             />
           </div>
@@ -869,18 +870,18 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         const currentCompetitor = initialData[ResearchSection.COMPETITOR_ANALYSIS].find(c => c.id === editingCompetitorId);
         return (
           <div>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold text-blue-700">{translatedSectionTitle}</h3>
-              <Button onClick={handleAddCompetitor} leftIcon={<PlusIcon className="h-5 w-5"/>}>{t('mra_competitor_add_button')}</Button>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-semibold text-blue-400">{translatedSectionTitle}</h3>
+              <Button onClick={handleAddCompetitor} leftIcon={<PlusIcon className="h-5 w-5"/>} variant="secondary">{t('mra_competitor_add_button')}</Button>
             </div>
             {editingCompetitorId && currentCompetitor ? (
               <CompetitorProfileEditor profile={currentCompetitor} onSave={handleSaveCompetitor} onDelete={handleDeleteCompetitor} language={language} t={t} />
             ) : (
-              <div className="space-y-2">
-                {initialData[ResearchSection.COMPETITOR_ANALYSIS].length === 0 && <p className="text-gray-500 italic">{t('mra_competitor_no_competitors_placeholder')}</p>}
+              <div className="space-y-3">
+                {initialData[ResearchSection.COMPETITOR_ANALYSIS].length === 0 && <p className="text-slate-500 italic p-4 text-center bg-slate-800 rounded-xl border border-slate-700">{t('mra_competitor_no_competitors_placeholder')}</p>}
                 {initialData[ResearchSection.COMPETITOR_ANALYSIS].map(comp => (
-                  <div key={comp.id} className="bg-white p-3 rounded-md shadow flex justify-between items-center">
-                    <span className="text-gray-700">{comp.name}</span>
+                  <div key={comp.id} className="bg-slate-800 p-4 rounded-xl shadow-md flex justify-between items-center border border-slate-700 hover:border-slate-600 transition-colors">
+                    <span className="text-slate-200 font-medium">{comp.name}</span>
                     <Button variant="outline" size="sm" onClick={() => {setEditingCompetitorId(comp.id); setEditingTrendId(null);}}>{t('edit_button')}</Button>
                   </div>
                 ))}
@@ -892,18 +893,18 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         const currentTrend = initialData[ResearchSection.TRENDS].find(t => t.id === editingTrendId);
         return (
           <div>
-            <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-semibold text-blue-700">{translatedSectionTitle}</h3>
-                <Button onClick={handleAddTrend} leftIcon={<PlusIcon className="h-5 w-5"/>}>{t('mra_trends_add_button')}</Button>
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-semibold text-blue-400">{translatedSectionTitle}</h3>
+                <Button onClick={handleAddTrend} leftIcon={<PlusIcon className="h-5 w-5"/>} variant="secondary">{t('mra_trends_add_button')}</Button>
             </div>
             {editingTrendId && currentTrend ? (
                 <TrendEntryEditor entry={currentTrend} onSave={handleSaveTrend} onDelete={handleDeleteTrend} language={language} t={t} />
             ) : (
-                <div className="space-y-2">
-                    {initialData[ResearchSection.TRENDS].length === 0 && <p className="text-gray-500 italic">{t('mra_trends_no_trends_placeholder')}</p>}
+                <div className="space-y-3">
+                    {initialData[ResearchSection.TRENDS].length === 0 && <p className="text-slate-500 italic p-4 text-center bg-slate-800 rounded-xl border border-slate-700">{t('mra_trends_no_trends_placeholder')}</p>}
                     {initialData[ResearchSection.TRENDS].map(trend => (
-                        <div key={trend.id} className="bg-white p-3 rounded-md shadow flex justify-between items-center">
-                            <span className="text-gray-700">{trend.title}</span>
+                        <div key={trend.id} className="bg-slate-800 p-4 rounded-xl shadow-md flex justify-between items-center border border-slate-700 hover:border-slate-600 transition-colors">
+                            <span className="text-slate-200 font-medium">{trend.title}</span>
                              <Button variant="outline" size="sm" onClick={() => {setEditingTrendId(trend.id); setEditingCompetitorId(null);}}>{t('edit_button')}</Button>
                         </div>
                     ))}
@@ -913,27 +914,27 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         );
       case ResearchSection.AI_SUMMARY:
         return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-blue-700">{translatedSectionTitle}</h3>
-            {error && <p className="text-red-500 bg-red-100 p-3 rounded-md mb-2">{error}</p>}
-            <Button onClick={() => {handleGenerateSummary(); setError(null);}} disabled={isLoadingAi} variant="primary" leftIcon={<SparklesIcon className="h-5 w-5"/>}>
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-blue-400">{translatedSectionTitle}</h3>
+            {error && <p className="text-red-400 bg-red-900/30 p-3 rounded-lg mb-4 text-sm">{error}</p>}
+            <Button onClick={() => {handleGenerateSummary(); setError(null);}} disabled={isLoadingAi} variant="primary" size="lg" leftIcon={<SparklesIcon className="h-5 w-5"/>}>
               {isLoadingAi ? (<><SpinnerIcon className="h-5 w-5 mr-2" /> {t('mra_ai_summary_generating_button')}</>) : t('mra_ai_summary_generate_button')}
             </Button>
-            <div className="bg-white p-4 rounded-lg shadow min-h-[200px] whitespace-pre-wrap text-gray-700">
-              {isLoadingAi && !initialData[ResearchSection.AI_SUMMARY] ? <div className="flex justify-center items-center h-full"><SpinnerIcon className="h-8 w-8 text-blue-600" /></div> : (initialData[ResearchSection.AI_SUMMARY] || <span className="italic text-gray-400">{t('mra_ai_summary_placeholder')}</span>)}
+            <div className="bg-slate-800 p-6 rounded-xl shadow-lg min-h-[250px] whitespace-pre-wrap text-slate-300 border border-slate-700 prose prose-sm prose-invert max-w-none">
+              {isLoadingAi && !initialData[ResearchSection.AI_SUMMARY] ? <div className="flex justify-center items-center h-full"><SpinnerIcon className="h-10 w-10 text-blue-500" /></div> : (initialData[ResearchSection.AI_SUMMARY] || <span className="italic text-slate-500">{t('mra_ai_summary_placeholder')}</span>)}
             </div>
           </div>
         );
-      default: return <p>Select a section</p>;
+      default: return <p className="text-slate-400">Select a section from the sidebar.</p>;
     }
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100vh-8rem-2rem)] relative">
-      <aside className={`fixed md:absolute top-20 md:top-auto bottom-0 right-0 h-full md:h-auto md:max-h-full w-full max-w-xs md:w-[300px] bg-gradient-to-br from-blue-700 to-blue-800 text-white p-6 shadow-2xl transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 z-40 overflow-y-auto`}>
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-semibold">{t('mra_sidebar_title')}</h3>
-          <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-blue-200 hover:text-white">
+    <div className="flex flex-col md:flex-row h-[calc(100vh-8rem-2rem)] relative bg-transparent">
+      <aside className={`fixed md:static top-0 left-0 h-full w-full max-w-xs md:w-[320px] bg-slate-800 text-slate-300 p-6 shadow-2xl transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 z-40 overflow-y-auto border-r border-slate-700`}>
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-xl font-semibold text-slate-100">{t('mra_sidebar_title')}</h3>
+          <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-slate-400 hover:text-white">
             <CloseIcon className="h-6 w-6" />
           </button>
         </div>
@@ -954,7 +955,11 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
                       setEditingTrendId(null);    
                       if(window.innerWidth < 768) setIsSidebarOpen(false); 
                     }}
-                    className={`block px-3 py-2 rounded-md transition-colors ${activeResearchSection === section ? 'bg-red-600 font-semibold' : 'hover:bg-blue-600'}`}
+                    className={`block px-4 py-3 rounded-lg transition-colors duration-200
+                      ${activeResearchSection === section 
+                        ? 'bg-blue-600 text-white font-semibold shadow-md' 
+                        : 'hover:bg-slate-700 hover:text-slate-100'
+                      }`}
                   >
                     {sidebarTitle}
                   </a>
@@ -965,10 +970,10 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         </nav>
       </aside>
 
-      <main className={`flex-grow p-4 md:p-6 bg-gray-50 shadow-inner overflow-y-auto transition-all duration-300 ease-in-out ${isSidebarOpen ? 'md:mr-[300px]' : 'mr-0'}`}>
-         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold text-red-700">{t('market_research_accelerator_page_title')}</h2>
-            <div className="flex items-center space-x-2">
+      <main className={`flex-grow p-4 md:p-8 bg-transparent shadow-inner overflow-y-auto transition-all duration-300 ease-in-out`}> {/* Removed md:mr for static sidebar */}
+         <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-slate-100">{t('market_research_accelerator_page_title')}</h2>
+            <div className="flex items-center space-x-3">
                 <Button onClick={handleExport} variant="primary" leftIcon={<DownloadIcon className="h-5 w-5"/>}>{t('export_current_view_button')}</Button>
                 <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden">
                     {isSidebarOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
@@ -982,33 +987,33 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
         icon={<HelpIcon className="h-6 w-6" />}
         tooltip={t('help_mra_button_tooltip')}
         onClick={() => openHelpModalForSection(activeResearchSection)}
-        className="bottom-6 right-6 z-50" 
-        colorClass="bg-blue-600 hover:bg-blue-700"
+        className="bottom-6 right-6 z-30" 
+        colorClass="bg-slate-600 hover:bg-slate-500" // Secondary color
         size="md" 
       />
 
-      <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title={`${t('mra_help_modal_title_prefix')}: ${currentHelpContent?.sidebarTitle[language] || currentHelpContent?.title || ''}`} size="lg">
-        <p className="text-gray-700 whitespace-pre-line">
+      <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title={`${t('mra_help_modal_title_prefix')}: ${currentHelpContent?.sidebarTitle[language] || currentHelpContent?.title || ''}`} size="xl">
+        <div className="prose prose-sm prose-invert max-w-none text-slate-300 whitespace-pre-line max-h-[70vh] overflow-y-auto pr-2">
             {currentHelpContent?.explanation[language] || currentHelpContent?.explanation.en}
-        </p>
+        </div>
       </Modal>
 
       <Modal isOpen={isCreateSetModalOpen} onClose={() => {setIsCreateSetModalOpen(false); setError(null); setNewSetForm({name: '', researchGoal: '', targetAudience: ''})}} title={t('mra_create_set_modal_title')} size="lg">
-        {error && <p className="text-red-500 bg-red-100 p-3 rounded-md mb-4">{error}</p>}
-        <div className="space-y-4">
+        {error && <p className="text-red-400 bg-red-900/30 p-3 rounded-lg mb-4 text-sm">{error}</p>}
+        <div className="space-y-5">
           <div>
-            <label htmlFor="setName" className="block text-sm font-medium text-gray-700 mb-1">{t('mra_create_set_name_label')}</label>
-            <input type="text" id="setName" value={newSetForm.name} onChange={(e) => setNewSetForm(prev => ({...prev, name: e.target.value}))} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder={language==='am'? 'ለምሳሌ፣ የቅድመ ተጠቃሚ አስተያየት':'e.g., Early Adopter Feedback'}/>
+            <label htmlFor="setName" className="block text-sm font-medium text-slate-300 mb-1">{t('mra_create_set_name_label')}</label>
+            <input type="text" id="setName" value={newSetForm.name} onChange={(e) => setNewSetForm(prev => ({...prev, name: e.target.value}))} className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400" placeholder={language==='am'? 'ለምሳሌ፣ የቅድመ ተጠቃሚ አስተያየት':'e.g., Early Adopter Feedback'}/>
           </div>
           <div>
-            <label htmlFor="setGoal" className="block text-sm font-medium text-gray-700 mb-1">{t('mra_create_set_goal_label')}</label>
-            <textarea id="setGoal" rows={2} value={newSetForm.researchGoal} onChange={(e) => setNewSetForm(prev => ({...prev, researchGoal: e.target.value}))} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder={language==='am' ? 'ለምሳሌ፣ ለዋና ባህሪ X ያለውን ፍላጎት ማረጋገጥ' : "e.g., Validate demand for core feature X"}/>
+            <label htmlFor="setGoal" className="block text-sm font-medium text-slate-300 mb-1">{t('mra_create_set_goal_label')}</label>
+            <textarea id="setGoal" rows={2} value={newSetForm.researchGoal} onChange={(e) => setNewSetForm(prev => ({...prev, researchGoal: e.target.value}))} className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400" placeholder={language==='am' ? 'ለምሳሌ፣ ለዋና ባህሪ X ያለውን ፍላጎት ማረጋገጥ' : "e.g., Validate demand for core feature X"}/>
           </div>
            <div>
-            <label htmlFor="setAudience" className="block text-sm font-medium text-gray-700 mb-1">{t('mra_create_set_audience_label')}</label>
-            <input type="text" id="setAudience" value={newSetForm.targetAudience} onChange={(e) => setNewSetForm(prev => ({...prev, targetAudience: e.target.value}))} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder={language === 'am' ? 'ለምሳሌ፣ በቴክኖሎጂ የተካኑ አነስተኛ የንግድ ባለቤቶች' : "e.g., Tech-savvy small business owners"}/>
+            <label htmlFor="setAudience" className="block text-sm font-medium text-slate-300 mb-1">{t('mra_create_set_audience_label')}</label>
+            <input type="text" id="setAudience" value={newSetForm.targetAudience} onChange={(e) => setNewSetForm(prev => ({...prev, targetAudience: e.target.value}))} className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400" placeholder={language === 'am' ? 'ለምሳሌ፣ በቴክኖሎጂ የተካኑ አነስተኛ የንግድ ባለቤቶች' : "e.g., Tech-savvy small business owners"}/>
           </div>
-          <Button onClick={handleCreateNewQuestionnaireSet} className="w-full" variant="primary">
+          <Button onClick={handleCreateNewQuestionnaireSet} className="w-full mt-2" variant="primary" size="lg">
             {t('mra_create_set_button')}
           </Button>
         </div>
@@ -1017,7 +1022,7 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
   );
 };
 
-// --- SVG Icons (remain the same) ---
+// --- SVG Icons ---
 const PencilIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" {...props}>
     <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" />
@@ -1027,7 +1032,7 @@ const PencilIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 
 const TrashIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" {...props}>
-    <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.58.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clipRule="evenodd" />
+    <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.58.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25-.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clipRule="evenodd" />
   </svg>
 );
 

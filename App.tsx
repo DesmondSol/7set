@@ -3,9 +3,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { BusinessLaunchCanvas } from './components/BusinessLaunchCanvas/BusinessLaunchCanvas';
 import { MarketResearchAccelerator } from './components/MarketResearchAccelerator/MarketResearchAccelerator';
-import { CopywritingPage } from './components/CopywritingPage'; // New Import
+import { CopywritingPage } from './components/CopywritingPage'; 
 import { ComingSoon } from './components/ComingSoon';
 import { UserProfileModal } from './components/UserProfileModal';
+import InfographicPage from './components/InfographicPage'; 
 import { 
     Page, 
     SubPage, 
@@ -16,7 +17,7 @@ import {
     UserProfile, 
     MarketResearchData, 
     ResearchSection,
-    CopywritingData // New Import
+    CopywritingData
 } from './types';
 import { NAV_ITEMS } from './constants';
 import { getTranslator, TranslationKey } from './locales';
@@ -165,35 +166,22 @@ const App: React.FC = () => {
                 userProfile={userProfile}
               />;
     }
-    if (activeSubPage) { 
+    if (activePage && activeSubPage) { 
       return <ComingSoon 
                 featureName={t(activeSubPage as TranslationKey, activeSubPage)} 
                 language={currentLanguage}
                 t={t}
               />;
     }
-    return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)] text-gray-700">
-        <div className="bg-gradient-to-br from-blue-800 to-blue-900 p-8 rounded-xl shadow-2xl mb-8 inline-block transform hover:scale-105 transition-transform duration-300">
-          <img 
-            src="https://7setspark.com/wp-content/uploads/2023/12/Asset-5-179x35.webp" 
-            alt={t('logo_alt_text')} 
-            className="h-10 sm:h-12 w-auto" // Adjusted height
-          />
-        </div>
-        <h1 className="text-4xl font-bold text-blue-700 mb-4">{t('welcome_title')}</h1>
-        <p className="text-xl text-center max-w-2xl">
-          {t('welcome_message')}
-        </p>
-      </div>
-    );
+    
+    return <InfographicPage />;
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-100 to-blue-50">
+    <div className="min-h-screen flex flex-col bg-transparent"> {/* Updated: bg-transparent as body sets base */}
       <Navbar
         navItems={NAV_ITEMS}
-        onSelectPage={(page, subPage) => {
+        onSelectPage={(page: Page | null, subPage: SubPage | null) => {
           setActivePage(page);
           setActiveSubPage(subPage);
         }}
@@ -204,8 +192,10 @@ const App: React.FC = () => {
         userProfile={userProfile}
         onOpenProfileModal={() => setIsUserProfileModalOpen(true)}
       />
-      <main className="flex-grow container mx-auto px-4 py-8">
-        {renderContent()}
+      <main className="flex-grow container mx-auto px-2 sm:px-4 md:px-6 py-4 md:py-8 flex flex-col"> {/* Adjusted padding */}
+        <div className="flex-grow w-full h-full"> 
+            {renderContent()}
+        </div>
       </main>
       {isUserProfileModalOpen && (
         <UserProfileModal

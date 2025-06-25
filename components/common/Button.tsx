@@ -17,19 +17,19 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseStyles = "font-semibold rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 ease-in-out inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyles = "font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#073B4C] transition-all duration-200 ease-in-out inline-flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed";
 
   const variantStyles = {
-    primary: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500',
-    secondary: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
-    danger: 'bg-red-500 hover:bg-red-600 text-white focus:ring-red-400',
-    outline: 'bg-transparent hover:bg-gray-100 text-gray-700 border border-gray-300 focus:ring-blue-500',
+    primary: 'bg-[#118AB2] hover:bg-[#0f7ea1] text-white focus:ring-[#118AB2]', // Infographic Blue
+    secondary: 'bg-slate-600 hover:bg-slate-500 text-slate-100 focus:ring-slate-500',
+    danger: 'bg-[#FF6B6B] hover:bg-[#fa5252] text-white focus:ring-[#FF6B6B]', // Infographic Coral
+    outline: 'bg-transparent hover:bg-slate-700 text-slate-300 border border-slate-600 hover:border-slate-500 focus:ring-blue-500',
   };
 
   const sizeStyles = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+    sm: 'px-3 py-1.5 text-xs sm:text-sm',
+    md: 'px-5 py-2.5 text-sm sm:text-base',
+    lg: 'px-7 py-3 text-base sm:text-lg',
   };
 
   return (
@@ -37,9 +37,9 @@ export const Button: React.FC<ButtonProps> = ({
       className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
       {...props}
     >
-      {leftIcon && <span className="mr-2">{leftIcon}</span>}
+      {leftIcon && <span className="mr-2 -ml-1">{leftIcon}</span>}
       {children}
-      {rightIcon && <span className="ml-2">{rightIcon}</span>}
+      {rightIcon && <span className="ml-2 -mr-1">{rightIcon}</span>}
     </button>
   );
 };

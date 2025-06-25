@@ -24,7 +24,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [otherDetails, setOtherDetails] = useState('');
-  const [photo, setPhoto] = useState<string | null>(null); // Base64 string
+  const [photo, setPhoto] = useState<string | null>(null); 
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,7 +36,6 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
       setPhoto(currentUserProfile.photo || null);
       setPhotoPreview(currentUserProfile.photo || null);
     } else {
-      // Reset form if no current profile (e.g., first time)
       setName('');
       setEmail('');
       setPhone('');
@@ -44,7 +43,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
       setPhoto(null);
       setPhotoPreview(null);
     }
-  }, [currentUserProfile, isOpen]); // Rerun effect if modal opens or profile changes
+  }, [currentUserProfile, isOpen]); 
 
   const handlePhotoUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -64,15 +63,17 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
     onSave({ name, email, phone, otherDetails, photo });
   };
 
+  const inputBaseClasses = "w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400 text-sm";
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t('user_profile_modal_title')} size="lg">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex flex-col items-center space-y-2">
-          <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-2 border-blue-300">
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="flex flex-col items-center space-y-3">
+          <div className="w-32 h-32 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden border-2 border-blue-500 shadow-md">
             {photoPreview ? (
               <img src={photoPreview} alt="Profile Preview" className="w-full h-full object-cover" />
             ) : (
-              <UserIcon className="w-16 h-16 text-gray-400" />
+              <UserIcon className="w-16 h-16 text-slate-500" />
             )}
           </div>
           <input
@@ -84,62 +85,62 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           />
           <label
             htmlFor="photoUpload"
-            className="cursor-pointer bg-blue-100 text-blue-700 px-3 py-1.5 text-sm font-medium rounded-md hover:bg-blue-200 transition-colors"
+            className="cursor-pointer bg-slate-600 text-slate-200 px-4 py-2 text-sm font-medium rounded-lg hover:bg-slate-500 transition-colors"
           >
             {photoPreview ? t('user_profile_change_photo_button') : t('user_profile_upload_photo_button')}
           </label>
         </div>
 
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">{t('user_profile_name_label')}</label>
+          <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-1">{t('user_profile_name_label')}</label>
           <input
             type="text"
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className={inputBaseClasses}
             placeholder={t('user_profile_name_placeholder')}
             required
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">{t('user_profile_email_label')}</label>
+          <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1">{t('user_profile_email_label')}</label>
           <input
             type="email"
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className={inputBaseClasses}
             placeholder={t('user_profile_email_placeholder')}
           />
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">{t('user_profile_phone_label')}</label>
+          <label htmlFor="phone" className="block text-sm font-medium text-slate-300 mb-1">{t('user_profile_phone_label')}</label>
           <input
             type="tel"
             id="phone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className={inputBaseClasses}
             placeholder={t('user_profile_phone_placeholder')}
           />
         </div>
 
         <div>
-          <label htmlFor="otherDetails" className="block text-sm font-medium text-gray-700">{t('user_profile_other_details_label')}</label>
+          <label htmlFor="otherDetails" className="block text-sm font-medium text-slate-300 mb-1">{t('user_profile_other_details_label')}</label>
           <textarea
             id="otherDetails"
             value={otherDetails}
             onChange={(e) => setOtherDetails(e.target.value)}
             rows={3}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className={inputBaseClasses}
             placeholder={t('user_profile_other_details_placeholder')}
           />
         </div>
 
-        <div className="flex justify-end pt-2">
+        <div className="flex justify-end pt-3 space-x-3">
           <Button type="button" variant="outline" onClick={onClose} className="mr-2">{t('cancel_button')}</Button>
           <Button type="submit" variant="primary">{t('user_profile_save_button')}</Button>
         </div>

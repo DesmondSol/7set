@@ -39,40 +39,42 @@ export const AiPitchModal: React.FC<AiPitchModalProps> = ({ isOpen, onClose, onG
     { value: 'sales_pitch', labelKey: 'pitch_type_sales' },
     { value: 'email_campaign', labelKey: 'pitch_type_email_campaign' },
   ];
+  
+  const inputBaseClasses = "w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400 text-sm";
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t('ai_pitch_modal_title')} size="lg">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label htmlFor="aiPitchType" className="block text-sm font-medium text-gray-700">{t('ai_pitch_type_label')}</label>
+          <label htmlFor="aiPitchType" className="block text-sm font-medium text-slate-300 mb-1">{t('ai_pitch_type_label')}</label>
           <select id="aiPitchType" value={pitchType} onChange={(e) => setPitchType(e.target.value as PitchType)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                  className={`${inputBaseClasses} appearance-none`}>
             {pitchTypeOptions.map(opt => (
-                <option key={opt.value} value={opt.value}>{t(opt.labelKey)}</option>
+                <option key={opt.value} value={opt.value} className="bg-slate-700 text-slate-200">{t(opt.labelKey)}</option>
             ))}
           </select>
         </div>
         <div>
-          <label htmlFor="aiPitchTargetAudience" className="block text-sm font-medium text-gray-700">{t('ai_pitch_target_audience_label')}</label>
+          <label htmlFor="aiPitchTargetAudience" className="block text-sm font-medium text-slate-300 mb-1">{t('ai_pitch_target_audience_label')}</label>
           <input type="text" id="aiPitchTargetAudience" value={targetAudience} onChange={(e) => setTargetAudience(e.target.value)} required
-                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                 className={inputBaseClasses}
                  placeholder={t('pitch_target_audience_placeholder')} />
         </div>
         <div>
-          <label htmlFor="aiPitchKeyMessage" className="block text-sm font-medium text-gray-700">{t('ai_pitch_key_message_label')}</label>
+          <label htmlFor="aiPitchKeyMessage" className="block text-sm font-medium text-slate-300 mb-1">{t('ai_pitch_key_message_label')}</label>
           <input type="text" id="aiPitchKeyMessage" value={keyMessage} onChange={(e) => setKeyMessage(e.target.value)} required
-                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                 className={inputBaseClasses}
                  placeholder={t('pitch_key_message_placeholder')} />
         </div>
         {pitchType === 'email_campaign' && (
           <div>
-            <label htmlFor="aiPitchNumEmails" className="block text-sm font-medium text-gray-700">{t('ai_pitch_num_emails_label')}</label>
+            <label htmlFor="aiPitchNumEmails" className="block text-sm font-medium text-slate-300 mb-1">{t('ai_pitch_num_emails_label')}</label>
             <input type="number" id="aiPitchNumEmails" value={numEmails || ''} onChange={(e) => setNumEmails(parseInt(e.target.value, 10))} min="1" max="10"
-                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                   className={inputBaseClasses}
                    placeholder="e.g., 3" />
           </div>
         )}
-        <div className="flex justify-end pt-2 space-x-2">
+        <div className="flex justify-end pt-3 space-x-3">
           <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>{t('cancel_button')}</Button>
           <Button type="submit" variant="primary" disabled={isLoading} leftIcon={isLoading ? <SpinnerIcon className="h-5 w-5"/> : <SparklesIcon className="h-5 w-5"/>}>
             {isLoading ? t('pitch_ai_generating_button') : t('ai_pitch_generate_button')}

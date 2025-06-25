@@ -16,7 +16,7 @@ interface AiMarketingModalProps {
 
 export const AiMarketingModal: React.FC<AiMarketingModalProps> = ({ isOpen, onClose, onGenerate, isLoading, language, t }) => {
   const [campaignGoal, setCampaignGoal] = useState('');
-  const [targetPlatforms, setTargetPlatforms] = useState(''); // Comma-separated
+  const [targetPlatforms, setTargetPlatforms] = useState(''); 
   const [contentTone, setContentTone] = useState('');
   const [duration, setDuration] = useState('');
 
@@ -33,35 +33,37 @@ export const AiMarketingModal: React.FC<AiMarketingModalProps> = ({ isOpen, onCl
       duration,
     });
   };
+  
+  const inputBaseClasses = "w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400 text-sm";
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t('ai_marketing_modal_title')} size="lg">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label htmlFor="campaignGoal" className="block text-sm font-medium text-gray-700">{t('ai_marketing_campaign_goal_label')}</label>
+          <label htmlFor="campaignGoal" className="block text-sm font-medium text-slate-300 mb-1">{t('ai_marketing_campaign_goal_label')}</label>
           <input type="text" id="campaignGoal" value={campaignGoal} onChange={(e) => setCampaignGoal(e.target.value)} required
-                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                 className={inputBaseClasses}
                  placeholder={t('ai_marketing_campaign_goal_placeholder')} />
         </div>
         <div>
-          <label htmlFor="targetPlatforms" className="block text-sm font-medium text-gray-700">{t('ai_marketing_target_platforms_label')}</label>
+          <label htmlFor="targetPlatforms" className="block text-sm font-medium text-slate-300 mb-1">{t('ai_marketing_target_platforms_label')}</label>
           <input type="text" id="targetPlatforms" value={targetPlatforms} onChange={(e) => setTargetPlatforms(e.target.value)} required
-                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                 className={inputBaseClasses}
                  placeholder={t('ai_marketing_target_platforms_placeholder')} />
         </div>
         <div>
-          <label htmlFor="contentTone" className="block text-sm font-medium text-gray-700">{t('ai_marketing_content_tone_label')}</label>
+          <label htmlFor="contentTone" className="block text-sm font-medium text-slate-300 mb-1">{t('ai_marketing_content_tone_label')}</label>
           <input type="text" id="contentTone" value={contentTone} onChange={(e) => setContentTone(e.target.value)} required
-                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                 className={inputBaseClasses}
                  placeholder={t('ai_marketing_content_tone_placeholder')} />
         </div>
         <div>
-          <label htmlFor="duration" className="block text-sm font-medium text-gray-700">{t('ai_marketing_duration_label')}</label>
+          <label htmlFor="duration" className="block text-sm font-medium text-slate-300 mb-1">{t('ai_marketing_duration_label')}</label>
           <input type="text" id="duration" value={duration} onChange={(e) => setDuration(e.target.value)} required
-                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                 className={inputBaseClasses}
                  placeholder={t('ai_marketing_duration_placeholder')} />
         </div>
-        <div className="flex justify-end pt-2 space-x-2">
+        <div className="flex justify-end pt-3 space-x-3">
           <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>{t('cancel_button')}</Button>
           <Button type="submit" variant="primary" disabled={isLoading} leftIcon={isLoading ? <SpinnerIcon className="h-5 w-5"/> : <SparklesIcon className="h-5 w-5"/>}>
             {isLoading ? t('marketing_ai_generating_plan_button') : t('ai_marketing_generate_button')}

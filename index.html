@@ -6,22 +6,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>7set Spark</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
   <style>
-    /* Custom scrollbar for webkit browsers */
+    /* Custom scrollbar for webkit browsers - Dark Theme */
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: #f1f1f1;
+      background: #0f172a; /* slate-900 */
       border-radius: 10px;
     }
     ::-webkit-scrollbar-thumb {
-      background: #888;
+      background: #334155; /* slate-700 */
       border-radius: 10px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #555;
+      background: #475569; /* slate-600 */
     }
     /* Simple body styling for better visual */
     body {
@@ -37,17 +38,20 @@
 <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@^19.1.0",
     "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
     "react/": "https://esm.sh/react@^19.1.0/",
-    "@google/genai": "https://esm.sh/@google/genai@^0.15.0",
-    "jspdf": "https://esm.sh/jspdf@2.5.1"
+    "react": "https://esm.sh/react@^19.1.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.6.0",
+    "jspdf": "https://esm.sh/jspdf@^3.0.1"
   }
 }
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-gray-100">
+<body class="bg-[#073B4C] text-slate-200 font-inter">
+  <div class="bg-[#FFD166] text-slate-900 py-2 px-4 text-center text-sm">
+    May class starting soon. <a href="#" class="font-semibold underline hover:text-yellow-800 transition-colors">Register here</a>.
+  </div>
   <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

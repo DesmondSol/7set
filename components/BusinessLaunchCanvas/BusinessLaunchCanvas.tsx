@@ -32,9 +32,9 @@ const SectionContentEditor: React.FC<SectionContentEditorProps> = ({ section, co
   };
   
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="text-2xl font-semibold text-blue-700">{t(section as TranslationKey, section)}</h3>
+    <div className="bg-slate-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-2xl font-semibold text-blue-400">{t(section as TranslationKey, section)}</h3>
         {!editing && (
           <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
             {t('edit_button', 'Edit')}
@@ -47,17 +47,17 @@ const SectionContentEditor: React.FC<SectionContentEditorProps> = ({ section, co
           <textarea
             value={currentContent}
             onChange={(e) => setCurrentContent(e.target.value)}
-            className="w-full h-40 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+            className="w-full h-48 p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
             placeholder={`${t('no_content_yet_placeholder', 'Enter details for')} ${t(section as TranslationKey, section)}...`}
           />
-          <div className="mt-3 flex space-x-2">
-            <Button onClick={handleSave} size="sm">{t('save_button', 'Save')}</Button>
+          <div className="mt-4 flex space-x-3">
+            <Button onClick={handleSave} size="sm" variant="primary">{t('save_button', 'Save')}</Button>
             <Button variant="outline" size="sm" onClick={() => { setEditing(false); setCurrentContent(content); }}>{t('cancel_button', 'Cancel')}</Button>
           </div>
         </div>
       ) : (
-        <p className="text-gray-700 whitespace-pre-wrap min-h-[50px]">
-            {content || <span className="text-gray-400 italic">{t('no_content_yet_placeholder')}</span>}
+        <p className="text-slate-300 whitespace-pre-wrap min-h-[60px] prose prose-sm prose-invert max-w-none"> {/* prose-invert for dark mode text styling */}
+            {content || <span className="text-slate-500 italic">{t('no_content_yet_placeholder')}</span>}
         </p>
       )}
     </div>
@@ -78,12 +78,12 @@ const A4_WIDTH_MM = 210;
 const A4_HEIGHT_MM = 297;
 const MARGIN_MM = 15;
 const CONTENT_WIDTH_MM = A4_WIDTH_MM - 2 * MARGIN_MM;
-const LINE_HEIGHT_NORMAL = 7; 
-const LINE_HEIGHT_TITLE = 9; 
+const LINE_HEIGHT_NORMAL = 6; 
+const LINE_HEIGHT_TITLE = 10; 
 const LINE_HEIGHT_SECTION_TITLE = 8; 
 
-const TITLE_FONT_SIZE = 18;
-const SECTION_TITLE_FONT_SIZE = 14;
+const TITLE_FONT_SIZE = 20;
+const SECTION_TITLE_FONT_SIZE = 16;
 const TEXT_FONT_SIZE = 10;
 const FOOTER_FONT_SIZE = 8;
 const USER_PHOTO_SIZE_MM = 25;
@@ -99,12 +99,12 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
 
   const addPageFooter = (doc: jsPDF, pageNumber: number, totalPages: number) => {
     doc.setFontSize(FOOTER_FONT_SIZE);
-    doc.setTextColor(100);
+    doc.setTextColor(120, 120, 120); // Lighter gray for dark mode PDF if needed, but black is fine for print
     const footerText = t('page_x_of_y', `Page ${pageNumber} of ${totalPages}`)
                         .replace('{currentPage}', String(pageNumber))
                         .replace('{totalPages}', String(totalPages));
     doc.text(footerText, MARGIN_MM, A4_HEIGHT_MM - MARGIN_MM / 2);
-    doc.setTextColor(0);
+    doc.setTextColor(0,0,0); // Reset to black for content
   };
   
   const addTextWithPageBreak = (
@@ -133,10 +133,10 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
 
   const handleExport = () => {
     const doc = new jsPDF();
+    doc.setTextColor(50, 50, 50); // Dark gray for text for better print readability
     let currentYRef = { value: MARGIN_MM };
     const totalPagesRef = { current: 1 }; 
 
-    // Add User Profile Section
     if (userProfile) {
         doc.setFontSize(SECTION_TITLE_FONT_SIZE);
         doc.setFont("helvetica", "bold");
@@ -147,14 +147,12 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
         let textX = MARGIN_MM;
         if (userProfile.photo) {
             try {
-                // Ensure photo is valid base64 string (remove data:image/jpeg;base64, part if present)
                 const base64Image = userProfile.photo.split(',')[1] || userProfile.photo;
                 const imageType = userProfile.photo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
                 doc.addImage(base64Image, imageType, MARGIN_MM, currentYRef.value, USER_PHOTO_SIZE_MM, USER_PHOTO_SIZE_MM);
-                textX = MARGIN_MM + USER_PHOTO_SIZE_MM + 5; // Indent text next to photo
+                textX = MARGIN_MM + USER_PHOTO_SIZE_MM + 5; 
             } catch (e) {
                 console.error("Error adding image to PDF:", e);
-                // Continue without image if error
             }
         }
         
@@ -167,22 +165,6 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
 
         let textStartY = currentYRef.value;
         profileDetails.forEach(detail => {
-            if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - LINE_HEIGHT_NORMAL && textStartY + (USER_PHOTO_SIZE_MM / 2) > A4_HEIGHT_MM - MARGIN_MM - LINE_HEIGHT_NORMAL) { // Check if new page is needed
-                 // Only add new page if not enough space for text next to photo
-                 if (userProfile.photo && currentYRef.value < textStartY + USER_PHOTO_SIZE_MM + 5 ) {
-                     // Still on the same line as photo, don't break page yet
-                 } else {
-                    addPageFooter(doc, doc.getNumberOfPages(), totalPagesRef.current);
-                    doc.addPage();
-                    totalPagesRef.current = doc.getNumberOfPages();
-                    currentYRef.value = MARGIN_MM;
-                    textStartY = MARGIN_MM; // Reset textStartY for new page
-                    textX = MARGIN_MM; // Reset textX if new page and no photo
-                 }
-            }
-            // Ensure we don't write text over the photo space if photo exists
-            const yPos = userProfile.photo && currentYRef.value < textStartY + USER_PHOTO_SIZE_MM + 5 ? currentYRef.value : textStartY;
-
             const lines = doc.splitTextToSize(detail, CONTENT_WIDTH_MM - (textX - MARGIN_MM));
             lines.forEach((line: string) => {
                  if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - LINE_HEIGHT_NORMAL) {
@@ -196,11 +178,11 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
                  currentYRef.value += LINE_HEIGHT_NORMAL;
             });
         });
-        // Ensure Y is below photo if photo was added
+
         if (userProfile.photo) {
             currentYRef.value = Math.max(currentYRef.value, textStartY + USER_PHOTO_SIZE_MM + LINE_HEIGHT_NORMAL);
         } else {
-            currentYRef.value += LINE_HEIGHT_NORMAL; // Extra space if no photo
+            currentYRef.value += LINE_HEIGHT_NORMAL; 
         }
     }
 
@@ -232,8 +214,8 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
       
       doc.setFontSize(TEXT_FONT_SIZE);
       const contentText = canvasData[section] || t('no_content_yet_placeholder_pdf', 'No content provided.');
-      addTextWithPageBreak(doc, contentText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL * 0.9, totalPagesRef);
-      currentYRef.value += LINE_HEIGHT_NORMAL / 2; 
+      addTextWithPageBreak(doc, contentText, MARGIN_MM + 2, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef); // Indent content slightly
+      currentYRef.value += LINE_HEIGHT_NORMAL * 0.75; 
     });
     
     for (let i = 1; i <= totalPagesRef.current; i++) {
@@ -280,14 +262,14 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem-2rem)] relative"> 
-      <div className="flex-grow p-1 md:p-6 overflow-y-auto">
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
-          <h2 className="text-3xl font-bold text-red-700">{t('businessLaunchCanvas_title', 'Business Launch Canvas')}</h2>
+    <div className="flex flex-col h-[calc(100vh-8rem-2rem)] relative bg-transparent"> 
+      <div className="flex-grow p-1 sm:p-4 md:p-6 overflow-y-auto">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-8 gap-4">
+          <h2 className="text-3xl font-bold text-slate-100">{t('businessLaunchCanvas_title', 'Business Launch Canvas')}</h2>
           <Button onClick={handleExport} variant="primary" leftIcon={<DownloadIcon className="h-5 w-5"/>}>{t('export_all_button', 'Export All')}</Button>
         </div>
         
-        <div className="space-y-6">
+        <div className="space-y-8">
           {ALL_CANVAS_SECTIONS.map(section => (
               <div key={section} id={`section-${section.replace(/\s+/g, '-')}`}>
                 <SectionContentEditor 
@@ -306,43 +288,43 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
         icon={<HelpIcon className="h-6 w-6" />}
         tooltip={t('help_canvas_button_tooltip', "Business Launch Canvas Guide")}
         onClick={() => setIsHelpModalOpen(true)}
-        className="bottom-28 right-6 z-50"
-        colorClass="bg-blue-600 hover:bg-blue-700"
-        size="sm"
+        className="bottom-28 right-6 z-30" // Ensure FAB is above content, but below modal if open
+        colorClass="bg-slate-600 hover:bg-slate-500" // Secondary color for help
+        size="md"
       />
       <FloatingActionButton
         icon={<SparklesIcon className="h-7 w-7"/>}
         tooltip={t('ai_assistant_canvas_button_tooltip', "AI Assistant to Fill Canvas")}
         onClick={() => setIsAiModalOpen(true)}
-        className="bottom-6 right-6 z-50"
-        colorClass="bg-red-600 hover:bg-red-700"
+        className="bottom-6 right-6 z-30" // Primary AI action
+        colorClass="bg-blue-600 hover:bg-blue-500" // Using infographic blue
         size="lg"
       />
 
       <Modal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} title={t('ai_assistant_modal_title_canvas', "AI Assistant - Business Canvas")} size="xl">
-        {error && <p className="text-red-500 bg-red-100 p-3 rounded-md mb-4">{error}</p>}
-        <div className="space-y-4">
+        {error && <p className="text-red-400 bg-red-900/30 p-3 rounded-lg mb-4 text-sm">{error}</p>}
+        <div className="space-y-5">
           <div>
-            <label htmlFor="idea" className="block text-sm font-medium text-gray-700 mb-1">{t('ai_modal_idea_label')}</label>
-            <textarea id="idea" name="idea" rows={3} value={aiForm.idea} onChange={handleAiInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder={t('ai_modal_idea_placeholder')}/>
+            <label htmlFor="idea" className="block text-sm font-medium text-slate-300 mb-1">{t('ai_modal_idea_label')}</label>
+            <textarea id="idea" name="idea" rows={3} value={aiForm.idea} onChange={handleAiInputChange} className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400" placeholder={t('ai_modal_idea_placeholder')}/>
           </div>
           <div>
-            <label htmlFor="q1" className="block text-sm font-medium text-gray-700 mb-1">{t('ai_modal_q1_label')}</label>
-            <input type="text" id="q1" name="q1" value={aiForm.q1} onChange={handleAiInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder={t('ai_modal_q1_placeholder')}/>
+            <label htmlFor="q1" className="block text-sm font-medium text-slate-300 mb-1">{t('ai_modal_q1_label')}</label>
+            <input type="text" id="q1" name="q1" value={aiForm.q1} onChange={handleAiInputChange} className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400" placeholder={t('ai_modal_q1_placeholder')}/>
           </div>
           <div>
-            <label htmlFor="q2" className="block text-sm font-medium text-gray-700 mb-1">{t('ai_modal_q2_label')}</label>
-            <input type="text" id="q2" name="q2" value={aiForm.q2} onChange={handleAiInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder={t('ai_modal_q2_placeholder')}/>
+            <label htmlFor="q2" className="block text-sm font-medium text-slate-300 mb-1">{t('ai_modal_q2_label')}</label>
+            <input type="text" id="q2" name="q2" value={aiForm.q2} onChange={handleAiInputChange} className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400" placeholder={t('ai_modal_q2_placeholder')}/>
           </div>
           <div>
-            <label htmlFor="q3" className="block text-sm font-medium text-gray-700 mb-1">{t('ai_modal_q3_label')}</label>
-            <input type="text" id="q3" name="q3" value={aiForm.q3} onChange={handleAiInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder={t('ai_modal_q3_placeholder')}/>
+            <label htmlFor="q3" className="block text-sm font-medium text-slate-300 mb-1">{t('ai_modal_q3_label')}</label>
+            <input type="text" id="q3" name="q3" value={aiForm.q3} onChange={handleAiInputChange} className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400" placeholder={t('ai_modal_q3_placeholder')}/>
           </div>
-          <Button onClick={handleAiGenerate} disabled={isLoadingAi} className="w-full" variant="primary">
+          <Button onClick={handleAiGenerate} disabled={isLoadingAi} className="w-full mt-2" variant="primary" size="lg">
             {isLoadingAi ? (
-              <SpinnerIcon className="animate-spin h-5 w-5 mr-2" />
+              <SpinnerIcon className="h-5 w-5" />
             ) : (
-              <SparklesIcon className="h-5 w-5 mr-2" />
+              <SparklesIcon className="h-5 w-5" />
             )}
             {isLoadingAi ? t('ai_modal_generating_button_canvas') : t('ai_modal_generate_button_canvas')}
           </Button>
@@ -350,15 +332,15 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
       </Modal>
 
       <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title={t('help_modal_title_canvas', "Business Launch Canvas Guide")} size="xl">
-        <div className="space-y-6">
+        <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2"> {/* Added max-height and overflow */}
           {CANVAS_SECTIONS_HELP.map(helpItem => (
-            <div key={helpItem.title} className="p-4 bg-gray-50 rounded-lg shadow">
-              <h4 className="text-xl font-semibold text-blue-700 mb-2">{t(helpItem.title as TranslationKey, helpItem.title)}</h4>
-              <p className="text-gray-700 mb-2 whitespace-pre-line">{helpItem.explanation[language] || helpItem.explanation.en}</p>
+            <div key={helpItem.title} className="p-4 bg-slate-700/50 rounded-lg shadow-inner">
+              <h4 className="text-xl font-semibold text-blue-400 mb-2">{t(helpItem.title as TranslationKey, helpItem.title)}</h4>
+              <p className="text-slate-300 mb-2 whitespace-pre-line prose prose-sm prose-invert max-w-none">{helpItem.explanation[language] || helpItem.explanation.en}</p>
               {helpItem.example && (helpItem.example[language] || helpItem.example.en) && (
                 <div>
-                  <h5 className="text-sm font-semibold text-gray-600 mb-1">{language === 'am' ? 'ምሳሌ:' : 'Example:'}</h5>
-                  <p className="text-sm text-gray-600 bg-blue-50 p-2 rounded whitespace-pre-line border border-blue-200">
+                  <h5 className="text-sm font-semibold text-slate-400 mb-1">{language === 'am' ? 'ምሳሌ:' : 'Example:'}</h5>
+                  <p className="text-sm text-slate-400 bg-slate-600/50 p-3 rounded whitespace-pre-line border border-slate-500 prose prose-sm prose-invert max-w-none">
                     {helpItem.example[language] || helpItem.example.en}
                   </p>
                 </div>

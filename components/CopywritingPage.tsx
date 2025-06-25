@@ -8,14 +8,14 @@ import {
     CanvasData, 
     MarketResearchData,
     CopywritingSectionHelp
-} from '../types';
-import { TranslationKey } from '../locales';
-import { COPYWRITING_SECTIONS_HELP } from '../constants';
+} from '../../types'; // Path to types from components/ is ../../types
+import { TranslationKey } from '../../locales'; // Path to locales from components/ is ../../locales
+import { COPYWRITING_SECTIONS_HELP } from '../../constants'; // Path to constants from components/ is ../../constants
 import { MarketingPlanner } from './Copywriting/MarketingPlanner';
 import { PitchRefiner } from './Copywriting/PitchRefiner';
-import { FloatingActionButton } from './common/FloatingActionButton';
-import { Modal } from './common/Modal';
-import { Button } from './common/Button';
+import { FloatingActionButton } from './common/FloatingActionButton'; // Corrected path
+import { Modal } from './common/Modal'; // Corrected path
+import { Button } from './common/Button'; // Corrected path
 
 interface CopywritingPageProps {
   initialData: CopywritingData;
@@ -39,9 +39,7 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
   const [activeSubSection, setActiveSubSection] = useState<CopywritingSubSection>(CopywritingSubSection.MARKETING);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
-  
-  // AI Modals will be specific to sub-components, but the FAB logic is here
-  const [isAiModalOpen, setIsAiModalOpen] = useState(false); 
+  const [isAiModalTriggered, setIsAiModalTriggered] = useState(false); 
 
 
   useEffect(() => {
@@ -60,18 +58,16 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
   };
 
   const openAiModal = () => {
-    // This function will likely be passed down and specific AI modal state will be handled in MarketingPlanner/PitchRefiner
-    // For now, it just sets a generic flag. The sub-components will decide which AI modal to show.
-    setIsAiModalOpen(true); 
+    setIsAiModalTriggered(true); 
   };
 
 
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100vh-8rem-2rem)] relative">
-      <aside className={`fixed md:absolute top-20 md:top-auto bottom-0 right-0 h-full md:h-auto md:max-h-full w-full max-w-xs md:w-[300px] bg-gradient-to-br from-red-700 to-red-800 text-white p-6 shadow-2xl transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 z-40 overflow-y-auto`}>
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-semibold">{t('copywriting_sidebar_title')}</h3>
-          <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-red-200 hover:text-white">
+    <div className="flex flex-col md:flex-row h-[calc(100vh-8rem-2rem)] relative bg-transparent">
+      <aside className={`fixed md:static top-0 left-0 h-full w-full max-w-xs md:w-[320px] bg-slate-800 text-slate-300 p-6 shadow-2xl transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 z-40 overflow-y-auto border-r border-slate-700`}>
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-xl font-semibold text-slate-100">{t('copywriting_sidebar_title')}</h3>
+          <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-slate-400 hover:text-white">
             <CloseIcon className="h-6 w-6" />
           </button>
         </div>
@@ -88,7 +84,11 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
                       e.preventDefault(); 
                       handleSubSectionSelect(subSection);
                     }}
-                    className={`block px-3 py-2 rounded-md transition-colors ${activeSubSection === subSection ? 'bg-blue-600 font-semibold' : 'hover:bg-red-600'}`}
+                    className={`block px-4 py-3 rounded-lg transition-colors duration-200
+                      ${activeSubSection === subSection 
+                        ? 'bg-blue-600 text-white font-semibold shadow-md' 
+                        : 'hover:bg-slate-700 hover:text-slate-100'
+                      }`}
                   >
                     {sidebarTitle}
                   </a>
@@ -99,9 +99,9 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
         </nav>
       </aside>
 
-      <main className={`flex-grow p-4 md:p-6 bg-gray-50 shadow-inner overflow-y-auto transition-all duration-300 ease-in-out ${isSidebarOpen ? 'md:mr-[300px]' : 'mr-0'}`}>
-        <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold text-red-700">{t('copywriting_page_title')}</h2>
+      <main className={`flex-grow p-4 md:p-8 bg-transparent shadow-inner overflow-y-auto transition-all duration-300 ease-in-out`}>
+        <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-slate-100">{t('copywriting_page_title')}</h2>
             <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden">
                 {isSidebarOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
             </Button>
@@ -116,8 +116,8 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
             language={language}
             t={t}
             userProfile={userProfile}
-            openAiModalFlag={isAiModalOpen} // This indicates the FAB was clicked
-            setOpenAiModalFlag={setIsAiModalOpen} // To close the modal from MarketingPlanner
+            openAiModalFlag={isAiModalTriggered && activeSubSection === CopywritingSubSection.MARKETING} 
+            setOpenAiModalFlag={setIsAiModalTriggered} 
           />
         )}
         {activeSubSection === CopywritingSubSection.PITCH_REFINEMENT && (
@@ -129,8 +129,8 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
             language={language}
             t={t}
             userProfile={userProfile}
-            openAiModalFlag={isAiModalOpen} // This indicates the FAB was clicked
-            setOpenAiModalFlag={setIsAiModalOpen} // To close the modal from PitchRefiner
+            openAiModalFlag={isAiModalTriggered && activeSubSection === CopywritingSubSection.PITCH_REFINEMENT} 
+            setOpenAiModalFlag={setIsAiModalTriggered} 
           />
         )}
       </main>
@@ -139,29 +139,29 @@ export const CopywritingPage: React.FC<CopywritingPageProps> = ({
         icon={<HelpIcon className="h-6 w-6" />}
         tooltip={t('copywriting_help_button_tooltip')}
         onClick={() => setIsHelpModalOpen(true)}
-        className="bottom-28 right-6 z-50"
-        colorClass="bg-blue-600 hover:bg-blue-700"
-        size="sm"
+        className="bottom-28 right-6 z-30"
+        colorClass="bg-slate-600 hover:bg-slate-500"
+        size="md"
       />
       <FloatingActionButton
         icon={<SparklesIcon className="h-7 w-7"/>}
         tooltip={t('copywriting_ai_button_tooltip')}
         onClick={openAiModal} 
-        className="bottom-6 right-6 z-50"
-        colorClass="bg-red-600 hover:bg-red-700"
+        className="bottom-6 right-6 z-30"
+        colorClass="bg-blue-600 hover:bg-blue-500"
         size="lg"
       />
 
-      <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title={`${t('mra_help_modal_title_prefix')}: ${currentHelpContent?.sidebarTitle[language] || currentHelpContent?.title || ''}`} size="lg">
-        <p className="text-gray-700 whitespace-pre-line">
+      <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title={`${t('mra_help_modal_title_prefix')}: ${currentHelpContent?.sidebarTitle[language] || currentHelpContent?.title || ''}`} size="xl">
+        <div className="prose prose-sm prose-invert max-w-none text-slate-300 whitespace-pre-line max-h-[70vh] overflow-y-auto pr-2">
             {currentHelpContent?.explanation[language] || currentHelpContent?.explanation.en}
-        </p>
+        </div>
       </Modal>
     </div>
   );
 };
 
-// --- SVG Icons (re-use from other components or define if new needed) ---
+// --- SVG Icons ---
 const CloseIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

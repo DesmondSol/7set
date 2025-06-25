@@ -1,5 +1,6 @@
 {
   "name": "v1 7set Spark Innovation & Training App with localizations",
   "description": "An application designed to assist entrepreneurs on their journey through various stages of business development, featuring AI-powered tools for strategy and research.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "prompt": ""
 }

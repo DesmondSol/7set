@@ -5,7 +5,7 @@ import { TranslationKey } from '../locales';
 
 interface NavbarProps {
   navItems: NavItem[];
-  onSelectPage: (page: Page, subPage: SubPage) => void;
+  onSelectPage: (page: Page | null, subPage: SubPage | null) => void;
   activeSubPage: SubPage | null;
   currentLanguage: Language;
   changeLanguage: (lang: Language) => void;
@@ -47,7 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   
   const mainNavDropdownRef = useRef<HTMLDivElement>(null);
   const langDropdownRef = useRef<HTMLDivElement>(null);
-  const profileDropdownRef = useRef<HTMLDivElement>(null); // Though not a dropdown, for consistency if needed later
+  const profileDropdownRef = useRef<HTMLDivElement>(null); 
 
   useClickOutside(mainNavDropdownRef, () => setOpenDropdown(null));
   useClickOutside(langDropdownRef, () => setIsLangDropdownOpen(false));
@@ -67,24 +67,39 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <nav className="bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white shadow-lg sticky top-0 z-50">
-      <div className="container mx-auto px-4 flex justify-between items-center h-20">
-        <div className="text-2xl font-bold tracking-tight">
-          <span className="text-white">7set</span> <span className="text-blue-300">Spark</span>
-        </div>
+    <nav className="bg-slate-900 text-slate-200 shadow-xl sticky top-0 z-50"> {/* Updated theme */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+        <button
+          onClick={() => onSelectPage(null, null)}
+          className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 rounded-md p-1"
+          aria-label={t('logo_alt_text')}
+        >
+          {/* Mobile Logo */}
+          <img
+            src="https://i.ibb.co/bgrbH1Ch/logo.png" 
+            alt={t('logo_alt_text')}
+            className="h-8 w-auto cursor-pointer block sm:hidden"
+          />
+          {/* Desktop Logo */}
+          <img
+            src="https://7setspark.com/wp-content/uploads/2023/12/Asset-5-179x35.webp"
+            alt={t('logo_alt_text')}
+            className="h-10 w-auto cursor-pointer hidden sm:block"
+          />
+        </button>
         
         <div className="flex-grow flex justify-center items-center space-x-1 sm:space-x-2" ref={mainNavDropdownRef}>
           {navItems.map((item) => (
             <div key={item.label} className="relative">
               <button
                 onClick={() => handleNavClick(item.label)}
-                className={`px-3 py-2 sm:px-4 text-base sm:text-lg font-medium rounded-md hover:bg-red-500 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300
-                  ${openDropdown === item.label ? 'bg-red-500' : ''}`}
+                className={`px-3 py-2 sm:px-4 text-base sm:text-lg font-medium rounded-md hover:bg-slate-700/70 hover:text-blue-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900
+                  ${openDropdown === item.label ? 'bg-slate-700 text-blue-300' : ''}`}
               >
                 {t(item.label as TranslationKey, item.label)}
               </button>
               {openDropdown === item.label && (
-                <div className="absolute mt-2 w-auto max-w-[90vw] sm:max-w-sm md:w-56 bg-white rounded-md shadow-xl z-20 right-0 lg:left-0 py-1">
+                <div className="absolute mt-2 w-auto max-w-[90vw] sm:max-w-sm md:w-56 bg-slate-800 rounded-md shadow-2xl z-20 right-0 lg:left-0 py-1 border border-slate-700"> {/* Dark theme dropdown */}
                   {item.subItems.map((subItem) => (
                     <a
                       key={subItem}
@@ -95,8 +110,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                       }}
                       className={`block px-4 py-3 text-sm transition-colors duration-150 whitespace-normal
                         ${activeSubPage === subItem 
-                          ? 'bg-blue-500 text-white' 
-                          : 'text-gray-700 hover:bg-red-100 hover:text-red-700'
+                          ? 'bg-blue-600 text-white' 
+                          : 'text-slate-300 hover:bg-slate-700 hover:text-blue-300' 
                         }`}
                     >
                       {t(subItem as TranslationKey, subItem)}
@@ -113,13 +128,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="relative" ref={langDropdownRef}>
             <button
               onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-              className="px-2 py-1 sm:px-3 text-sm sm:text-base font-medium rounded-md hover:bg-red-500 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300 flex items-center"
+              className="px-2 py-1 sm:px-3 text-sm sm:text-base font-medium rounded-md hover:bg-slate-700/70 hover:text-blue-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 flex items-center"
             >
               {currentLanguage === 'am' ? t('lang_am_short') : t('lang_en_short')}
               <ChevronDownIcon className={`w-4 h-4 ml-1 transition-transform duration-200 ${isLangDropdownOpen ? 'transform rotate-180' : ''}`} />
             </button>
             {isLangDropdownOpen && (
-              <div className="absolute mt-2 w-auto max-w-[70vw] sm:max-w-[12rem] md:w-36 bg-white rounded-md shadow-xl z-20 right-0 py-1">
+              <div className="absolute mt-2 w-auto max-w-[70vw] sm:max-w-[12rem] md:w-36 bg-slate-800 rounded-md shadow-2xl z-20 right-0 py-1 border border-slate-700"> {/* Dark theme dropdown */}
                 {(['en', 'am'] as Language[]).map((lang) => (
                   <a
                     key={lang}
@@ -130,11 +145,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                     }}
                     className={`block px-4 py-3 text-sm transition-colors duration-150 whitespace-normal
                       ${currentLanguage === lang
-                        ? 'bg-blue-500 text-white'
-                        : 'text-gray-700 hover:bg-red-100 hover:text-red-700'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-300 hover:bg-slate-700 hover:text-blue-300'
                       }`}
                   >
-                    {lang === 'am' ? t('lang_amharic') : t('lang_english')} {/* Full name in dropdown */}
+                    {lang === 'am' ? t('lang_amharic') : t('lang_english')}
                   </a>
                 ))}
               </div>
@@ -145,13 +160,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="relative" ref={profileDropdownRef}>
              <button
                 onClick={onOpenProfileModal}
-                className="w-10 h-10 rounded-full bg-blue-300 hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-offset-2 focus:ring-offset-red-700 flex items-center justify-center overflow-hidden"
+                className="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 flex items-center justify-center overflow-hidden border-2 border-slate-600 hover:border-blue-500 transition-colors"
                 title={t('user_profile_button_tooltip')}
               >
                 {userProfile?.photo ? (
                   <img src={userProfile.photo} alt={t('user_profile_button_tooltip')} className="w-full h-full object-cover" />
                 ) : (
-                  <UserIcon className="w-6 h-6 text-red-700" />
+                  <UserIcon className="w-6 h-6 text-slate-400" />
                 )}
             </button>
           </div>

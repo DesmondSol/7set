@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { 
-    MindsetData, 
-    MindsetSubSection, 
-    Language, 
-    UserProfile 
+import {
+  MindsetData,
+  MindsetSubSection,
+  Language,
+  UserProfile
 } from '../types';
 import { TranslationKey } from '../types';
-import { MINDSET_SECTIONS_HELP } from '../../constants';
+import { MINDSET_SECTIONS_HELP } from '../constants';
 import EntrepreneurialAssessment from './Mindset/EntrepreneurialAssessment';
 import ProfileReport from './Mindset/ProfileReport';
 import GoalSetting from './Mindset/GoalSetting';
@@ -52,24 +52,24 @@ const MindsetPage: React.FC<MindsetPageProps> = ({
   const renderSubSectionContent = () => {
     switch (activeSubSection) {
       case MindsetSubSection.ENTREPRENEURIAL_ASSESSMENT:
-        return <EntrepreneurialAssessment 
-                  mindsetData={initialData} 
-                  onUpdateMindsetData={onUpdateData} 
-                  language={language} t={t} 
-                />;
+        return <EntrepreneurialAssessment
+          mindsetData={initialData}
+          onUpdateMindsetData={onUpdateData}
+          language={language} t={t}
+        />;
       case MindsetSubSection.PROFILE_REPORT:
-        return <ProfileReport 
-                  mindsetData={initialData} 
-                  onUpdateMindsetData={onUpdateData} 
-                  language={language} t={t} 
-                  userProfile={userProfile}
-                />;
+        return <ProfileReport
+          mindsetData={initialData}
+          onUpdateMindsetData={onUpdateData}
+          language={language} t={t}
+          userProfile={userProfile}
+        />;
       case MindsetSubSection.GOAL_SETTING:
-        return <GoalSetting 
-                  mindsetData={initialData} 
-                  onUpdateMindsetData={onUpdateData} 
-                  language={language} t={t} 
-                />;
+        return <GoalSetting
+          mindsetData={initialData}
+          onUpdateMindsetData={onUpdateData}
+          language={language} t={t}
+        />;
       default:
         return <p>{t('coming_soon_message')}</p>;
     }
@@ -77,7 +77,7 @@ const MindsetPage: React.FC<MindsetPageProps> = ({
 
   return (
     <div className="flex flex-col md:flex-row h-full md:h-[calc(100vh-8rem-2rem)] relative bg-transparent">
-      <aside 
+      <aside
         className={`
           fixed top-20 right-0 w-full h-[calc(100vh-5rem)] bg-slate-800 z-40 p-6 overflow-y-auto shadow-xl transition-transform duration-300 ease-in-out
           ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}
@@ -96,13 +96,13 @@ const MindsetPage: React.FC<MindsetPageProps> = ({
               <li key={sectionHelp.title}>
                 <a
                   href="#"
-                  onClick={(e) => { 
-                    e.preventDefault(); 
+                  onClick={(e) => {
+                    e.preventDefault();
                     handleSubSectionSelect(sectionHelp.title);
                   }}
                   className={`block px-4 py-3 rounded-lg transition-colors duration-200
-                    ${activeSubSection === sectionHelp.title 
-                      ? 'bg-blue-600 text-white font-semibold shadow-md' 
+                    ${activeSubSection === sectionHelp.title
+                      ? 'bg-blue-600 text-white font-semibold shadow-md'
                       : 'hover:bg-slate-700 hover:text-slate-100'
                     }`}
                 >
@@ -116,14 +116,14 @@ const MindsetPage: React.FC<MindsetPageProps> = ({
 
       <main className={`flex-grow p-4 md:p-8 bg-transparent shadow-inner overflow-y-auto ${isSidebarOpen && 'md:ml-0'}`}>
         <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-slate-100">{t('mindset_page_title')}</h2>
-            <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden">
-                {isSidebarOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
-            </Button>
+          <h2 className="text-3xl font-bold text-slate-100">{t('mindset_page_title')}</h2>
+          <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden">
+            {isSidebarOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
+          </Button>
         </div>
         {renderSubSectionContent()}
       </main>
-      
+
       <FloatingActionButton
         icon={<HelpIcon className="h-6 w-6" />}
         tooltip={t('mindset_help_button_tooltip')}
@@ -133,14 +133,14 @@ const MindsetPage: React.FC<MindsetPageProps> = ({
         size="md"
       />
 
-      <Modal 
-        isOpen={isHelpModalOpen} 
-        onClose={() => setIsHelpModalOpen(false)} 
-        title={`${t('mra_help_modal_title_prefix')}: ${t(currentHelpContent.sidebarTitle[language] as TranslationKey, currentHelpContent.title)}`} 
+      <Modal
+        isOpen={isHelpModalOpen}
+        onClose={() => setIsHelpModalOpen(false)}
+        title={`${t('mra_help_modal_title_prefix')}: ${t(currentHelpContent.sidebarTitle[language] as TranslationKey, currentHelpContent.title)}`}
         size="xl"
       >
         <div className="prose prose-sm prose-invert max-w-none text-slate-300 whitespace-pre-line max-h-[70vh] overflow-y-auto pr-2">
-            {t(currentHelpContent.explanationKey)}
+          {t(currentHelpContent.explanationKey)}
         </div>
       </Modal>
     </div>

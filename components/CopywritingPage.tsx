@@ -9,7 +9,7 @@ import {
   MarketResearchData,
   CopywritingSectionHelp,
   TranslationKey
-} from '../../types'; // Path to types from components/ is ../../types
+} from '../types'; // Path to types from components/ is ../../types
 import { COPYWRITING_SECTIONS_HELP } from '../constants'; // Path to constants from components/ is ../../constants
 import { MarketingPlanner } from './Copywriting/MarketingPlanner';
 import { PitchRefiner } from './Copywriting/PitchRefiner';

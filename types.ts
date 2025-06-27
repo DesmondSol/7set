@@ -1,4 +1,3 @@
-
 // Define the TranslationKey type directly in types.ts
 // This includes all string literals and enums previously defined in locales.ts for this type.
 export type TranslationKey =
@@ -303,6 +302,11 @@ export type TranslationKey =
   | 'mindset_ai_coach_input_placeholder'
   | 'mindset_ai_coach_welcome_message'
   | 'mindset_help_button_tooltip'
+  | 'export_profile_report_button'
+  | 'export_goals_button'
+  | 'pdf_profile_report_title'
+  | 'pdf_goals_title'
+  | 'pdf_score_label'
   // Personality Questions
   | 'q_p1_text' | 'q_p1_opt_very_uncomfortable' | 'q_p1_opt_uncomfortable' | 'q_p1_opt_neutral' | 'q_p1_opt_comfortable' | 'q_p1_opt_very_comfortable'
   | 'q_p2_text' | 'q_p2_opt_analyze' | 'q_p2_opt_action' | 'q_p2_opt_seek_help' | 'q_p2_opt_wait'
@@ -323,10 +327,6 @@ export type TranslationKey =
   | 'q_sk4_text' // Scenario: Validating product-market fit
     | 'q_sk4_opt_surveys' | 'q_sk4_opt_interviews' | 'q_sk4_opt_presales' | 'q_sk4_opt_analytics'
   | 'q_sk5_text' | 'q_sk5_opt_solo' | 'q_sk5_opt_complementary' | 'q_sk5_opt_similar_skills' | 'q_sk5_opt_friends'
-  // AI Generated Report Keys (placeholders for dynamic content)
-  | 'founder_type_visionary_catalyst_title' | 'founder_type_visionary_catalyst_desc' // Example
-  | 'cofounder_suggestion_operational_excellence' // Example
-  | 'takeaway_focus_on_execution' // Example
   // Radar Chart Labels
   | 'radar_chart_risk_tolerance'
   | 'radar_chart_leadership'
@@ -338,6 +338,11 @@ export type TranslationKey =
   | 'radar_chart_sales_ability'
   | 'radar_chart_resilience'
   | 'radar_chart_creativity'
+  | 'founder_type_visionary_catalyst_title'
+  | 'founder_type_visionary_catalyst_desc'
+  | 'cofounder_suggestion_operational_excellence'
+  | 'takeaway_focus_on_execution'
+  | 'goal_promise_cast_on'
   ;
 
 export type Language = 'en' | 'am';
@@ -507,7 +512,7 @@ export enum MindsetSubSection {
   GOAL_SETTING = "Goal Setting",
 }
 
-export type AssessmentCategory = 'personality' | 'business_acumen' | 'startup_knowledge';
+export type AssessmentCategory = 'personality' | 'businessAcumen' | 'startupKnowledge';
 
 export interface AssessmentQuestionOption {
   value: string;
@@ -539,12 +544,13 @@ export interface AssessmentScores {
 }
 
 export interface FounderProfileReportData {
-  founderTypeTitleKey: TranslationKey; 
-  founderTypeDescriptionKey: TranslationKey; 
+  founderTypeTitle: string;
+  founderTypeDescription: string;
   scores: AssessmentScores;
-  cofounderPersonaSuggestionKey: TranslationKey; 
-  keyTakeawaysKeys: TranslationKey[]; 
+  cofounderPersonaSuggestion: string;
+  keyTakeaways: string[];
   generatedDate: string;
+  language: Language; // Track the language of the report
 }
 
 export interface GoalDetail {
@@ -575,6 +581,7 @@ export interface MindsetData {
   };
   profileReport: FounderProfileReportData | null;
   goals: GoalSettingData;
+  goalsFirstSetDate?: string; // Optional: stores ISO string of date when goals are first saved
   shouldAutoGenerateReport: boolean; // Added this field
   goalSettingAiChatHistory: { role: 'user' | 'model', parts: {text: string}[] }[];
 }

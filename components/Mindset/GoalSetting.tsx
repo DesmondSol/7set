@@ -1,16 +1,15 @@
-
 import React, { useState } from 'react';
-import { MindsetData, Language, GoalTimeframe, GoalDetail } from '../../types';
+import { MindsetData, Language, GoalTimeframe, GoalDetail, UserProfile } from '../../types';
 import { TranslationKey } from '../../types';
 import { Button } from '../common/Button';
-import { FloatingActionButton } from '../common/FloatingActionButton';
-// import AiCoachModal from './AiCoachModal'; // Uncomment when ready
+import { addUserProfileHeader, addPageFooter, addTextWithPageBreaks, MARGIN_MM, LINE_HEIGHT_NORMAL, TITLE_FONT_SIZE, LINE_HEIGHT_TITLE, SECTION_TITLE_FONT_SIZE, LINE_HEIGHT_SECTION_TITLE, TEXT_FONT_SIZE } from '../../utils/pdfUtils'; // Import PDF utils
 
 interface GoalSettingProps {
   mindsetData: MindsetData;
   onUpdateMindsetData: (data: MindsetData) => void;
   language: Language;
   t: (key: TranslationKey, defaultText?: string) => string;
+  userProfile: UserProfile | null; // Pass userProfile for export
 }
 
 const GoalCard: React.FC<{
@@ -64,11 +63,10 @@ const GoalCard: React.FC<{
 };
 
 
-const GoalSetting: React.FC<GoalSettingProps> = ({ mindsetData, onUpdateMindsetData, language, t }) => {
-  const [isAiCoachModalOpen, setIsAiCoachModalOpen] = useState(false);
+const GoalSetting: React.FC<GoalSettingProps> = ({ mindsetData, onUpdateMindsetData, language, t, userProfile }) => {
 
   const handleGoalChange = (timeframe: GoalTimeframe, field: keyof GoalDetail, value: string) => {
-    onUpdateMindsetData({
+    const updatedMindsetData: MindsetData = {
       ...mindsetData,
       goals: {
         ...mindsetData.goals,
@@ -76,8 +74,11 @@ const GoalSetting: React.FC<GoalSettingProps> = ({ mindsetData, onUpdateMindsetD
           ...mindsetData.goals[timeframe],
           [field]: value,
         }
-      }
-    });
+      },
+      // Set the date only if it hasn't been set before
+      goalsFirstSetDate: mindsetData.goalsFirstSetDate || new Date().toISOString(),
+    };
+    onUpdateMindsetData(updatedMindsetData);
   };
 
   const goalTimeframes: { timeframe: GoalTimeframe, titleKey: TranslationKey }[] = [
@@ -87,9 +88,62 @@ const GoalSetting: React.FC<GoalSettingProps> = ({ mindsetData, onUpdateMindsetD
     { timeframe: '10-year', titleKey: 'mindset_goal_setting_10_year_title' },
   ];
 
+  const handleExportGoals = async () => {
+    const { default: jsPDF } = await import('jspdf');
+    const doc = new jsPDF();
+    const yRef = { value: MARGIN_MM };
+    const totalPagesRef = { current: doc.getNumberOfPages() };
+
+    addUserProfileHeader(doc, userProfile, yRef, totalPagesRef, t);
+
+    doc.setFontSize(TITLE_FONT_SIZE);
+    doc.setFont('helvetica', 'bold');
+    addTextWithPageBreaks(doc, t('pdf_goals_title'), MARGIN_MM, yRef, {}, LINE_HEIGHT_TITLE, totalPagesRef, t);
+
+    doc.setFontSize(TEXT_FONT_SIZE - 2);
+    doc.setFont('helvetica', 'normal');
+    addTextWithPageBreaks(doc, `${t('exported_on_label')}: ${new Date().toLocaleString()}`, MARGIN_MM, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+    yRef.value += LINE_HEIGHT_NORMAL;
+
+    goalTimeframes.forEach(item => {
+        const goalData = mindsetData.goals[item.timeframe];
+        doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+        doc.setFont('helvetica', 'bold');
+        addTextWithPageBreaks(doc, t(item.titleKey), MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, t);
+        
+        doc.setFontSize(TEXT_FONT_SIZE);
+        doc.setFont('helvetica', 'normal');
+        
+        addTextWithPageBreaks(doc, `${t('mindset_goal_setting_self_label')} ${goalData.self || '-'}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+        addTextWithPageBreaks(doc, `${t('mindset_goal_setting_family_label')} ${goalData.family || '-'}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+        addTextWithPageBreaks(doc, `${t('mindset_goal_setting_world_label')} ${goalData.world || '-'}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+        yRef.value += LINE_HEIGHT_NORMAL;
+    });
+
+    if (mindsetData.goalsFirstSetDate) {
+        yRef.value += LINE_HEIGHT_NORMAL;
+        doc.setFontSize(TEXT_FONT_SIZE);
+        doc.setFont('helvetica', 'bold');
+        const promiseDate = new Date(mindsetData.goalsFirstSetDate).toLocaleDateString(language === 'am' ? 'am-ET' : 'en-US', {
+            year: 'numeric', month: 'long', day: 'numeric',
+        });
+        addTextWithPageBreaks(doc, `${t('goal_promise_cast_on')}: ${promiseDate}`, MARGIN_MM, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+    }
+    
+    // Finalize footers
+    for (let i = 1; i <= totalPagesRef.current; i++) {
+        doc.setPage(i);
+        addPageFooter(doc, i, totalPagesRef.current, t);
+    }
+    doc.save(t('pdf_goals_title', 'my_goals').toLowerCase().replace(/\s/g, '_') + '.pdf');
+  };
+
   return (
     <div className="relative">
-      <h3 className="text-2xl font-semibold text-blue-400 mb-6 p-1">{t('mindset_goal_setting_title')}</h3>
+      <div className="flex justify-between items-center mb-6 p-1">
+        <h3 className="text-2xl font-semibold text-blue-400">{t('mindset_goal_setting_title')}</h3>
+        <Button onClick={handleExportGoals} variant="outline">{t('export_goals_button')}</Button>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {goalTimeframes.map(item => (
           <GoalCard
@@ -104,38 +158,18 @@ const GoalSetting: React.FC<GoalSettingProps> = ({ mindsetData, onUpdateMindsetD
         ))}
       </div>
       
-      <FloatingActionButton
-        icon={<SparklesIcon className="h-6 w-6" />}
-        tooltip={t('mindset_goal_setting_ai_coach_button_tooltip')}
-        onClick={() => setIsAiCoachModalOpen(true)}
-        className="bottom-0 right-0 md:bottom-[-2rem] md:right-[-0.5rem]" // Adjust position relative to this component's container
-        colorClass="bg-green-600 hover:bg-green-500" // Different color for AI coach
-        size="md"
-      />
-
-      {/* 
-      {isAiCoachModalOpen && (
-        <AiCoachModal
-          isOpen={isAiCoachModalOpen}
-          onClose={() => setIsAiCoachModalOpen(false)}
-          mindsetData={mindsetData}
-          onUpdateMindsetData={onUpdateMindsetData}
-          language={language}
-          t={t}
-        />
-      )} 
-      */}
-       <p className="text-center mt-8 text-slate-400 text-sm"> {/* Placeholder for AI Coach Modal */}
-        (AI Coach Modal will open here when implemented)
-      </p>
+      {mindsetData.goalsFirstSetDate && (
+        <div className="mt-12 text-center">
+            <p className="text-slate-400 text-sm font-medium">{t('goal_promise_cast_on')}:</p>
+            <p className="text-slate-300 text-base">{new Date(mindsetData.goalsFirstSetDate).toLocaleDateString(language === 'am' ? 'am-ET' : 'en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            })}</p>
+        </div>
+      )}
     </div>
   );
 };
-
-const SparklesIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L1.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.25 7.5l.813 2.846a4.5 4.5 0 01-3.09 3.09L12.187 15l-2.846.813a4.5 4.5 0 01-3.09-3.09L5.437 10.5l2.846-.813a4.5 4.5 0 013.09-3.09L12 3.75l.813 2.846a4.5 4.5 0 013.09 3.09L18.75 9l-2.846.813a4.5 4.5 0 01-3.09-3.09L12.187 6 12 5.25l.187.75z" />
-  </svg>
-);
 
 export default GoalSetting;

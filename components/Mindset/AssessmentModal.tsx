@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
@@ -35,9 +34,9 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({
       let fetchedQuestions: AssessmentQuestion[] = [];
       if (assessmentType === 'personality') {
         fetchedQuestions = PERSONALITY_QUESTIONS;
-      } else if (assessmentType === 'business_acumen') {
+      } else if (assessmentType === 'businessAcumen') {
         fetchedQuestions = BUSINESS_ACUMEN_QUESTIONS;
-      } else if (assessmentType === 'startup_knowledge') {
+      } else if (assessmentType === 'startupKnowledge') {
         fetchedQuestions = STARTUP_KNOWLEDGE_QUESTIONS;
       }
       setQuestions(fetchedQuestions.slice(0, 10)); // Ensure max 10 questions
@@ -76,8 +75,8 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({
   const progressPercent = totalQuestions > 0 ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0;
 
   let modalTitleKey: TranslationKey = 'mindset_assessment_modal_title_personality';
-  if (assessmentType === 'business_acumen') modalTitleKey = 'mindset_assessment_modal_title_acumen';
-  if (assessmentType === 'startup_knowledge') modalTitleKey = 'mindset_assessment_modal_title_knowledge';
+  if (assessmentType === 'businessAcumen') modalTitleKey = 'mindset_assessment_modal_title_acumen';
+  if (assessmentType === 'startupKnowledge') modalTitleKey = 'mindset_assessment_modal_title_knowledge';
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t(modalTitleKey)} size="xl">

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { BusinessLaunchCanvas } from './components/BusinessLaunchCanvas/BusinessLaunchCanvas';
@@ -56,6 +57,7 @@ const initialMindsetData: MindsetData = {
     '5-year': { self: '', family: '', world: '' },
     '10-year': { self: '', family: '', world: '' },
   },
+  goalsFirstSetDate: undefined,
   shouldAutoGenerateReport: false,
   goalSettingAiChatHistory: [],
 };
@@ -149,6 +151,7 @@ const App: React.FC = () => {
             '5-year': parsed.goals?.['5-year'] || { self: '', family: '', world: '' },
             '10-year': parsed.goals?.['10-year'] || { self: '', family: '', world: '' },
           },
+          goalsFirstSetDate: parsed.goalsFirstSetDate || undefined,
           shouldAutoGenerateReport: typeof parsed.shouldAutoGenerateReport === 'boolean' 
                                       ? parsed.shouldAutoGenerateReport 
                                       : false,

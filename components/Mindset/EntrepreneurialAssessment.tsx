@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MindsetData, Language, AssessmentCategory } from '../../types';
 import { TranslationKey } from '../../types';
@@ -52,7 +51,7 @@ const EntrepreneurialAssessment: React.FC<EntrepreneurialAssessmentProps> = ({
           variant="primary" 
           size="lg" 
           className="w-full py-4 flex items-center justify-center"
-          onClick={() => openAssessment('business_acumen')}
+          onClick={() => openAssessment('businessAcumen')}
         >
           {t('mindset_assessment_acumen_button')}
           {mindsetData.assessmentStatus.businessAcumen === 'completed' && <CheckIcon className="ml-2 h-5 w-5 text-green-300 flex-shrink-0" />}
@@ -61,7 +60,7 @@ const EntrepreneurialAssessment: React.FC<EntrepreneurialAssessmentProps> = ({
           variant="primary" 
           size="lg" 
           className="w-full py-4 flex items-center justify-center"
-          onClick={() => openAssessment('startup_knowledge')}
+          onClick={() => openAssessment('startupKnowledge')}
         >
           {t('mindset_assessment_knowledge_button')}
           {mindsetData.assessmentStatus.startupKnowledge === 'completed' && <CheckIcon className="ml-2 h-5 w-5 text-green-300 flex-shrink-0" />}

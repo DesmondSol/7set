@@ -1,10 +1,11 @@
 
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { MindsetData, Language } from '../../types';
 import { TranslationKey } from '../../types';
-// import { askAiMindsetCoach } from '../../services/geminiService'; // Uncomment when ready
+import { askAiMindsetCoach } from '../../services/geminiService';
 
 interface AiCoachModalProps {
   isOpen: boolean;
@@ -47,32 +48,26 @@ const AiCoachModal: React.FC<AiCoachModalProps> = ({
 
 
   const handleSendMessage = async () => {
-    // if (!userInput.trim()) return;
-    // setIsLoading(true);
-    // const newUserMessage = { role: 'user' as const, parts: [{text: userInput.trim()}] };
-    // const updatedHistory = [...chatHistory, newUserMessage];
-    // onUpdateMindsetData({...mindsetData, goalSettingAiChatHistory: updatedHistory});
-    // setUserInput('');
-
-    // try {
-    //   const aiResponse = await askAiMindsetCoach(mindsetData.goals, userInput.trim(), updatedHistory, language);
-    //   const newAiMessage = { role: 'model' as const, parts: [{text: aiResponse}] };
-    //   onUpdateMindsetData({...mindsetData, goalSettingAiChatHistory: [...updatedHistory, newAiMessage]});
-    // } catch (error) {
-    //   console.error("Error with AI Coach:", error);
-    //   const errorMessage = { role: 'model' as const, parts: [{text: t('error_ai_failed_generic')}] };
-    //   onUpdateMindsetData({...mindsetData, goalSettingAiChatHistory: [...updatedHistory, errorMessage]});
-    // } finally {
-    //   setIsLoading(false);
-    // }
-    alert("AI Coach send message to be implemented!");
-    const tempUserMsg = { role: 'user' as const, parts: [{text: userInput.trim()}] };
-    const tempAiResp = {role: 'model' as const, parts: [{text: "This is a placeholder AI response to: " + userInput.trim()}]};
-    onUpdateMindsetData({
-        ...mindsetData, 
-        goalSettingAiChatHistory: [...chatHistory, tempUserMsg, tempAiResp]
-    });
+    if (!userInput.trim()) return;
+    setIsLoading(true);
+    const newUserMessage = { role: 'user' as const, parts: [{text: userInput.trim()}] };
+    const updatedHistory = [...chatHistory, newUserMessage];
+    
+    // Optimistically update UI with user's message
+    onUpdateMindsetData({...mindsetData, goalSettingAiChatHistory: updatedHistory});
     setUserInput('');
+
+    try {
+      const aiResponse = await askAiMindsetCoach(mindsetData.goals, userInput.trim(), updatedHistory, language);
+      const newAiMessage = { role: 'model' as const, parts: [{text: aiResponse}] };
+      onUpdateMindsetData({...mindsetData, goalSettingAiChatHistory: [...updatedHistory, newAiMessage]});
+    } catch (error) {
+      console.error("Error with AI Coach:", error);
+      const errorMessage = { role: 'model' as const, parts: [{text: t('error_ai_failed_generic')}] };
+      onUpdateMindsetData({...mindsetData, goalSettingAiChatHistory: [...updatedHistory, errorMessage]});
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -111,7 +106,7 @@ const AiCoachModal: React.FC<AiCoachModalProps> = ({
             disabled={isLoading}
           />
           <Button onClick={handleSendMessage} disabled={isLoading || !userInput.trim()} variant="primary">
-            {isLoading ? <SpinnerIcon className="h-5 w-5"/> : t('save_button')} {/* Using 'Save' as 'Send' generic */}
+            {isLoading ? <SpinnerIcon className="h-5 w-5"/> : <SendIcon className="h-5 w-5"/>}
           </Button>
         </div>
       </div>
@@ -125,5 +120,12 @@ const SpinnerIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
   </svg>
 );
+
+const SendIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" {...props}>
+        <path d="M3.105 3.105a.75.75 0 01.814-.153l12 4.5a.75.75 0 010 1.342l-12 4.5a.75.75 0 01-.966-.996l2.5-5.5a.75.75 0 010-.198l-2.5-5.5a.75.75 0 01.152-.843z" />
+    </svg>
+);
+
 
 export default AiCoachModal;

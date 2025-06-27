@@ -1,5 +1,5 @@
 
-import { GoogleGenAI, GenerateContentResponse, Part } from "@google/genai";
+import { GenerateContentResponse, Part } from "@google/genai";
 import { 
     CanvasData, 
     CanvasSection, 
@@ -24,16 +24,32 @@ import {
 } from '../types';
 import { API_KEY_WARNING, GENERIC_ERROR_MESSAGE } from "../constants";
 
+// Note: GoogleGenAI type will be imported dynamically.
+type GoogleGenAI = any;
+
 const API_KEY = process.env.API_KEY;
-let ai: GoogleGenAI | null = null;
+let ai: GoogleGenAI | null = null; // AI client will be initialized on first use
 
-const TEXT_MODEL = 'gemini-2.5-flash-preview-04-17'; // Corrected model name usage
+const TEXT_MODEL = 'gemini-2.5-flash-preview-04-17';
 
-if (!API_KEY) {
-  console.warn(API_KEY_WARNING);
-} else {
-  ai = new GoogleGenAI({ apiKey: API_KEY });
-}
+// Singleton pattern to get the AI client asynchronously
+const getAiClient = async (): Promise<GoogleGenAI | null> => {
+    if (ai) return ai; // Return existing instance
+    if (!API_KEY) {
+        console.warn(API_KEY_WARNING);
+        return null;
+    }
+    try {
+        // Dynamically import the library
+        const { GoogleGenAI } = await import("@google/genai");
+        ai = new GoogleGenAI({ apiKey: API_KEY });
+        return ai;
+    } catch (error) {
+        console.error("Failed to load @google/genai library:", error);
+        return null;
+    }
+};
+
 
 const parseJsonFromText = <T,>(text: string): T | null => {
   let jsonStr = text.trim();
@@ -59,7 +75,8 @@ export const generateBusinessCanvasContent = async (
   sections: CanvasSection[],
   language: Language
 ): Promise<Partial<CanvasData> | null> => {
-  if (!API_KEY || !ai) {
+  const localAi = await getAiClient();
+  if (!localAi) {
     console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
     const errorResult: Partial<CanvasData> = {};
     sections.forEach(section => {
@@ -97,7 +114,7 @@ Ensure the entire output is a single JSON object.
   `;
 
   try {
-    const response: GenerateContentResponse = await ai.models.generateContent({
+    const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
       contents: [{ role: "user", parts: [{text: prompt}] }],
       config: {
@@ -152,7 +169,8 @@ export const generateMarketResearchQuestions = async (
   targetAudience: string,
   language: Language
 ): Promise<ResearchQuestionItem[]> => {
-  if (!API_KEY || !ai) {
+  const localAi = await getAiClient();
+  if (!localAi) {
     console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
     return [];
   }
@@ -187,7 +205,7 @@ generate a list of 5 to 7 key, open-ended market research questions. These quest
 Return the response as a valid JSON array of strings, where each string is a question (in ${language === 'am' ? 'Amharic' : 'English'}).
 For example: ["Question 1?", "Question 2?", "Question 3?"]`;
   try {
-    const response: GenerateContentResponse = await ai.models.generateContent({
+    const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
       contents: [{ role: "user", parts: [{text: prompt}] }],
       config: {
@@ -220,7 +238,8 @@ export const generateMarketResearchSummary = async (
   strategyData: Partial<CanvasData> | null,
   language: Language
 ): Promise<string> => {
-  if (!API_KEY || !ai) {
+  const localAi = await getAiClient();
+  if (!localAi) {
     console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
     return language === 'am' ? "የ AI ማጠቃለያ ማመንጨት ተሰናክሏል።" : "AI Summary generation disabled.";
   }
@@ -306,7 +325,7 @@ Your summary MUST:
 Ensure the summary clearly links research findings back to the business strategy for success in Ethiopia.
 Generate the comprehensive summary:`;
   try {
-    const response: GenerateContentResponse = await ai.models.generateContent({
+    const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
       contents: [{ role: "user", parts: [{text: prompt}] }],
        config: {
@@ -326,7 +345,8 @@ export const generateMarketingPlan = async (
   userInputs: { campaignGoal: string; targetPlatforms: string[]; contentTone: string; duration: string, referenceWeekStartDate: string },
   language: Language
 ): Promise<MarketingPost[] | null> => {
-  if (!API_KEY || !ai) {
+  const localAi = await getAiClient();
+  if (!localAi) {
     console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
     return null;
   }
@@ -395,7 +415,7 @@ Consider local Ethiopian events, holidays, or cultural moments if relevant for s
 Focus on providing actionable, creative, and "Jasper-style" content suggestions.`;
 
   try {
-    const response: GenerateContentResponse = await ai.models.generateContent({
+    const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
       contents: [{ role: "user", parts: [{text: prompt}] }],
       config: { responseMimeType: "application/json", temperature: 0.75 }
@@ -415,7 +435,8 @@ export const generatePitchContent = async (
   userInputs: { pitchType: PitchType; targetAudience: string; keyMessage: string; numEmails?: number },
   language: Language
 ): Promise<Partial<Pick<Pitch, 'title' | 'content'>> | null> => {
-  if (!API_KEY || !ai) {
+  const localAi = await getAiClient();
+  if (!localAi) {
     console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
     return null;
   }
@@ -469,7 +490,7 @@ Example for email_campaign (if English):
 Ensure the content is actionable and reflects an understanding of Ethiopian business communication styles.`;
 
   try {
-    const response: GenerateContentResponse = await ai.models.generateContent({
+    const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
       contents: [{ role: "user", parts: [{text: prompt}] }],
       config: { responseMimeType: "application/json", temperature: 0.7 }
@@ -505,7 +526,8 @@ export const generateFounderProfileReport = async (
   language: Language,
   t: (key: TranslationKey, defaultText?: string) => string // For potential mapping
 ): Promise<FounderProfileReportData | null> => {
-  if (!API_KEY || !ai) {
+  const localAi = await getAiClient();
+  if (!localAi) {
     console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
     return null;
   }
@@ -560,7 +582,7 @@ The scores should reflect a balanced view; avoid extreme highs or lows unless st
 `;
 
   try {
-    const response: GenerateContentResponse = await ai.models.generateContent({
+    const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
       contents: [{ role: "user", parts: [{text: prompt}] }],
       config: { responseMimeType: "application/json", temperature: 0.6 }
@@ -574,50 +596,38 @@ The scores should reflect a balanced view; avoid extreme highs or lows unless st
     const parsedReport = parseJsonFromText<{
         founderTypeTitle: string;
         founderTypeDescription: string;
-        scores: Partial<AssessmentScores>; // AI might not return all scores
+        scores: Partial<AssessmentScores>;
         cofounderPersonaSuggestion: string;
         keyTakeaways: string[];
     }>(textResponse);
 
     if (parsedReport) {
-        // Create TranslationKeys on the fly (these would need to be added to locales.ts)
-        // This is a simplified approach; ideally, these keys are pre-defined or managed better.
-        const founderTypeTitleKey = `ai_founder_type_title_${parsedReport.founderTypeTitle.toLowerCase().replace(/\s+/g, '_').slice(0,20)}` as TranslationKey;
-        const founderTypeDescriptionKey = `ai_founder_type_desc_${parsedReport.founderTypeDescription.toLowerCase().replace(/\s+/g, '_').slice(0,30)}` as TranslationKey;
-        const cofounderPersonaSuggestionKey = `ai_cofounder_sugg_${parsedReport.cofounderPersonaSuggestion.toLowerCase().replace(/\s+/g, '_').slice(0,30)}` as TranslationKey;
-        const keyTakeawaysKeys = parsedReport.keyTakeaways.map((kt, i) => `ai_takeaway_${i}_${kt.toLowerCase().replace(/\s+/g, '_').slice(0,20)}` as TranslationKey);
-        
-        // Add these to a temporary "to be translated" store or directly use English if t() handles unknown keys
-        // For now, we assume t() can handle these by returning the key itself or a default.
-        // In a real app, you'd update locales.ts with these keys and their translations.
-
-        // Ensure all score fields are present, defaulting if necessary
         const finalScores: AssessmentScores = {
-            ...defaultScores, // Start with defaults
-            ...(parsedReport.scores || {}), // Override with AI scores
+            ...defaultScores,
+            ...(parsedReport.scores || {}),
         };
 
-
         return {
-            founderTypeTitleKey,
-            founderTypeDescriptionKey,
+            founderTypeTitle: parsedReport.founderTypeTitle,
+            founderTypeDescription: parsedReport.founderTypeDescription,
             scores: finalScores,
-            cofounderPersonaSuggestionKey,
-            keyTakeawaysKeys,
+            cofounderPersonaSuggestion: parsedReport.cofounderPersonaSuggestion,
+            keyTakeaways: parsedReport.keyTakeaways || [],
             generatedDate: new Date().toISOString(),
+            language: language,
         };
     }
     return null;
   } catch (error) {
     console.error("Error generating founder profile report:", error);
-    // Fallback with default structure but indication of error
     return {
-        founderTypeTitleKey: 'error_ai_failed_generic' as TranslationKey,
-        founderTypeDescriptionKey: 'error_ai_failed_generic' as TranslationKey,
+        founderTypeTitle: t('error_ai_failed_generic'),
+        founderTypeDescription: t('error_ai_failed_generic'),
         scores: defaultScores,
-        cofounderPersonaSuggestionKey: 'error_ai_failed_generic' as TranslationKey,
-        keyTakeawaysKeys: ['error_ai_failed_generic' as TranslationKey],
+        cofounderPersonaSuggestion: t('error_ai_failed_generic'),
+        keyTakeaways: [t('error_ai_failed_generic')],
         generatedDate: new Date().toISOString(),
+        language: language,
     };
   }
 };
@@ -629,44 +639,49 @@ export const askAiMindsetCoach = async (
   chatHistory: { role: 'user' | 'model', parts: {text: string}[] }[],
   language: Language
 ): Promise<string> => {
-  if (!API_KEY || !ai) {
-    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
+  const localAi = await getAiClient();
+  if (!localAi) {
+    console.warn(API_KEY_WARNING, "AI Mindset Coach disabled.");
     return language === 'am' ? "የ AI የአስተሳሰብ አሰልጣኝ ተሰናክሏል።" : "AI Mindset Coach disabled.";
   }
   
   const langInstructions = language === 'am'
-    ? "Respond in Amharic. Act as an empathetic and insightful mindset coach."
-    : "Respond in English. Act as an empathetic and insightful mindset coach.";
+    ? "Respond ONLY in Amharic. Act as an empathetic and insightful mindset coach for an entrepreneur in Ethiopia. Keep your responses concise (1-3 sentences)."
+    : "Respond ONLY in English. Act as an empathetic and insightful mindset coach for an entrepreneur in Ethiopia. Keep your responses concise (1-3 sentences).";
 
-  const historyString = chatHistory.map(entry => `${entry.role}: ${entry.parts[0].text}`).join('\n');
+  const historyForPrompt = chatHistory
+    .map(entry => `${entry.role === 'user' ? 'Founder' : 'Coach'}: ${entry.parts[0].text}`)
+    .join('\n');
 
-  const prompt = `You are an AI Mindset Coach for Ethiopian entrepreneurs.
+  const prompt = `You are an AI Mindset Coach for an Ethiopian entrepreneur.
+Your role is to be supportive, ask clarifying questions, and help the founder explore their motivations and goals deeper.
+Your responses must be concise, typically 1-3 sentences.
 ${langInstructions}
 
-Current Chat History:
-${historyString}
+Here is the conversation history so far:
+--- HISTORY ---
+${historyForPrompt}
+--- END HISTORY ---
 
-User's Current Goals (for context, but focus on their latest message):
+Here are the founder's current written goals, for your context:
+--- GOALS ---
 6-Month: Self: ${currentGoals['6-month'].self}, Family: ${currentGoals['6-month'].family}, World: ${currentGoals['6-month'].world}
 2-Year: Self: ${currentGoals['2-year'].self}, Family: ${currentGoals['2-year'].family}, World: ${currentGoals['2-year'].world}
 5-Year: Self: ${currentGoals['5-year'].self}, Family: ${currentGoals['5-year'].family}, World: ${currentGoals['5-year'].world}
 10-Year: Self: ${currentGoals['10-year'].self}, Family: ${currentGoals['10-year'].family}, World: ${currentGoals['10-year'].world}
+--- END GOALS ---
 
-User's latest message: "${userMessage}"
-
-Your task is to respond to the user's latest message. 
-Ask clarifying questions, offer encouragement, or help them break down their goals or explore their motivations deeper.
-Your response should be 1-3 sentences.
-Be supportive and focus on helping them achieve clarity and stay motivated in their entrepreneurial journey in Ethiopia.
-`;
+Now, respond to the founder's LATEST message:
+Founder: "${userMessage}"
+Coach:`;
 
   try {
-    const response: GenerateContentResponse = await ai.models.generateContent({
+    const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
       contents: [{ role: "user", parts: [{text: prompt}] }],
-      config: { temperature: 0.75 }
+      config: { temperature: 0.75, stopSequences: ["Founder:"] }
     });
-    return response.text || (language === 'am' ? "ይቅርታ፣ ምላሽ ማመንጨት አልቻልኩም። እንደገና መሞከር ይችላሉ?" : "Sorry, I couldn't generate a response. Could you try again?");
+    return response.text.trim() || (language === 'am' ? "ይቅርታ፣ ምላሽ ማመንጨት አልቻልኩም። እንደገና መሞከር ይችላሉ?" : "Sorry, I couldn't generate a response. Could you try again?");
   } catch (error) {
     console.error("Error with AI Mindset Coach:", error);
     return language === 'am' ? "የ AI የአስተሳሰብ አሰልጣኝ ላይ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።" : "Error with AI Mindset Coach. Please try again.";

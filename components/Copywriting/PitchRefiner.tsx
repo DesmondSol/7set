@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import jsPDF from 'jspdf';
 import { 
     CopywritingData, 
     Pitch,
@@ -16,22 +15,7 @@ import { PitchModal } from './PitchModal';
 import { AiPitchModal } from './AiPitchModal';
 import { generatePitchContent } from '../../services/geminiService';
 import { GENERIC_ERROR_MESSAGE } from '../../constants';
-
-// PDF Export Helper Constants (similar to other components)
-const A4_WIDTH_MM = 210;
-const A4_HEIGHT_MM = 297;
-const MARGIN_MM = 15;
-const CONTENT_WIDTH_MM = A4_WIDTH_MM - 2 * MARGIN_MM;
-const LINE_HEIGHT_NORMAL = 6; 
-const LINE_HEIGHT_TITLE = 10; 
-const LINE_HEIGHT_SECTION_TITLE = 8; 
-const USER_PHOTO_SIZE_MM = 25;
-const FOOTER_FONT_SIZE = 8;
-
-// Added missing constants
-const TITLE_FONT_SIZE = 20;
-const SECTION_TITLE_FONT_SIZE = 16;
-const TEXT_FONT_SIZE = 10;
+import { addUserProfileHeader, addPageFooter, addTextWithPageBreaks, MARGIN_MM, LINE_HEIGHT_NORMAL, TITLE_FONT_SIZE, LINE_HEIGHT_TITLE, SECTION_TITLE_FONT_SIZE, LINE_HEIGHT_SECTION_TITLE } from '../../utils/pdfUtils';
 
 
 interface PitchRefinerProps {
@@ -118,121 +102,50 @@ export const PitchRefiner: React.FC<PitchRefinerProps> = ({
     }
   };
   
-  const handleExportPitches = () => {
+  const handleExportPitches = async () => {
+    const { default: jsPDF } = await import('jspdf'); // Dynamic import
     const doc = new jsPDF();
-    doc.setTextColor(50, 50, 50);
-    const currentYRef = { value: MARGIN_MM };
-    const totalPagesRef = { current: 1 };
+    const yRef = { value: MARGIN_MM };
+    const totalPagesRef = { current: doc.getNumberOfPages() };
 
-    const addPageFooter = (pageNumber: number, totalPages: number) => {
-        doc.setFontSize(FOOTER_FONT_SIZE);
-        doc.setTextColor(120, 120, 120);
-        const footerText = t('page_x_of_y').replace('{currentPage}', String(pageNumber)).replace('{totalPages}', String(totalPages));
-        doc.text(footerText, MARGIN_MM, A4_HEIGHT_MM - MARGIN_MM / 2);
-        doc.setTextColor(50, 50, 50);
-    };
-    
-    const addText = (text: string | string[], x: number, options: any, lineHeight: number) => {
-        const lines = Array.isArray(text) ? text : doc.splitTextToSize(text, CONTENT_WIDTH_MM - (x - MARGIN_MM));
-        lines.forEach((line: string) => {
-            if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - lineHeight) {
-                addPageFooter(doc.getNumberOfPages(), totalPagesRef.current);
-                doc.addPage();
-                totalPagesRef.current = doc.getNumberOfPages();
-                currentYRef.value = MARGIN_MM;
-            }
-            doc.text(line, x, currentYRef.value, options);
-            currentYRef.value += lineHeight;
-        });
-    };
-
-    if (userProfile) {
-        doc.setFontSize(SECTION_TITLE_FONT_SIZE);
-        doc.setFont("helvetica", "bold");
-        addText(t('pdf_made_by_title'), MARGIN_MM, {}, LINE_HEIGHT_SECTION_TITLE);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(TEXT_FONT_SIZE);
-
-        let textX = MARGIN_MM;
-        if (userProfile.photo) {
-            try {
-                const base64Image = userProfile.photo.split(',')[1] || userProfile.photo;
-                const imageType = userProfile.photo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
-                doc.addImage(base64Image, imageType, MARGIN_MM, currentYRef.value, USER_PHOTO_SIZE_MM, USER_PHOTO_SIZE_MM);
-                textX = MARGIN_MM + USER_PHOTO_SIZE_MM + 5;
-            } catch (e) { console.error("Error adding image to Pitches PDF:", e); }
-        }
-        
-        const profileDetails = [
-            `${t('user_profile_name_label')} ${userProfile.name}`,
-            `${t('user_profile_email_label')} ${userProfile.email || '-'}`,
-            `${t('user_profile_phone_label')} ${userProfile.phone || '-'}`,
-            `${t('user_profile_other_details_label')} ${userProfile.otherDetails || '-'}`
-        ];
-        
-        let textStartY = currentYRef.value;
-        profileDetails.forEach(detail => {
-             const lines = doc.splitTextToSize(detail, CONTENT_WIDTH_MM - (textX - MARGIN_MM));
-             lines.forEach((line: string) => {
-                 if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - LINE_HEIGHT_NORMAL) {
-                    addPageFooter(doc.getNumberOfPages(), totalPagesRef.current);
-                    doc.addPage();
-                    totalPagesRef.current = doc.getNumberOfPages();
-                    currentYRef.value = MARGIN_MM;
-                    textX = MARGIN_MM;
-                 }
-                 doc.text(line, textX, currentYRef.value);
-                 currentYRef.value += LINE_HEIGHT_NORMAL;
-            });
-        });
-        if (userProfile.photo) {
-            currentYRef.value = Math.max(currentYRef.value, textStartY + USER_PHOTO_SIZE_MM + LINE_HEIGHT_NORMAL);
-        } else {
-            currentYRef.value += LINE_HEIGHT_NORMAL; 
-        }
-    }
-
+    addUserProfileHeader(doc, userProfile, yRef, totalPagesRef, t);
 
     doc.setFontSize(TITLE_FONT_SIZE);
     doc.setFont("helvetica", "bold");
-    addText(t('pdf_pitches_title'), MARGIN_MM, {}, LINE_HEIGHT_TITLE);
-    currentYRef.value += LINE_HEIGHT_NORMAL / 2;
-
-    doc.setFontSize(TEXT_FONT_SIZE - 2); // Smaller font for export date
+    addTextWithPageBreaks(doc, t('pdf_pitches_title'), MARGIN_MM, yRef, {}, LINE_HEIGHT_TITLE, totalPagesRef, t);
+    
+    doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     const exportDateText = `${t('exported_on_label')}: ${new Date().toLocaleString(language === 'am' ? 'am-ET' : 'en-US')}`;
-    addText(exportDateText, MARGIN_MM, {}, LINE_HEIGHT_NORMAL);
-    currentYRef.value += LINE_HEIGHT_NORMAL;
+    addTextWithPageBreaks(doc, exportDateText, MARGIN_MM, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+    yRef.value += LINE_HEIGHT_NORMAL;
 
     copywritingData.pitches.forEach((pitch, index) => {
-        if (index > 0) currentYRef.value += LINE_HEIGHT_NORMAL; // Space between pitches
+        if (index > 0) yRef.value += LINE_HEIGHT_NORMAL; 
 
         doc.setFontSize(SECTION_TITLE_FONT_SIZE - 2);
         doc.setFont("helvetica", "bold");
-        addText(`${t('pdf_pitch_title')}: ${pitch.title}`, MARGIN_MM, {}, LINE_HEIGHT_SECTION_TITLE);
+        addTextWithPageBreaks(doc, `${t('pdf_pitch_title')}: ${pitch.title}`, MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, t);
         
-        doc.setFontSize(TEXT_FONT_SIZE);
+        doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
 
-        addText(`${t('pdf_pitch_type_label')}: ${t(pitch.type as TranslationKey, pitch.type)}`, MARGIN_MM + 2, {}, LINE_HEIGHT_NORMAL);
-        addText(`${t('pdf_target_audience_label')}: ${pitch.targetAudience}`, MARGIN_MM + 2, {}, LINE_HEIGHT_NORMAL);
-        addText(`${t('pdf_key_message_label')}: ${pitch.keyMessage}`, MARGIN_MM + 2, {}, LINE_HEIGHT_NORMAL);
+        addTextWithPageBreaks(doc, `${t('pdf_pitch_type_label')}: ${t(pitch.type as TranslationKey, pitch.type)}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+        addTextWithPageBreaks(doc, `${t('pdf_target_audience_label')}: ${pitch.targetAudience}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+        addTextWithPageBreaks(doc, `${t('pdf_key_message_label')}: ${pitch.keyMessage}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
         
-        currentYRef.value += LINE_HEIGHT_NORMAL / 2;
-        addText(pitch.content, MARGIN_MM + 2, {}, LINE_HEIGHT_NORMAL);
+        yRef.value += LINE_HEIGHT_NORMAL / 2;
+        addTextWithPageBreaks(doc, pitch.content, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
 
         if (pitch.notes) {
-            currentYRef.value += LINE_HEIGHT_NORMAL / 2;
-            addText(`${t('marketing_post_notes_label')}: ${pitch.notes}`, MARGIN_MM + 2, {}, LINE_HEIGHT_NORMAL);
+            yRef.value += LINE_HEIGHT_NORMAL / 2;
+            addTextWithPageBreaks(doc, `${t('marketing_post_notes_label')}: ${pitch.notes}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
         }
     });
 
-    for (let i = 1; i <= totalPagesRef.current; i++) {
-        doc.setPage(i);
-        addPageFooter(i, totalPagesRef.current);
-    }
+    addPageFooter(doc, totalPagesRef.current, totalPagesRef.current, t);
 
-    doc.save(language === 'am' ? 'የሀሳብ_ማቅረቢያዎች.pdf' : 'pitches_and_campaigns.pdf');
+    doc.save(`${t('pdf_pitches_title', 'pitches_and_campaigns').toLowerCase().replace(/\s/g, '_')}.pdf`);
   };
 
 
@@ -317,17 +230,4 @@ const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 const DownloadIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-  </svg>
-);
-const SpinnerIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" {...props} className={`animate-spin ${props.className || ''}`}>
-    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"></circle>
-    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-  </svg>
-);
-const SparklesIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L1.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.25 7.5l.813 2.846a4.5 4.5 0 01-3.09 3.09L12.187 15l-2.846.813a4.5 4.5 0 01-3.09-3.09L5.437 10.5l2.846-.813a4.5 4.5 0 013.09-3.09L12 3.75l.813 2.846a4.5 4.5 0 013.09 3.09L18.75 9l-2.846.813a4.5 4.5 0 01-3.09-3.09L12.187 6 12 5.25l.187.75z" />
-  </svg>
-);
-// Note: No 'export default PitchRefiner;' at the end
+  </svg

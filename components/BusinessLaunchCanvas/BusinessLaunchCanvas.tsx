@@ -1,12 +1,11 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
-import jsPDF from 'jspdf';
 import { CanvasSection, CanvasData, ALL_CANVAS_SECTIONS, CanvasSectionHelp, Language, UserProfile, TranslationKey } from '../../types';
 import { CANVAS_SECTIONS_HELP, GENERIC_ERROR_MESSAGE } from '../../constants';
 import { generateBusinessCanvasContent } from '../../services/geminiService';
 import { Button } from '../common/Button';
 import { Modal } from '../common/Modal';
 import { FloatingActionButton } from '../common/FloatingActionButton';
+import { addUserProfileHeader, addPageFooter, addTextWithPageBreaks, MARGIN_MM, LINE_HEIGHT_NORMAL, TITLE_FONT_SIZE, LINE_HEIGHT_TITLE, SECTION_TITLE_FONT_SIZE, LINE_HEIGHT_SECTION_TITLE } from '../../utils/pdfUtils';
 
 
 interface SectionContentEditorProps {
@@ -72,22 +71,6 @@ interface BusinessLaunchCanvasProps {
   userProfile: UserProfile | null;
 }
 
-// PDF Export Helper Constants
-const A4_WIDTH_MM = 210;
-const A4_HEIGHT_MM = 297;
-const MARGIN_MM = 15;
-const CONTENT_WIDTH_MM = A4_WIDTH_MM - 2 * MARGIN_MM;
-const LINE_HEIGHT_NORMAL = 6; 
-const LINE_HEIGHT_TITLE = 10; 
-const LINE_HEIGHT_SECTION_TITLE = 8; 
-
-const TITLE_FONT_SIZE = 20;
-const SECTION_TITLE_FONT_SIZE = 16;
-const TEXT_FONT_SIZE = 10;
-const FOOTER_FONT_SIZE = 8;
-const USER_PHOTO_SIZE_MM = 25;
-
-
 export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canvasData, onSaveSection, onMassUpdate, language, t, userProfile }) => {
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
@@ -96,138 +79,48 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
   const [aiForm, setAiForm] = useState({ idea: '', q1: '', q2: '', q3: '' });
   const [error, setError] = useState<string | null>(null);
 
-  const addPageFooter = (doc: jsPDF, pageNumber: number, totalPages: number) => {
-    doc.setFontSize(FOOTER_FONT_SIZE);
-    doc.setTextColor(120, 120, 120); // Lighter gray for dark mode PDF if needed, but black is fine for print
-    const footerText = t('page_x_of_y', `Page ${pageNumber} of ${totalPages}`)
-                        .replace('{currentPage}', String(pageNumber))
-                        .replace('{totalPages}', String(totalPages));
-    doc.text(footerText, MARGIN_MM, A4_HEIGHT_MM - MARGIN_MM / 2);
-    doc.setTextColor(0,0,0); // Reset to black for content
-  };
-  
-  const addTextWithPageBreak = (
-    doc: jsPDF, 
-    text: string | string[], 
-    x: number, 
-    currentYRef: { value: number }, 
-    options: any, 
-    lineHeight: number, 
-    totalPagesRef: { current: number }
-  ) => {
-    const lines = Array.isArray(text) ? text : doc.splitTextToSize(text, CONTENT_WIDTH_MM - (x - MARGIN_MM));
-
-    lines.forEach((line: string) => {
-        if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - lineHeight) { 
-            addPageFooter(doc, doc.getNumberOfPages(), totalPagesRef.current); 
-            doc.addPage();
-            totalPagesRef.current = doc.getNumberOfPages();
-            currentYRef.value = MARGIN_MM; 
-        }
-        doc.text(line, x, currentYRef.value, options); 
-        currentYRef.value += lineHeight;
-    });
-  };
-
-
-  const handleExport = () => {
+  const handleExport = async () => {
+    const { default: jsPDF } = await import('jspdf'); // Dynamic import
     const doc = new jsPDF();
-    doc.setTextColor(50, 50, 50); // Dark gray for text for better print readability
-    let currentYRef = { value: MARGIN_MM };
-    const totalPagesRef = { current: 1 }; 
+    doc.setTextColor(50, 50, 50); // Dark gray for text
+    const yRef = { value: MARGIN_MM };
+    const totalPagesRef = { current: doc.getNumberOfPages() }; 
 
-    if (userProfile) {
-        doc.setFontSize(SECTION_TITLE_FONT_SIZE);
-        doc.setFont("helvetica", "bold");
-        addTextWithPageBreak(doc, t('pdf_made_by_title'), MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(TEXT_FONT_SIZE);
-
-        let textX = MARGIN_MM;
-        if (userProfile.photo) {
-            try {
-                const base64Image = userProfile.photo.split(',')[1] || userProfile.photo;
-                const imageType = userProfile.photo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
-                doc.addImage(base64Image, imageType, MARGIN_MM, currentYRef.value, USER_PHOTO_SIZE_MM, USER_PHOTO_SIZE_MM);
-                textX = MARGIN_MM + USER_PHOTO_SIZE_MM + 5; 
-            } catch (e) {
-                console.error("Error adding image to PDF:", e);
-            }
-        }
-        
-        const profileDetails = [
-            `${t('user_profile_name_label')} ${userProfile.name}`,
-            `${t('user_profile_email_label')} ${userProfile.email || '-'}`,
-            `${t('user_profile_phone_label')} ${userProfile.phone || '-'}`,
-            `${t('user_profile_other_details_label')} ${userProfile.otherDetails || '-'}`
-        ];
-
-        let textStartY = currentYRef.value;
-        profileDetails.forEach(detail => {
-            const lines = doc.splitTextToSize(detail, CONTENT_WIDTH_MM - (textX - MARGIN_MM));
-            lines.forEach((line: string) => {
-                 if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - LINE_HEIGHT_NORMAL) {
-                    addPageFooter(doc, doc.getNumberOfPages(), totalPagesRef.current);
-                    doc.addPage();
-                    totalPagesRef.current = doc.getNumberOfPages();
-                    currentYRef.value = MARGIN_MM;
-                    textX = MARGIN_MM;
-                 }
-                 doc.text(line, textX, currentYRef.value);
-                 currentYRef.value += LINE_HEIGHT_NORMAL;
-            });
-        });
-
-        if (userProfile.photo) {
-            currentYRef.value = Math.max(currentYRef.value, textStartY + USER_PHOTO_SIZE_MM + LINE_HEIGHT_NORMAL);
-        } else {
-            currentYRef.value += LINE_HEIGHT_NORMAL; 
-        }
-    }
-
+    addUserProfileHeader(doc, userProfile, yRef, totalPagesRef, t);
 
     doc.setFontSize(TITLE_FONT_SIZE);
     doc.setFont("helvetica", "bold");
-    const mainTitleText = `7set Spark - ${t('businessLaunchCanvas_title', "Business Launch Canvas")}`;
-    addTextWithPageBreak(doc, mainTitleText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_TITLE, totalPagesRef);
-    currentYRef.value += LINE_HEIGHT_NORMAL / 2; 
+    const mainTitleText = `7set Spark - ${t('businessLaunchCanvas_title')}`;
+    addTextWithPageBreaks(doc, mainTitleText, MARGIN_MM, yRef, {}, LINE_HEIGHT_TITLE, totalPagesRef, t);
+    
+    doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-
-    doc.setFontSize(TEXT_FONT_SIZE - 1);
-    const exportDateText = `${t('exported_on_label', 'Exported on')}: ${new Date().toLocaleString(language === 'am' ? 'am-ET' : 'en-US')}`;
-    addTextWithPageBreak(doc, exportDateText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef);
-    currentYRef.value += LINE_HEIGHT_NORMAL;
+    const exportDateText = `${t('exported_on_label')}: ${new Date().toLocaleString(language === 'am' ? 'am-ET' : 'en-US')}`;
+    addTextWithPageBreaks(doc, exportDateText, MARGIN_MM, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+    yRef.value += LINE_HEIGHT_NORMAL;
 
     ALL_CANVAS_SECTIONS.forEach(section => {
-      if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - (LINE_HEIGHT_SECTION_TITLE * 2) ) { 
-          addPageFooter(doc, doc.getNumberOfPages(), totalPagesRef.current);
-          doc.addPage();
-          totalPagesRef.current = doc.getNumberOfPages();
-          currentYRef.value = MARGIN_MM;
-      }
       doc.setFontSize(SECTION_TITLE_FONT_SIZE);
       doc.setFont("helvetica", "bold");
       const sectionTitleText = t(section as TranslationKey, section);
-      addTextWithPageBreak(doc, sectionTitleText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef);
-      doc.setFont("helvetica", "normal");
+      addTextWithPageBreaks(doc, sectionTitleText, MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, t);
       
-      doc.setFontSize(TEXT_FONT_SIZE);
-      const contentText = canvasData[section] || t('no_content_yet_placeholder_pdf', 'No content provided.');
-      addTextWithPageBreak(doc, contentText, MARGIN_MM + 2, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef); // Indent content slightly
-      currentYRef.value += LINE_HEIGHT_NORMAL * 0.75; 
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      const contentText = canvasData[section] || t('no_content_yet_placeholder_pdf');
+      addTextWithPageBreaks(doc, contentText, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+      yRef.value += LINE_HEIGHT_NORMAL * 0.75; 
     });
     
-    for (let i = 1; i <= totalPagesRef.current; i++) {
-        doc.setPage(i);
-        addPageFooter(doc, i, totalPagesRef.current);
-    }
+    // Ensure last page has a footer
+    addPageFooter(doc, totalPagesRef.current, totalPagesRef.current, t);
 
-    doc.save(language === 'am' ? 'የቢዝነስ_ማስጀመሪያ_ሸራ.pdf' : 'business_launch_canvas.pdf');
+    doc.save(`${t('businessLaunchCanvas_title', 'business_launch_canvas').toLowerCase().replace(/\s/g, '_')}.pdf`);
   };
 
   const handleAiGenerate = async () => {
     if (!aiForm.idea.trim()) {
-        setError(t('error_ai_no_idea', "Please provide your business idea."));
+        setError(t('error_ai_no_idea'));
         return;
     }
     setIsLoadingAi(true);
@@ -246,11 +139,11 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
             setIsAiModalOpen(false);
             setAiForm({ idea: '', q1: '', q2: '', q3: ''});
         } else {
-            setError(t('error_ai_failed_generic', GENERIC_ERROR_MESSAGE + " (AI generation failed or returned no data)"));
+            setError(t('error_ai_failed_generic'));
         }
     } catch (e) {
         console.error(e);
-        setError(t('error_ai_failed_generic', "Failed to generate content. ") + (e as Error).message);
+        setError(t('error_ai_failed_generic'));
     } finally {
         setIsLoadingAi(false);
     }
@@ -264,8 +157,8 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
     <div className="flex flex-col h-[calc(100vh-8rem-2rem)] relative bg-transparent"> 
       <div className="flex-grow p-1 sm:p-4 md:p-6 overflow-y-auto">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-8 gap-4">
-          <h2 className="text-3xl font-bold text-slate-100">{t('businessLaunchCanvas_title', 'Business Launch Canvas')}</h2>
-          <Button onClick={handleExport} variant="primary" leftIcon={<DownloadIcon className="h-5 w-5"/>}>{t('export_all_button', 'Export All')}</Button>
+          <h2 className="text-3xl font-bold text-slate-100">{t('businessLaunchCanvas_title')}</h2>
+          <Button onClick={handleExport} variant="primary" leftIcon={<DownloadIcon className="h-5 w-5"/>}>{t('export_all_button')}</Button>
         </div>
         
         <div className="space-y-8">
@@ -285,22 +178,22 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
 
       <FloatingActionButton
         icon={<HelpIcon className="h-6 w-6" />}
-        tooltip={t('help_canvas_button_tooltip', "Business Launch Canvas Guide")}
+        tooltip={t('help_canvas_button_tooltip')}
         onClick={() => setIsHelpModalOpen(true)}
-        className="bottom-28 right-6 z-30" // Ensure FAB is above content, but below modal if open
-        colorClass="bg-slate-600 hover:bg-slate-500" // Secondary color for help
+        className="bottom-28 right-6 z-30"
+        colorClass="bg-slate-600 hover:bg-slate-500"
         size="md"
       />
       <FloatingActionButton
         icon={<SparklesIcon className="h-7 w-7"/>}
-        tooltip={t('ai_assistant_canvas_button_tooltip', "AI Assistant to Fill Canvas")}
+        tooltip={t('ai_assistant_canvas_button_tooltip')}
         onClick={() => setIsAiModalOpen(true)}
-        className="bottom-6 right-6 z-30" // Primary AI action
-        colorClass="bg-blue-600 hover:bg-blue-500" // Using infographic blue
+        className="bottom-6 right-6 z-30"
+        colorClass="bg-blue-600 hover:bg-blue-500"
         size="lg"
       />
 
-      <Modal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} title={t('ai_assistant_modal_title_canvas', "AI Assistant - Business Canvas")} size="xl">
+      <Modal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} title={t('ai_assistant_modal_title_canvas')} size="xl">
         {error && <p className="text-red-400 bg-red-900/30 p-3 rounded-lg mb-4 text-sm">{error}</p>}
         <div className="space-y-5">
           <div>
@@ -330,8 +223,8 @@ export const BusinessLaunchCanvas: React.FC<BusinessLaunchCanvasProps> = ({ canv
         </div>
       </Modal>
 
-      <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title={t('help_modal_title_canvas', "Business Launch Canvas Guide")} size="xl">
-        <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2"> {/* Added max-height and overflow */}
+      <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title={t('help_modal_title_canvas')} size="xl">
+        <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
           {CANVAS_SECTIONS_HELP.map(helpItem => (
             <div key={helpItem.title} className="p-4 bg-slate-700/50 rounded-lg shadow-inner">
               <h4 className="text-xl font-semibold text-blue-400 mb-2">{t(helpItem.title as TranslationKey, helpItem.title)}</h4>

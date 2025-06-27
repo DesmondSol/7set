@@ -1,6 +1,4 @@
-
 import React, { useState, useCallback, ChangeEvent, useEffect } from 'react';
-import jsPDF from 'jspdf';
 import { 
     MarketResearchData, 
     ResearchSection, 
@@ -20,21 +18,7 @@ import { generateMarketResearchQuestions, generateMarketResearchSummary } from '
 import { Button } from '../common/Button';
 import { Modal } from '../common/Modal';
 import { FloatingActionButton } from '../common/FloatingActionButton';
-
-// PDF Export Helper Constants
-const A4_WIDTH_MM = 210;
-const A4_HEIGHT_MM = 297;
-const MARGIN_MM = 15;
-const CONTENT_WIDTH_MM = A4_WIDTH_MM - 2 * MARGIN_MM;
-const LINE_HEIGHT_NORMAL = 6; 
-const LINE_HEIGHT_TITLE = 10; 
-const LINE_HEIGHT_SECTION_TITLE = 8; 
-
-const TITLE_FONT_SIZE = 20;
-const SECTION_TITLE_FONT_SIZE = 16;
-const TEXT_FONT_SIZE = 10;
-const FOOTER_FONT_SIZE = 8;
-const USER_PHOTO_SIZE_MM = 25;
+import { addUserProfileHeader, addPageFooter, addTextWithPageBreaks, MARGIN_MM, LINE_HEIGHT_NORMAL, TITLE_FONT_SIZE, LINE_HEIGHT_TITLE, SECTION_TITLE_FONT_SIZE, LINE_HEIGHT_SECTION_TITLE, TEXT_FONT_SIZE } from '../../utils/pdfUtils';
 
 interface ResearchQuestionCardProps {
   item: ResearchQuestionItem;
@@ -250,42 +234,6 @@ interface MarketResearchAcceleratorProps {
   userProfile: UserProfile | null;
 }
 
-const addPageFooterToDoc = (doc: jsPDF, lang: Language, translator: Function, pageNumber: number, totalPages: number) => {
-    doc.setFontSize(FOOTER_FONT_SIZE);
-    doc.setTextColor(120, 120, 120); 
-    const footerText = translator('page_x_of_y', `Page ${pageNumber} of ${totalPages}`)
-                        .replace('{currentPage}', String(pageNumber))
-                        .replace('{totalPages}', String(totalPages));
-    doc.text(footerText, MARGIN_MM, A4_HEIGHT_MM - MARGIN_MM / 2); 
-    doc.setTextColor(50, 50, 50);
-};
-
-const addTextWithPageBreakToDoc = (
-    doc: jsPDF, 
-    text: string | string[], 
-    x: number, 
-    currentYRef: { value: number }, 
-    options: any, 
-    lineHeight: number, 
-    totalPagesRef: { current: number }, 
-    lang: Language, 
-    translator: Function
-) => {
-    const lines = Array.isArray(text) ? text : doc.splitTextToSize(text, CONTENT_WIDTH_MM - (x - MARGIN_MM) );
-
-    lines.forEach((line: string) => {
-        if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - lineHeight) {
-            addPageFooterToDoc(doc, lang, translator, doc.getNumberOfPages(), totalPagesRef.current);
-            doc.addPage();
-            totalPagesRef.current = doc.getNumberOfPages();
-            currentYRef.value = MARGIN_MM;
-        }
-        doc.text(line, x, currentYRef.value, options); 
-        currentYRef.value += lineHeight;
-    });
-};
-
-
 export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps> = ({ initialData, onUpdateData, strategyData, language, t, userProfile }) => {
   const [activeResearchSection, setActiveResearchSection] = useState<ResearchSection>(ResearchSection.QUESTIONS);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
@@ -305,17 +253,14 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
   const [editingTrendId, setEditingTrendId] = useState<string | null>(null);
 
    useEffect(() => {
-    // Default to closed sidebar on mobile initially
     if (window.innerWidth < 768) { 
         setIsSidebarOpen(false);
     }
-    // Auto-select first questionnaire set if available
     if (!activeQuestionnaireSetId && initialData[ResearchSection.QUESTIONS].length > 0) {
       setActiveQuestionnaireSetId(initialData[ResearchSection.QUESTIONS][0].id);
     }
-  }, []); // Run only on mount
+  }, []);
 
-  // Update active set if data changes and current active set is removed
    useEffect(() => {
     if (activeQuestionnaireSetId && !initialData[ResearchSection.QUESTIONS].find(s => s.id === activeQuestionnaireSetId)) {
       setActiveQuestionnaireSetId(initialData[ResearchSection.QUESTIONS].length > 0 ? initialData[ResearchSection.QUESTIONS][0].id : null);
@@ -584,57 +529,13 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
     }
   };
   
-  const handleExport = () => {
+  const handleExport = async () => {
+    const { default: jsPDF } = await import('jspdf');
     const doc = new jsPDF();
-    doc.setTextColor(50, 50, 50);
-    const currentYRef = { value: MARGIN_MM };
-    const totalPagesRef = { current: 1 };
+    const yRef = { value: MARGIN_MM };
+    const totalPagesRef = { current: doc.getNumberOfPages() };
 
-    if (userProfile) {
-        doc.setFontSize(SECTION_TITLE_FONT_SIZE);
-        doc.setFont("helvetica", "bold");
-        addTextWithPageBreakToDoc(doc, t('pdf_made_by_title'), MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, language, t);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(TEXT_FONT_SIZE);
-
-        let textX = MARGIN_MM;
-        if (userProfile.photo) {
-            try {
-                const base64Image = userProfile.photo.split(',')[1] || userProfile.photo;
-                const imageType = userProfile.photo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
-                doc.addImage(base64Image, imageType, MARGIN_MM, currentYRef.value, USER_PHOTO_SIZE_MM, USER_PHOTO_SIZE_MM);
-                textX = MARGIN_MM + USER_PHOTO_SIZE_MM + 5;
-            } catch (e) { console.error("Error adding image to MRA PDF:", e); }
-        }
-        
-        const profileDetails = [
-            `${t('user_profile_name_label')} ${userProfile.name}`,
-            `${t('user_profile_email_label')} ${userProfile.email || '-'}`,
-            `${t('user_profile_phone_label')} ${userProfile.phone || '-'}`,
-            `${t('user_profile_other_details_label')} ${userProfile.otherDetails || '-'}`
-        ];
-        
-        let textStartY = currentYRef.value;
-        profileDetails.forEach(detail => {
-             const lines = doc.splitTextToSize(detail, CONTENT_WIDTH_MM - (textX - MARGIN_MM));
-             lines.forEach((line: string) => {
-                 if (currentYRef.value > A4_HEIGHT_MM - MARGIN_MM - LINE_HEIGHT_NORMAL) {
-                    addPageFooterToDoc(doc, language, t, doc.getNumberOfPages(), totalPagesRef.current);
-                    doc.addPage();
-                    totalPagesRef.current = doc.getNumberOfPages();
-                    currentYRef.value = MARGIN_MM;
-                    textX = MARGIN_MM;
-                 }
-                 doc.text(line, textX, currentYRef.value);
-                 currentYRef.value += LINE_HEIGHT_NORMAL;
-            });
-        });
-        if (userProfile.photo) {
-            currentYRef.value = Math.max(currentYRef.value, textStartY + USER_PHOTO_SIZE_MM + LINE_HEIGHT_NORMAL);
-        } else {
-            currentYRef.value += LINE_HEIGHT_NORMAL; 
-        }
-    }
+    addUserProfileHeader(doc, userProfile, yRef, totalPagesRef, t);
 
     const activeSectionHelp = RESEARCH_SECTIONS_HELP.find(h => h.title === activeResearchSection);
     const translatedSectionTitleForFileName = activeSectionHelp?.sidebarTitle[language] || activeResearchSection;
@@ -643,105 +544,97 @@ export const MarketResearchAccelerator: React.FC<MarketResearchAcceleratorProps>
     doc.setFontSize(TITLE_FONT_SIZE);
     doc.setFont("helvetica", "bold");
     const mainTitleText = `7set Spark - ${t('market_research_accelerator_page_title')} - ${translatedSectionTitleForDisplay}`;
-    addTextWithPageBreakToDoc(doc, mainTitleText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_TITLE, totalPagesRef, language, t);
-    currentYRef.value += LINE_HEIGHT_NORMAL / 2;
+    addTextWithPageBreaks(doc, mainTitleText, MARGIN_MM, yRef, {}, LINE_HEIGHT_TITLE, totalPagesRef, t);
+    
+    doc.setFontSize(TEXT_FONT_SIZE - 2);
     doc.setFont("helvetica", "normal");
-
-    doc.setFontSize(TEXT_FONT_SIZE - 1);
-    const exportDateText = `${t('exported_on_label', 'Exported on')}: ${new Date().toLocaleString(language === 'am' ? 'am-ET' : 'en-US')}`;
-    addTextWithPageBreakToDoc(doc, exportDateText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t);
-    currentYRef.value += LINE_HEIGHT_NORMAL;
-
-    doc.setFontSize(TEXT_FONT_SIZE);
+    const exportDateText = `${t('exported_on_label')}: ${new Date().toLocaleString(language === 'am' ? 'am-ET' : 'en-US')}`;
+    addTextWithPageBreaks(doc, exportDateText, MARGIN_MM, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+    yRef.value += LINE_HEIGHT_NORMAL;
 
     switch (activeResearchSection) {
       case ResearchSection.QUESTIONS:
         initialData[ResearchSection.QUESTIONS].forEach(set => {
-          doc.setFontSize(SECTION_TITLE_FONT_SIZE - 2); // Slightly smaller for sets
+          doc.setFontSize(SECTION_TITLE_FONT_SIZE - 2);
           doc.setFont("helvetica", "bold");
-          const setTitleText = `${t('mra_report_set_title', 'Research Set')}: ${set.name} (${t('mra_report_goal_label', 'Goal')}: ${set.researchGoal}, ${t('mra_report_audience_label', 'Audience')}: ${set.targetAudience})`;
-          addTextWithPageBreakToDoc(doc, setTitleText, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE * 0.9, totalPagesRef, language, t);
-          doc.setFont("helvetica", "normal");
+          const setTitleText = `${t('mra_report_set_title')}: ${set.name} (${t('mra_report_goal_label')}: ${set.researchGoal}, ${t('mra_report_audience_label')}: ${set.targetAudience})`;
+          addTextWithPageBreaks(doc, setTitleText, MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE * 0.9, totalPagesRef, t);
           doc.setFontSize(TEXT_FONT_SIZE);
+          doc.setFont("helvetica", "normal");
 
           set.questions.forEach(q => {
-            const qText = `${t('mra_report_question_label', 'Question')}: ${q.text}`;
-            addTextWithPageBreakToDoc(doc, qText, MARGIN_MM + 2, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t); // Indent question
+            const qText = `${t('mra_report_question_label')}: ${q.text}`;
+            addTextWithPageBreaks(doc, qText, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
             if (q.responses.length > 0) {
-              const rTitle = `  ${t('mra_report_responses_label', 'Responses')}:`;
-              addTextWithPageBreakToDoc(doc, rTitle, MARGIN_MM + 2, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t);
+              const rTitle = `  ${t('mra_report_responses_label')}:`;
+              addTextWithPageBreaks(doc, rTitle, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
               q.responses.forEach(r => {
-                addTextWithPageBreakToDoc(doc, `    - ${r.text}`, MARGIN_MM + 4, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t); // Further indent responses
+                addTextWithPageBreaks(doc, `    - ${r.text}`, MARGIN_MM + 4, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
               });
             }
-            currentYRef.value += LINE_HEIGHT_NORMAL * 0.5; 
+            yRef.value += LINE_HEIGHT_NORMAL * 0.5; 
           });
-          currentYRef.value += LINE_HEIGHT_NORMAL; 
+          yRef.value += LINE_HEIGHT_NORMAL; 
         });
         break;
       case ResearchSection.GENERAL_NOTES_IMPORT:
-        const notes = initialData[ResearchSection.GENERAL_NOTES_IMPORT] || t('no_content_yet_placeholder_pdf', 'No content provided.');
-        addTextWithPageBreakToDoc(doc, notes, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t);
+        const notes = initialData[ResearchSection.GENERAL_NOTES_IMPORT] || t('no_content_yet_placeholder_pdf');
+        addTextWithPageBreaks(doc, notes, MARGIN_MM, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
         break;
       case ResearchSection.COMPETITOR_ANALYSIS:
         initialData[ResearchSection.COMPETITOR_ANALYSIS].forEach(comp => {
-          doc.setFontSize(SECTION_TITLE_FONT_SIZE -2 );
+          doc.setFontSize(SECTION_TITLE_FONT_SIZE - 2);
           doc.setFont("helvetica", "bold");
-          addTextWithPageBreakToDoc(doc, comp.name, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE * 0.9, totalPagesRef, language, t);
+          addTextWithPageBreaks(doc, comp.name, MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE * 0.9, totalPagesRef, t);
           doc.setFont("helvetica", "normal");
           doc.setFontSize(TEXT_FONT_SIZE);
           
           const fields = [
-            { labelKey: 'mra_report_pricing_label', defaultLabel: 'Pricing Strategy', value: comp.pricingStrategy },
-            { labelKey: 'mra_report_features_label', defaultLabel: 'Key Features', value: comp.keyFeatures },
-            { labelKey: 'mra_report_strengths_label', defaultLabel: 'Strengths', value: comp.strengths },
-            { labelKey: 'mra_report_weaknesses_label', defaultLabel: 'Weaknesses', value: comp.weaknesses },
-            { labelKey: 'mra_report_gaps_label', defaultLabel: 'Market Gaps Addressed', value: comp.marketGapsAddressed },
-            { labelKey: 'mra_report_notes_label', defaultLabel: 'Notes', value: comp.notes },
+            { labelKey: 'mra_report_pricing_label', value: comp.pricingStrategy },
+            { labelKey: 'mra_report_features_label', value: comp.keyFeatures },
+            { labelKey: 'mra_report_strengths_label', value: comp.strengths },
+            { labelKey: 'mra_report_weaknesses_label', value: comp.weaknesses },
+            { labelKey: 'mra_report_gaps_label', value: comp.marketGapsAddressed },
+            { labelKey: 'mra_report_notes_label', value: comp.notes },
           ];
           fields.forEach(field => {
             if (field.value) {
-              const fieldText = `${t(field.labelKey as TranslationKey, field.defaultLabel)}: ${field.value}`;
-              addTextWithPageBreakToDoc(doc, fieldText, MARGIN_MM + 2, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t);
+              addTextWithPageBreaks(doc, `${t(field.labelKey as TranslationKey)}: ${field.value}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
             }
           });
-          currentYRef.value += LINE_HEIGHT_NORMAL;
+          yRef.value += LINE_HEIGHT_NORMAL;
         });
         break;
       case ResearchSection.TRENDS:
         initialData[ResearchSection.TRENDS].forEach(trend => {
           doc.setFontSize(SECTION_TITLE_FONT_SIZE - 2);
           doc.setFont("helvetica", "bold");
-          addTextWithPageBreakToDoc(doc, trend.title, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_SECTION_TITLE * 0.9, totalPagesRef, language, t);
+          addTextWithPageBreaks(doc, trend.title, MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE * 0.9, totalPagesRef, t);
           doc.setFont("helvetica", "normal");
           doc.setFontSize(TEXT_FONT_SIZE);
           const fields = [
-            { labelKey: 'mra_report_description_label', defaultLabel: 'Description', value: trend.description },
-            { labelKey: 'mra_report_source_label', defaultLabel: 'Source/Evidence', value: trend.sourceEvidence },
-            { labelKey: 'mra_report_timeframe_label', defaultLabel: 'Timeframe', value: trend.timeframe },
-            { labelKey: 'mra_report_location_label', defaultLabel: 'Location/Market', value: trend.locationMarket },
-            { labelKey: 'mra_report_impact_label', defaultLabel: 'Potential Impact', value: trend.potentialImpact },
-            { labelKey: 'mra_report_notes_label', defaultLabel: 'Notes', value: trend.notes },
+            { labelKey: 'mra_report_description_label', value: trend.description },
+            { labelKey: 'mra_report_source_label', value: trend.sourceEvidence },
+            { labelKey: 'mra_report_timeframe_label', value: trend.timeframe },
+            { labelKey: 'mra_report_location_label', value: trend.locationMarket },
+            { labelKey: 'mra_report_impact_label', value: trend.potentialImpact },
+            { labelKey: 'mra_report_notes_label', value: trend.notes },
           ];
           fields.forEach(field => {
             if (field.value) {
-              const fieldText = `${t(field.labelKey as TranslationKey, field.defaultLabel)}: ${field.value}`;
-              addTextWithPageBreakToDoc(doc, fieldText, MARGIN_MM + 2, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t);
+              addTextWithPageBreaks(doc, `${t(field.labelKey as TranslationKey)}: ${field.value}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
             }
           });
-          currentYRef.value += LINE_HEIGHT_NORMAL;
+          yRef.value += LINE_HEIGHT_NORMAL;
         });
         break;
       case ResearchSection.AI_SUMMARY:
-        const summary = initialData[ResearchSection.AI_SUMMARY] || t('no_content_yet_placeholder_pdf', 'No summary generated.');
-        addTextWithPageBreakToDoc(doc, summary, MARGIN_MM, currentYRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, language, t);
+        const summary = initialData[ResearchSection.AI_SUMMARY] || t('no_content_yet_placeholder_pdf');
+        addTextWithPageBreaks(doc, summary, MARGIN_MM, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
         break;
     }
 
-    for (let i = 1; i <= totalPagesRef.current; i++) {
-        doc.setPage(i);
-        addPageFooterToDoc(doc, language, t, i, totalPagesRef.current);
-    }
+    addPageFooter(doc, totalPagesRef.current, totalPagesRef.current, t);
 
     const fileNameBase = language === 'am' ? 'የገበያ_ጥናት' : 'market_research';
     doc.save(`${fileNameBase}_${translatedSectionTitleForFileName.toLowerCase().replace(/\s+|&|\//g, '_')}.pdf`);

@@ -34,6 +34,39 @@
     @supports (font-variation-settings: normal) {
       html { font-family: 'Inter var', sans-serif; }
     }
+    /* --- Pre-React Loader Styles --- */
+    .loader-container {
+      position: fixed;
+      inset: 0;
+      background-color: #073B4C;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      color: #cbd5e1; /* slate-300 */
+      transition: opacity 0.5s ease-in-out;
+    }
+    .loader-spinner {
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-left-color: #06D6A0; /* green accent */
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    .loader-quote {
+      font-style: italic;
+      max-width: 80%;
+      text-align: center;
+      font-size: 1.1rem;
+      color: #94a3b8; /* slate-400 */
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 <script type="importmap">
 {
@@ -52,7 +85,14 @@
   <div class="bg-[#FFD166] text-slate-900 py-2 px-4 text-center text-sm">
     May class starting soon. <a href="#" class="font-semibold underline hover:text-yellow-800 transition-colors">Register here</a>.
   </div>
-  <div id="root"></div>
+  <div id="root">
+    <!-- Pre-React Loading Screen -->
+    <div class="loader-container">
+      <img src="https://7setspark.com/wp-content/uploads/2023/12/Asset-5-179x35.webp" alt="7set Spark Logo" style="height: 35px; margin-bottom: 2rem;"/>
+      <div class="loader-spinner"></div>
+      <p class="loader-quote">"The best way to predict the future is to create it."</p>
+    </div>
+  </div>
   <script type="module" src="/index.tsx"></script>
 </body>
 </html>

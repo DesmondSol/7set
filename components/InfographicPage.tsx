@@ -1,12 +1,12 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { TranslationKey, Partner, Trainer, Testimonial } from '../types'; 
+import { TranslationKey, Partner, Trainer, Testimonial } from '../types';
 import { Language, Page } from '../types';
 import { PARTNERS_DATA, TRAINERS_DATA, TESTIMONIALS_DATA } from '../constants';
 import { Modal } from './common/Modal';
 import { Button } from './common/Button';
 
-declare var Chart: any; 
+declare var Chart: any;
 
 interface InfographicPageProps {
   language: Language;
@@ -38,64 +38,64 @@ const PartnerScroller = ({ t }: { t: (key: TranslationKey, defaultText?: string)
 const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
   const [chartJsReady, setChartJsReady] = useState(false);
   const initializedChartIDsRef = useRef<string[]>([]);
-  const [selectedItem, setSelectedItem] = useState<{type: 'partner' | 'trainer' | 'testimonial', data: Partner | Trainer | Testimonial} | null>(null);
+  const [selectedItem, setSelectedItem] = useState<{ type: 'partner' | 'trainer' | 'testimonial', data: Partner | Trainer | Testimonial } | null>(null);
 
   const getModalTitle = () => {
     if (!selectedItem) return '';
     switch (selectedItem.type) {
-        case 'partner': return t('partner_modal_title');
-        case 'trainer': return t('trainer_modal_title');
-        case 'testimonial': return t('testimonial_modal_title');
-        default: return '';
+      case 'partner': return t('partner_modal_title');
+      case 'trainer': return t('trainer_modal_title');
+      case 'testimonial': return t('testimonial_modal_title');
+      default: return '';
     }
   };
 
   const renderModalContent = () => {
-      if (!selectedItem) return null;
-      const { type, data } = selectedItem;
-      
-      switch (type) {
-          case 'partner': {
-              const partner = data as Partner;
-              return (
-                  <div className="text-center">
-                      <img src={partner.logoUrl} alt={`${partner.name} logo`} className="h-20 max-w-[200px] object-contain mx-auto mb-4 bg-white p-2 rounded-lg" />
-                      <h4 className="text-2xl font-bold text-slate-100 mb-4">{partner.name}</h4>
-                      <p className="text-slate-300 mb-6">{partner.description}</p>
-                      <a href={partner.website} target="_blank" rel="noopener noreferrer">
-                          <Button variant="primary">{t('visit_website_button')}</Button>
-                      </a>
-                  </div>
-              );
-          }
-          case 'trainer': {
-              const trainer = data as Trainer;
-              return (
-                  <div className="text-center">
-                      <img src={trainer.photoUrl} alt={trainer.name} className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-slate-600"/>
-                      <h4 className="text-2xl font-bold text-slate-100">{trainer.name}</h4>
-                      <p className="text-md font-semibold text-blue-400 mb-4">{trainer.specialty}</p>
-                      <p className="text-slate-300 text-left whitespace-pre-line">{trainer.bio}</p>
-                  </div>
-              );
-          }
-          case 'testimonial': {
-              const testimonial = data as Testimonial;
-              return (
-                  <div>
-                       <div className="flex flex-col items-center text-center mb-4">
-                          <img src={testimonial.photoUrl} alt={testimonial.authorName} className="w-24 h-24 rounded-full mx-auto mb-3 object-cover border-4 border-slate-600"/>
-                          <h4 className="text-xl font-bold text-slate-100">{testimonial.authorName}</h4>
-                          <p className="text-sm font-medium text-slate-400">{testimonial.authorTitle}</p>
-                      </div>
-                      <blockquote className="text-lg italic text-slate-300 border-l-4 border-blue-500 pl-4 py-2">
-                          "{testimonial.quote}"
-                      </blockquote>
-                  </div>
-              );
-          }
-          default: return null;
+    if (!selectedItem) return null;
+    const { type, data } = selectedItem;
+
+    switch (type) {
+      case 'partner': {
+        const partner = data as Partner;
+        return (
+          <div className="text-center">
+            <img src={partner.logoUrl} alt={`${partner.name} logo`} className="h-20 max-w-[200px] object-contain mx-auto mb-4 bg-white p-2 rounded-lg" />
+            <h4 className="text-2xl font-bold text-slate-100 mb-4">{partner.name}</h4>
+            <p className="text-slate-300 mb-6">{partner.description}</p>
+            <a href={partner.website} target="_blank" rel="noopener noreferrer">
+              <Button variant="primary">{t('visit_website_button')}</Button>
+            </a>
+          </div>
+        );
       }
+      case 'trainer': {
+        const trainer = data as Trainer;
+        return (
+          <div className="text-center">
+            <img src={trainer.photoUrl} alt={trainer.name} className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-slate-600" />
+            <h4 className="text-2xl font-bold text-slate-100">{trainer.name}</h4>
+            <p className="text-md font-semibold text-blue-400 mb-4">{trainer.specialty}</p>
+            <p className="text-slate-300 text-left whitespace-pre-line">{trainer.bio}</p>
+          </div>
+        );
+      }
+      case 'testimonial': {
+        const testimonial = data as Testimonial;
+        return (
+          <div>
+            <div className="flex flex-col items-center text-center mb-4">
+              <img src={testimonial.photoUrl} alt={testimonial.authorName} className="w-24 h-24 rounded-full mx-auto mb-3 object-cover border-4 border-slate-600" />
+              <h4 className="text-xl font-bold text-slate-100">{testimonial.authorName}</h4>
+              <p className="text-sm font-medium text-slate-400">{testimonial.authorTitle}</p>
+            </div>
+            <blockquote className="text-lg italic text-slate-300 border-l-4 border-blue-500 pl-4 py-2">
+              "{testimonial.quote}"
+            </blockquote>
+          </div>
+        );
+      }
+      default: return null;
+    }
   };
 
   function wrapLabel(str: string, maxLen: number): string | string[] {
@@ -125,7 +125,7 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
         titleColor: '#fff',
         bodyColor: '#fff',
         callbacks: {
-          title: function(tooltipItems: any[]) {
+          title: function (tooltipItems: any[]) {
             const item = tooltipItems[0];
             let label = item.chart.data.labels[item.dataIndex];
             if (Array.isArray(label)) {
@@ -137,7 +137,7 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
       },
       legend: {
         labels: {
-          color: '#E5E7EB', 
+          color: '#E5E7EB',
           font: {
             size: 14
           }
@@ -157,22 +157,22 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
     };
 
     if (checkChartJsAvailability()) {
-      return; 
+      return;
     }
 
     const intervalId = setInterval(() => {
       if (checkChartJsAvailability()) {
         clearInterval(intervalId);
       }
-    }, 100); 
+    }, 100);
 
-    return () => clearInterval(intervalId); 
+    return () => clearInterval(intervalId);
   }, []);
 
 
   useEffect(() => {
     if (chartJsReady) {
-      initializedChartIDsRef.current = []; 
+      initializedChartIDsRef.current = [];
       const tooltipCallbacks = getTooltipTitleCallback();
 
       const initStartPackageChart = () => {
@@ -185,10 +185,10 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
           type: 'doughnut',
           data: {
             labels: [
-                t('infographic_chart_start_week1'), 
-                t('infographic_chart_start_week2'), 
-                t('infographic_chart_start_week3'), 
-                t('infographic_chart_start_week4')
+              t('infographic_chart_start_week1'),
+              t('infographic_chart_start_week2'),
+              t('infographic_chart_start_week3'),
+              t('infographic_chart_start_week4')
             ],
             datasets: [{
               label: 'Focus', // This label might not be directly visible in doughnut but good for data structure
@@ -211,10 +211,10 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
           type: 'bar',
           data: {
             labels: [
-                t('infographic_chart_build_mvp'), 
-                t('infographic_chart_build_finance'), 
-                t('infographic_chart_build_marketing'), 
-                t('infographic_chart_build_legal')
+              t('infographic_chart_build_mvp'),
+              t('infographic_chart_build_finance'),
+              t('infographic_chart_build_marketing'),
+              t('infographic_chart_build_legal')
             ],
             datasets: [{
               label: t('infographic_deepdive_build_title'), // Or a generic 'Module Focus'
@@ -230,14 +230,14 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
           }
         });
       };
-      
+
       const initGrowPackageChart = () => {
         const canvasElement = document.getElementById('growPackageChart') as HTMLCanvasElement | null;
         if (!canvasElement) return null;
         const ctx = canvasElement.getContext('2d');
         if (!ctx) return null;
         const labels = [
-          t('infographic_chart_grow_legal'), t('infographic_chart_grow_finance'), t('infographic_chart_grow_ops'), 
+          t('infographic_chart_grow_legal'), t('infographic_chart_grow_finance'), t('infographic_chart_grow_ops'),
           t('infographic_chart_grow_hr'), t('infographic_chart_grow_negotiation'), t('infographic_chart_grow_kpi')
         ];
         const wrappedLabels = labels.map(label => wrapLabel(label, 16));
@@ -248,7 +248,7 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
             labels: wrappedLabels,
             datasets: [{
               label: t('infographic_deepdive_grow_title'), // Or 'GROW Module Focus'
-              data: [8, 9, 7, 8, 9, 7],
+              data: [8, 9, 7.4, 8, 9, 8.6],
               fill: true, backgroundColor: 'rgba(6, 214, 160, 0.4)', borderColor: '#06D6A0',
               pointBackgroundColor: '#06D6A0', pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: '#06D6A0'
             }]
@@ -260,7 +260,7 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
           }
         });
       };
-      
+
       const initLearningModelChart = () => {
         const canvasElement = document.getElementById('learningModelChart') as HTMLCanvasElement | null;
         if (!canvasElement) return null;
@@ -283,7 +283,7 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
           }
         });
       };
-      
+
       const initWeeklyHoursChart = () => {
         const canvasElement = document.getElementById('weeklyHoursChart') as HTMLCanvasElement | null;
         if (!canvasElement) return null;
@@ -322,14 +322,14 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
             chartInstance.destroy();
           }
         });
-        initializedChartIDsRef.current = []; 
+        initializedChartIDsRef.current = [];
       }
     };
-  }, [chartJsReady, language, t]); 
+  }, [chartJsReady, language, t]);
 
 
   return (
-    <div className="text-slate-100 font-inter w-full overflow-y-auto h-full"> 
+    <div className="text-slate-100 font-inter w-full overflow-y-auto h-full">
       <div className="container mx-auto p-4 md:p-8">
         <header className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-black text-white mb-4">{t('infographic_title')}</h1>
@@ -441,7 +441,7 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
               ].map(item => (
                 <div key={item.titleKey} className="bg-slate-800/70 backdrop-blur-sm p-6 rounded-xl shadow-lg text-center transition-transform hover:scale-105 border border-slate-700 flex flex-col">
                   <div className="text-4xl mb-3">{item.icon}</div>
-                  <h3 className="text-xl font-bold text-slate-100" style={{color: item.color}}>{t(item.titleKey as TranslationKey)}</h3>
+                  <h3 className="text-xl font-bold text-slate-100" style={{ color: item.color }}>{t(item.titleKey as TranslationKey)}</h3>
                   <p className="mt-2 text-slate-300 text-sm flex-grow">{t(item.textKey as TranslationKey)}</p>
                 </div>
               ))}
@@ -455,7 +455,7 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
                 <p className="text-6xl md:text-8xl font-black text-white">{t('infographic_goal_prizes_amount')}</p>
                 <p className="mt-2 text-white/80 text-sm">{t('infographic_goal_prizes_desc')}</p>
               </div>
-                <div>
+              <div>
                 <p className="text-6xl md:text-8xl font-black text-white">{t('infographic_goal_investment_amount')}</p>
                 <p className="mt-2 text-white/80 text-sm">{t('infographic_goal_investment_desc')}</p>
               </div>
@@ -479,30 +479,30 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
           </section> */}
 
           <section id="testimonials" className="mb-20">
-              <h2 className="text-3xl font-bold text-center mb-12 text-white">{t('infographic_testimonials_title')}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                  {TESTIMONIALS_DATA.map(testimonial => (
-                      <div key={testimonial.id} className="bg-slate-800/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center text-center cursor-pointer transition-transform hover:scale-105" onClick={() => setSelectedItem({ type: 'testimonial', data: testimonial })}>
-                          <img src={testimonial.photoUrl} alt={testimonial.authorName} className="w-20 h-20 rounded-full mb-4 object-cover border-4 border-slate-600"/>
-                          <blockquote className="text-slate-300 italic flex-grow">
-                              "{testimonial.quote.substring(0, 120)}..."
-                          </blockquote>
-                          <div className="mt-4 font-bold text-slate-100">{testimonial.authorName}</div>
-                          <div className="text-sm text-slate-400">{testimonial.authorTitle}</div>
-                      </div>
-                  ))}
-              </div>
+            <h2 className="text-3xl font-bold text-center mb-12 text-white">{t('infographic_testimonials_title')}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {TESTIMONIALS_DATA.map(testimonial => (
+                <div key={testimonial.id} className="bg-slate-800/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center text-center cursor-pointer transition-transform hover:scale-105" onClick={() => setSelectedItem({ type: 'testimonial', data: testimonial })}>
+                  <img src={testimonial.photoUrl} alt={testimonial.authorName} className="w-20 h-20 rounded-full mb-4 object-cover border-4 border-slate-600" />
+                  <blockquote className="text-slate-300 italic flex-grow">
+                    "{testimonial.quote.substring(0, 120)}..."
+                  </blockquote>
+                  <div className="mt-4 font-bold text-slate-100">{testimonial.authorName}</div>
+                  <div className="text-sm text-slate-400">{testimonial.authorTitle}</div>
+                </div>
+              ))}
+            </div>
           </section>
-          
-           <section id="partners" className="mb-20">
-              <h2 className="text-3xl font-bold text-center mb-12 text-white">{t('infographic_partners_title')}</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 items-center justify-center">
-                  {PARTNERS_DATA.map(partner => (
-                      <div key={partner.id} className="flex justify-center items-center p-4 bg-slate-800/70 backdrop-blur-sm rounded-xl shadow-lg h-32 border border-slate-700 transition-transform hover:scale-105 cursor-pointer" onClick={() => setSelectedItem({ type: 'partner', data: partner })}>
-                          <img src={partner.logoUrl} alt={`${partner.name} logo`} title={partner.name} className="max-h-16 w-auto object-contain"/>
-                      </div>
-                  ))}
-              </div>
+
+          <section id="partners" className="mb-20">
+            <h2 className="text-3xl font-bold text-center mb-12 text-white">{t('infographic_partners_title')}</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 items-center justify-center">
+              {PARTNERS_DATA.map(partner => (
+                <div key={partner.id} className="flex justify-center items-center p-4 bg-slate-800/70 backdrop-blur-sm rounded-xl shadow-lg h-32 border border-slate-700 transition-transform hover:scale-105 cursor-pointer" onClick={() => setSelectedItem({ type: 'partner', data: partner })}>
+                  <img src={partner.logoUrl} alt={`${partner.name} logo`} title={partner.name} className="max-h-16 w-auto object-contain" />
+                </div>
+              ))}
+            </div>
           </section>
         </main>
 
@@ -511,18 +511,18 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
           <p className="text-slate-400 text-sm">{t('infographic_footer_copyright')}</p>
           <p className="text-slate-400 text-sm">{t('infographic_footer_address')}</p>
           <p className="text-slate-400 text-sm">{t('infographic_footer_poweredby')}
-          <a className="underline hover:text-blue-600 dark:hover:text-blue-400"
-          href="https://www.linkedin.com/in/sol-tig/"
-          target='_blank'
-          rel="noopener"
-          aria-label='likedin'
-        >
-          Solomon T
-        </a></p>
+            <a className="underline hover:text-blue-600 dark:hover:text-blue-400"
+              href="https://www.linkedin.com/in/sol-tig/"
+              target='_blank'
+              rel="noopener"
+              aria-label='likedin'
+            >
+              Solomon T
+            </a></p>
         </footer>
       </div>
-       <Modal isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} title={getModalTitle()} size="lg">
-          {renderModalContent()}
+      <Modal isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} title={getModalTitle()} size="lg">
+        {renderModalContent()}
       </Modal>
     </div>
   );

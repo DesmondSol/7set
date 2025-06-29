@@ -22,7 +22,7 @@ import {
     AssessmentScores,
     TranslationKey
 } from '../types';
-import { API_KEY_WARNING, GENERIC_ERROR_MESSAGE } from "../constants";
+import { API_KEY_WARNING } from "../constants";
 
 // Note: GoogleGenAI type will be imported dynamically.
 type GoogleGenAI = any;

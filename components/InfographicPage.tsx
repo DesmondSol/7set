@@ -1,7 +1,10 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { TranslationKey } from '../types'; 
+import { TranslationKey, Partner, Trainer, Testimonial } from '../types'; 
 import { Language, Page } from '../types';
+import { PARTNERS_DATA, TRAINERS_DATA, TESTIMONIALS_DATA } from '../constants';
+import { Modal } from './common/Modal';
+import { Button } from './common/Button';
 
 declare var Chart: any; 
 
@@ -10,10 +13,90 @@ interface InfographicPageProps {
   t: (key: TranslationKey, defaultText?: string) => string;
 }
 
+const PartnerScroller = ({ t }: { t: (key: TranslationKey, defaultText?: string) => string }) => {
+  // To make it seamless, we need to duplicate the items.
+  const duplicatedPartners = [...PARTNERS_DATA, ...PARTNERS_DATA];
+
+  return (
+    <div className="scroller w-full">
+      <div className="scroller__inner">
+        {duplicatedPartners.map((partner, index) => (
+          <a href={partner.website} key={`${partner.id}-${index}`} target="_blank" rel="noopener noreferrer" title={partner.name}>
+            <img
+              src={partner.logoUrl}
+              alt={`${partner.name} logo`}
+              className="h-10 md:h-12 object-contain"
+            />
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
 const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
   const [chartJsReady, setChartJsReady] = useState(false);
   const initializedChartIDsRef = useRef<string[]>([]);
+  const [selectedItem, setSelectedItem] = useState<{type: 'partner' | 'trainer' | 'testimonial', data: Partner | Trainer | Testimonial} | null>(null);
 
+  const getModalTitle = () => {
+    if (!selectedItem) return '';
+    switch (selectedItem.type) {
+        case 'partner': return t('partner_modal_title');
+        case 'trainer': return t('trainer_modal_title');
+        case 'testimonial': return t('testimonial_modal_title');
+        default: return '';
+    }
+  };
+
+  const renderModalContent = () => {
+      if (!selectedItem) return null;
+      const { type, data } = selectedItem;
+      
+      switch (type) {
+          case 'partner': {
+              const partner = data as Partner;
+              return (
+                  <div className="text-center">
+                      <img src={partner.logoUrl} alt={`${partner.name} logo`} className="h-20 max-w-[200px] object-contain mx-auto mb-4 bg-white p-2 rounded-lg" />
+                      <h4 className="text-2xl font-bold text-slate-100 mb-4">{partner.name}</h4>
+                      <p className="text-slate-300 mb-6">{partner.description}</p>
+                      <a href={partner.website} target="_blank" rel="noopener noreferrer">
+                          <Button variant="primary">{t('visit_website_button')}</Button>
+                      </a>
+                  </div>
+              );
+          }
+          case 'trainer': {
+              const trainer = data as Trainer;
+              return (
+                  <div className="text-center">
+                      <img src={trainer.photoUrl} alt={trainer.name} className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-slate-600"/>
+                      <h4 className="text-2xl font-bold text-slate-100">{trainer.name}</h4>
+                      <p className="text-md font-semibold text-blue-400 mb-4">{trainer.specialty}</p>
+                      <p className="text-slate-300 text-left whitespace-pre-line">{trainer.bio}</p>
+                  </div>
+              );
+          }
+          case 'testimonial': {
+              const testimonial = data as Testimonial;
+              return (
+                  <div>
+                       <div className="flex flex-col items-center text-center mb-4">
+                          <img src={testimonial.photoUrl} alt={testimonial.authorName} className="w-24 h-24 rounded-full mx-auto mb-3 object-cover border-4 border-slate-600"/>
+                          <h4 className="text-xl font-bold text-slate-100">{testimonial.authorName}</h4>
+                          <p className="text-sm font-medium text-slate-400">{testimonial.authorTitle}</p>
+                      </div>
+                      <blockquote className="text-lg italic text-slate-300 border-l-4 border-blue-500 pl-4 py-2">
+                          "{testimonial.quote}"
+                      </blockquote>
+                  </div>
+              );
+          }
+          default: return null;
+      }
+  };
 
   function wrapLabel(str: string, maxLen: number): string | string[] {
     if (str.length <= maxLen) {
@@ -253,6 +336,10 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
           <p className="text-xl md:text-2xl font-light text-[#FFD166] max-w-3xl mx-auto">{t('infographic_subtitle')}</p>
         </header>
 
+        <section className="mb-20">
+          <PartnerScroller t={t} />
+        </section>
+
         <main>
           <section id="blueprint" className="mb-20">
             <h2 className="text-3xl font-bold text-center mb-2 text-white">{t('infographic_blueprint_title')}</h2>
@@ -360,8 +447,8 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
               ))}
             </div>
           </section>
-          
-          <section id="goal" className="text-center bg-gradient-to-br from-[#118AB2] to-[#06D6A0] p-8 md:p-12 rounded-xl mb-12 shadow-2xl">
+
+          <section id="goal" className="text-center bg-gradient-to-br from-[#118AB2] to-[#06D6A0] p-8 md:p-12 rounded-xl mb-20 shadow-2xl">
             <h2 className="text-3xl font-bold text-center mb-8 text-white">{t('infographic_goal_title')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
@@ -373,6 +460,49 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
                 <p className="mt-2 text-white/80 text-sm">{t('infographic_goal_investment_desc')}</p>
               </div>
             </div>
+          </section>
+
+          {/* <section id="trainers" className="mb-20">
+              <h2 className="text-3xl font-bold text-center mb-12 text-white">{t('infographic_trainers_title')}</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {TRAINERS_DATA.map(trainer => (
+                      <div key={trainer.id} className="bg-slate-800/70 backdrop-blur-sm p-6 rounded-xl shadow-lg text-center border border-slate-700">
+                          <img src={trainer.photoUrl} alt={trainer.name} className="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-slate-600"/>
+                          <h3 className="text-xl font-bold text-slate-100">{trainer.name}</h3>
+                          <p className="text-md font-light text-blue-400 mb-4">{trainer.specialty}</p>
+                          <Button variant="outline" size="sm" onClick={() => setSelectedItem({ type: 'trainer', data: trainer })}>
+                              {t('view_details_button')}
+                          </Button>
+                      </div>
+                  ))}
+              </div>
+          </section> */}
+
+          <section id="testimonials" className="mb-20">
+              <h2 className="text-3xl font-bold text-center mb-12 text-white">{t('infographic_testimonials_title')}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                  {TESTIMONIALS_DATA.map(testimonial => (
+                      <div key={testimonial.id} className="bg-slate-800/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center text-center cursor-pointer transition-transform hover:scale-105" onClick={() => setSelectedItem({ type: 'testimonial', data: testimonial })}>
+                          <img src={testimonial.photoUrl} alt={testimonial.authorName} className="w-20 h-20 rounded-full mb-4 object-cover border-4 border-slate-600"/>
+                          <blockquote className="text-slate-300 italic flex-grow">
+                              "{testimonial.quote.substring(0, 120)}..."
+                          </blockquote>
+                          <div className="mt-4 font-bold text-slate-100">{testimonial.authorName}</div>
+                          <div className="text-sm text-slate-400">{testimonial.authorTitle}</div>
+                      </div>
+                  ))}
+              </div>
+          </section>
+          
+           <section id="partners" className="mb-20">
+              <h2 className="text-3xl font-bold text-center mb-12 text-white">{t('infographic_partners_title')}</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 items-center justify-center">
+                  {PARTNERS_DATA.map(partner => (
+                      <div key={partner.id} className="flex justify-center items-center p-4 bg-slate-800/70 backdrop-blur-sm rounded-xl shadow-lg h-32 border border-slate-700 transition-transform hover:scale-105 cursor-pointer" onClick={() => setSelectedItem({ type: 'partner', data: partner })}>
+                          <img src={partner.logoUrl} alt={`${partner.name} logo`} title={partner.name} className="max-h-16 w-auto object-contain"/>
+                      </div>
+                  ))}
+              </div>
           </section>
         </main>
 
@@ -391,6 +521,9 @@ const InfographicPage: React.FC<InfographicPageProps> = ({ language, t }) => {
         </a></p>
         </footer>
       </div>
+       <Modal isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} title={getModalTitle()} size="lg">
+          {renderModalContent()}
+      </Modal>
     </div>
   );
 };

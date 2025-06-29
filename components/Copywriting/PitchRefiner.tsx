@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import {
-  CopywritingData,
-  Pitch,
-  PitchType,
-  Language,
-  UserProfile,
-  CanvasData,
-  MarketResearchData,
-  CanvasSection,
-  TranslationKey
+import { 
+    CopywritingData, 
+    Pitch,
+    PitchType,
+    Language, 
+    UserProfile, 
+    CanvasData, 
+    MarketResearchData,
+    CanvasSection,
+    TranslationKey
 } from '../../types';
 import { Button } from '../common/Button';
 import { PitchModal } from './PitchModal';
@@ -64,16 +64,16 @@ export const PitchRefiner: React.FC<PitchRefinerProps> = ({
   };
 
   const handleDeletePitch = (pitchId: string) => {
-    if (window.confirm(t('delete_button') + ` "${copywritingData.pitches.find(p => p.id === pitchId)?.title || 'pitch'}"?`)) {
-      const updatedPitches = copywritingData.pitches.filter(p => p.id !== pitchId);
-      onUpdateData({ ...copywritingData, pitches: updatedPitches });
+    if (window.confirm(t('delete_button') + ` "${copywritingData.pitches.find(p=>p.id === pitchId)?.title || 'pitch'}"?`)) {
+        const updatedPitches = copywritingData.pitches.filter(p => p.id !== pitchId);
+        onUpdateData({ ...copywritingData, pitches: updatedPitches });
     }
   };
 
   const handleAiGeneratePitch = async (inputs: { pitchType: PitchType; targetAudience: string; keyMessage: string; numEmails?: number }) => {
-    if (!strategyData || Object.keys(strategyData).filter(k => strategyData[k as CanvasSection]?.trim()).length === 0) {
-      setError(t('mra_questions_ai_requires_canvas_note')); // Re-use relevant error message
-      return;
+    if (!strategyData || Object.keys(strategyData).filter(k=>strategyData[k as CanvasSection]?.trim()).length === 0) {
+        setError(t('mra_questions_ai_requires_canvas_note')); // Re-use relevant error message
+        return;
     }
     setIsLoadingAi(true);
     setError(null);
@@ -101,7 +101,7 @@ export const PitchRefiner: React.FC<PitchRefinerProps> = ({
       setIsLoadingAi(false);
     }
   };
-
+  
   const handleExportPitches = async () => {
     const { default: jsPDF } = await import('jspdf'); // Dynamic import
     const doc = new jsPDF();
@@ -113,7 +113,7 @@ export const PitchRefiner: React.FC<PitchRefinerProps> = ({
     doc.setFontSize(TITLE_FONT_SIZE);
     doc.setFont("helvetica", "bold");
     addTextWithPageBreaks(doc, t('pdf_pitches_title'), MARGIN_MM, yRef, {}, LINE_HEIGHT_TITLE, totalPagesRef, t);
-
+    
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     const exportDateText = `${t('exported_on_label')}: ${new Date().toLocaleString(language === 'am' ? 'am-ET' : 'en-US')}`;
@@ -121,26 +121,26 @@ export const PitchRefiner: React.FC<PitchRefinerProps> = ({
     yRef.value += LINE_HEIGHT_NORMAL;
 
     copywritingData.pitches.forEach((pitch, index) => {
-      if (index > 0) yRef.value += LINE_HEIGHT_NORMAL;
+        if (index > 0) yRef.value += LINE_HEIGHT_NORMAL; 
 
-      doc.setFontSize(SECTION_TITLE_FONT_SIZE - 2);
-      doc.setFont("helvetica", "bold");
-      addTextWithPageBreaks(doc, `${t('pdf_pitch_title')}: ${pitch.title}`, MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, t);
+        doc.setFontSize(SECTION_TITLE_FONT_SIZE - 2);
+        doc.setFont("helvetica", "bold");
+        addTextWithPageBreaks(doc, `${t('pdf_pitch_title')}: ${pitch.title}`, MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, t);
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
 
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-
-      addTextWithPageBreaks(doc, `${t('pdf_pitch_type_label')}: ${t(pitch.type as TranslationKey, pitch.type)}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
-      addTextWithPageBreaks(doc, `${t('pdf_target_audience_label')}: ${pitch.targetAudience}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
-      addTextWithPageBreaks(doc, `${t('pdf_key_message_label')}: ${pitch.keyMessage}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
-
-      yRef.value += LINE_HEIGHT_NORMAL / 2;
-      addTextWithPageBreaks(doc, pitch.content, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
-
-      if (pitch.notes) {
+        addTextWithPageBreaks(doc, `${t('pdf_pitch_type_label')}: ${t(pitch.type as TranslationKey, pitch.type)}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+        addTextWithPageBreaks(doc, `${t('pdf_target_audience_label')}: ${pitch.targetAudience}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+        addTextWithPageBreaks(doc, `${t('pdf_key_message_label')}: ${pitch.keyMessage}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+        
         yRef.value += LINE_HEIGHT_NORMAL / 2;
-        addTextWithPageBreaks(doc, `${t('marketing_post_notes_label')}: ${pitch.notes}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
-      }
+        addTextWithPageBreaks(doc, pitch.content, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+
+        if (pitch.notes) {
+            yRef.value += LINE_HEIGHT_NORMAL / 2;
+            addTextWithPageBreaks(doc, `${t('marketing_post_notes_label')}: ${pitch.notes}`, MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+        }
     });
 
     addPageFooter(doc, totalPagesRef.current, totalPagesRef.current, t);
@@ -154,12 +154,12 @@ export const PitchRefiner: React.FC<PitchRefinerProps> = ({
       <div className="p-6 bg-slate-800 rounded-xl shadow-xl border border-slate-700">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <h3 className="text-xl font-semibold text-blue-400">{t('copywriting_pitch_refinement_title')}</h3>
-          <div className="flex space-x-3">
-            <Button onClick={() => handleOpenPitchModal(null)} leftIcon={<PlusIcon className="h-5 w-5" />} variant="secondary">
+           <div className="flex space-x-3">
+            <Button onClick={() => handleOpenPitchModal(null)} leftIcon={<PlusIcon className="h-5 w-5"/>} variant="secondary">
               {t('pitch_add_button')}
             </Button>
-            <Button onClick={handleExportPitches} leftIcon={<DownloadIcon className="h-5 w-5" />} variant="outline">
-              {t('export_pitches_button')}
+            <Button onClick={handleExportPitches} leftIcon={<DownloadIcon className="h-5 w-5"/>} variant="outline">
+                {t('export_pitches_button')}
             </Button>
           </div>
         </div>
@@ -176,7 +176,7 @@ export const PitchRefiner: React.FC<PitchRefinerProps> = ({
                   <div className="flex-grow">
                     <h4 className="text-lg font-semibold text-slate-100">{pitch.title}</h4>
                     <p className="text-xs text-slate-400 mt-0.5 mb-1">
-                      <span className="font-medium">{t('pitch_type_label')}</span> {t(pitch.type as TranslationKey, pitch.type)} |
+                      <span className="font-medium">{t('pitch_type_label')}</span> {t(pitch.type as TranslationKey, pitch.type)} | 
                       <span className="font-medium ml-2">{t('pitch_target_audience_label')}</span> {pitch.targetAudience}
                     </p>
                     <p className="text-sm text-slate-300 line-clamp-2">{pitch.content}</p>
@@ -230,5 +230,4 @@ const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 const DownloadIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-  </svg>
-);
+  </svg

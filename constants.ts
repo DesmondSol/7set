@@ -1,4 +1,4 @@
-import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey, AssessmentQuestion } from './types';
+import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey, AssessmentQuestion, Partner, Trainer, Testimonial } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
   {
@@ -14,6 +14,10 @@ export const NAV_ITEMS: NavItem[] = [
     subItems: [SubPage.LEARN, SubPage.AI_ADVISOR],
   },
 ];
+
+export const API_KEY_WARNING = "API key is not set. AI features will be disabled.";
+export const GENERIC_ERROR_MESSAGE = "An unexpected error occurred. Please try again later.";
+
 
 export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   {
@@ -112,7 +116,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
     },
     example: {
       en: "1. Abebe: 45-yr old teff farmer in rural Gojjam, owns a feature phone, struggles with market price info and transport. Wants fair, consistent income. 2. Fatuma: 30-yr old restaurant owner in Bole, Addis Ababa, needs reliable supply of fresh vegetables, values quality and convenience, uses Telebirr.",
-      am: "1. አበበ፦ በገጠር ጎጃም የሚኖር የ45 ዓመት የጤፍ ገበሬ፣ የባህሪ ስልክ ያለው፣ የገበያ ዋጋ መረጃ እና የትራንስፖርት ችግር አለበት። ፍትሃዊ፣ ወጥ የሆነ ገቢ ይፈልጋል። 2. ፋጡማ፦ በቦሌ፣ አዲስ አበባ የምትኖር የ30 ዓመት የምግብ ቤት ባለቤት፣ አስተማማኝ ትኩስ አትክልት አቅርቦት ትፈልጋለች፣ ጥራትንና ምቾትን ትመለከታለች፣ ቴሌብር ትጠቀማለች።"
+      am: "1. አበበ፦ በገጠር ጎጃም የሚኖር የ45 ዓመት የጤፍ ገበሬ፣ የባህሪ ስልክ ያለው፣ የገበያ ዋጋ መረጃ እና የትራንስፖርት ችግር አለበት። ፍትሃዊ፣ ወጥ የሆነ ገቢ ይፈልጋል። 2. ፋጡማ፦ በቦሌ፣ አዲስ አበባ የምትኖር የ30 ዓመት የምግብ ቤት ባለቤት፣ አስተማማኝ ትኩስ አትክልት አቅርቦት ትፈልጋለች、 ጥራትንና ምቾትን ትመለከታለች、 ቴሌብር ትጠቀማለች።"
     }
   },
   {
@@ -145,7 +149,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
     },
     example: {
       en: "GebeyaLink: The only platform in Ethiopia offering a combined USSD and App access for agricultural trade, with integrated local payment (Telebirr) and logistics partnerships, directly connecting rural farmers to urban markets, reducing intermediaries and increasing transparency.",
-      am: "ገበያሊንክ፦ በኢትዮጵያ ብቸኛው የግብርና ንግድ የUSSD እና የመተግበሪያ ተደራሽነትን በአንድ ላይ የሚያቀርብ、 የተቀናጀ የአካባቢ ክፍያ (ቴሌብር) እና የሎጂስቲክስ አጋርነት ያለው፣ የገጠር ገበሬዎችን ከከተማ ገበያዎች ጋር በቀጥታ የሚያገናኝ፣ አማላጆችን የሚቀንስ እና ግልጽነትን የሚጨምር መድረክ።"
+      am: "ገበያሊንክ፦ በኢትዮጵያ ብቸኛው የግብርና ንግድ የUSSD እና የመተግበሪያ ተደራሽነትን በአንድ ላይ የሚያቀርብ、 የተቀናጀ የአካባቢ ክፍያ (ቴሌብር) እና የሎጂስቲክስ አጋርነት ያለው፣ የገጠር ገበሬዎችን ከከተማ ገበያዎች ጋር በቀጥታ የሚያገናኝ、 አማላጆችን የሚቀንስ እና ግልጽነትን የሚጨምር መድረክ።"
     }
   },
   {
@@ -167,7 +171,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
     },
     example: {
       en: "GebeyaLink will charge a 5% commission on the value of each successful transaction facilitated through the platform (deducted from seller payment). Future potential: Premium features for businesses (e.g., data analytics on crop availability for ETB 500/month).",
-      am: "ገበያሊንክ በመድረኩ በኩል ለሚከናወን እያንዳንዱ የተሳካ ግብይት ዋጋ 5% ኮሚሽን ያስከፍላል (ከሻጭ ክፍያ ላይ ተቀንሶ)። የወደፊት እምቅ አቅም፦ ለንግዶች ፕሪሚየም ባህሪዎች (ለምሳሌ፣ በወር 500 ብር ስለ ሰብል መገኘት የውሂብ ትንተና)።"
+      am: "ገበያሊንክ በመድረኩ በኩል ለሚከናወን እያንዳንዱ የተሳካ ግብይት ዋጋ 5% ኮሚሽን ያስከፍላል (ከሻጭ ክፍያ ላይ ተቀንሶ)። የወደፊት እምቅ አቅም፦ ለንግዶች ፕሪሚየም ባህሪዎች (ለምሳሌ፣ በወር 500 ብр ስለ ሰብል መገኘት የውሂብ ትንተና)።"
     }
   },
   {
@@ -200,7 +204,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
     },
     example: {
       en: "Per transaction: Avg. transaction value = 5000 ETB. Revenue (5% commission) = 250 ETB. Variable costs (SMS, payment gateway fee) = 10 ETB. Contribution margin = 240 ETB. Target CAC for a farmer: 100 ETB (via local agent outreach). LTV (farmer, 3 yrs): ~15,000 ETB profit contribution.",
-      am: "በአንድ ግብይት፦ አማካይ የግብይት ዋጋ = 5000 ብር። ገቢ (5% ኮሚሽን) = 250 ብር። ተለዋዋጭ ወጪዎች (SMS፣ የክፍያ መግቢያ ክፍያ) = 10 ብር። የአስተዋጽኦ ህዳግ = 240 ብር። ለአንድ ገበሬ ዒላማ የደንበኛ ማግኛ ወጪ (CAC)፦ 100 ብር (በአካባቢ ወኪል ተደራሽነት)። የአንድ ገበሬ የህይወት ዘመን ዋጋ (LTV) (3 ዓመታት)፦ ~15,000 ብር የትርፍ አስተዋጽኦ።"
+      am: "በአንድ ግብይት፦ አማካይ የግብይት ዋጋ = 5000 ብር። ገቢ (5% ኮሚሽን) = 250 ብር። ተለዋዋጭ ወጪዎች (SMS፣ የክፍያ መግቢያ ክፍያ) = 10 ብር። የአስተዋጽኦ ህዳግ = 240 ብр። ለአንድ ገበሬ ዒላማ የደንበኛ ማግኛ ወጪ (CAC)፦ 100 ብር (በአካባቢ ወኪል ተደራሽነት)። የአንድ ገበሬ የህይወት ዘመን ዋጋ (LTV) (3 ዓመታት)፦ ~15,000 ብር የትርፍ አስተዋጽኦ።"
     }
   },
   {
@@ -222,90 +226,69 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
     },
     example: {
       en: "Metrics: Achieve 500 active farmer listings and 1000 buyer transactions per month within 6 months. Farmer retention rate of 70% after 3 months. Net Promoter Score (NPS) of +40 from both farmer and buyer segments in Ethiopia. User testimonials in Amharic and Oromiffa praising ease of use and fair pricing.",
-      am: "መለኪያዎች፦ በ6 ወራት ውስጥ በወር 500 ንቁ የገበሬ ዝርዝሮችን እና 1000 የገዥ ግብይቶችን ማሳካት። ከ3 ወራት በኋላ የገበሬ የደንበኛ ታማኝነት መጠን 70%። ከኢትዮጵያ የገበሬ እና የገዥ ክፍሎች የተጣራ አራማጅ ነጥብ (NPS) +40። በአማርኛ እና በኦሮምኛ የአጠቃቀም ቀላልነትን እና ፍትሃዊ ዋጋን የሚያወድሱ የተጠቃሚ ምስክርነቶች።"
+      am: "መለኪያዎች፦ በ6 ወራት ውስጥ በወር 500 ንቁ የገበሬዎች ዝርዝሮችን እና 1000 የገዢ ግብይቶችን ማሳካት። ከ3 ወራት በኋላ 70% የገበሬዎች ታማኝነት መጠን። በኢትዮጵያ ውስጥ ካሉ የገበሬ እና የገዢ ክፍሎች +40 የተጣራ አራማጅ ውጤት (NPS)። በአማርኛ እና በኦሮምኛ የተጠቃሚ ምስክርነቶች የአጠቃቀም ቀላልነትን እና ፍትሃዊ ዋጋን የሚያወድሱ።"
     }
-  }
+  },
 ];
 
 export const RESEARCH_SECTIONS_HELP: ResearchSectionHelp[] = [
   {
     title: ResearchSection.QUESTIONS,
-    sidebarTitle: {
-      en: "Questions & Responses",
-      am: "ጥያቄዎች እና ምላሾች"
-    },
+    sidebarTitle: { en: 'Research Q&A', am: 'የምርምር ጥያቄና መልስ' },
     explanation: {
-      en: "Develop key questions to ask your target users in Ethiopia. You can create these manually or use AI (which will consider Ethiopian context). For each question, you can record individual responses from different participants to gather granular feedback.",
-      am: "ዒላማ ተጠቃሚዎችዎን በኢትዮጵያ ውስጥ ለመጠየቅ ቁልፍ ጥያቄዎችን ያዘጋጁ። እነዚህን በእጅ መፍጠር ወይም AI መጠቀም ይችላሉ (ይህም የኢትዮጵያን ሁኔታ ግምት ውስጥ ያስገባል)። ለእያንዳንዱ ጥያቄ፣ ዝርዝር አስተያየቶችን ለመሰብሰብ ከተለያዩ ተሳታፊዎች የግል ምላሾችን መመዝገብ ይችላሉ።"
+      en: 'Define and answer key questions to understand your market. Use AI to generate culturally relevant questions based on your strategy.',
+      am: 'ገበያዎን ለመረዳት ቁልፍ ጥያቄዎችን ይግለጹ እና ይመልሱ። በስትራቴጂዎ ላይ በመመስረት ከባህል ጋር ተዛማጅነት ያላቸውን ጥያቄዎች ለማመንጨት AI ይጠቀሙ።'
     }
   },
   {
     title: ResearchSection.GENERAL_NOTES_IMPORT,
-    sidebarTitle: {
-      en: "General Notes / Import",
-      am: "አጠቃላይ ማስታወሻዎች / አስገባ"
-    },
+    sidebarTitle: { en: 'General Notes & Import', am: 'አጠቃላይ ማስታወሻዎች እና ማስመጣት' },
     explanation: {
-      en: "Use this section for general research observations related to the Ethiopian market, brainstorming, or to import bulk data like CSV files from Google Forms. This is for broader data that isn't tied to specific questions or structured entries.",
-      am: "ይህንን ክፍል ከኢትዮጵያ ገበያ ጋር ለተያያዙ አጠቃላይ የምርምር დაკვირვებები፣ ለአእምሮ ማጎልበት፣ ወይም እንደ CSV ፋይሎች ያሉ የጅምላ መረጃዎችን ከGoogle ቅጾች ለማስመጣት ይጠቀሙበት። ይህ ከተወሰኑ ጥያቄዎች ወይም ከተዋቀሩ ግቤቶች ጋር ያልተያያዘ ሰፋ ያለ መረጃ ለማግኘት ነው።"
+      en: 'A scratchpad for all your research thoughts, interview notes, and observations. You can also import data from CSV files like Google Forms responses.',
+      am: 'ለሁሉም የምርምር ሀሳቦችዎ፣ የቃለ መጠይቅ ማስታወሻዎችዎ እና ምልከታዎችዎ ማስታወሻ ደብተር። እንዲሁም እንደ የጉግል ቅጾች ምላሾች ካሉ የCSV ፋይሎች ውሂብ ማስመጣት ይችላሉ።'
     }
   },
   {
     title: ResearchSection.COMPETITOR_ANALYSIS,
-    sidebarTitle: {
-      en: "Competitor Analysis",
-      am: "የተፎካካሪ ትንተና"
-    },
+    sidebarTitle: { en: 'Competitor Analysis', am: 'የተፎካካሪ ትንተና' },
     explanation: {
-      en: "Systematically evaluate your competitors in the Ethiopian market. Identify who they are, their pricing strategies (in ETB), key features offered to Ethiopians, their perceived strengths and weaknesses, and any market gaps they address or create. Use this to refine your own strategy for Ethiopia.",
-      am: "በኢትዮጵያ ገበያ ውስጥ ተወዳዳሪዎችዎን በስርዓት ይገምግሙ። እነማን እንደሆኑ፣ የዋጋ አወጣጥ ስልቶቻቸውን (በኢትዮጵያ ብር)፣ ለኢትዮጵያውያን የሚያቀርቧቸውን ቁልፍ ባህሪያት፣ የሚገመቱ ጥንካሬዎቻቸውን እና ድክመቶቻቸውን፣ እንዲሁም የሚሸፍኗቸውን ወይም የሚፈጥሯቸውን የገበያ ክፍተቶች ይለዩ። ለኢትዮጵያ የራስዎን ስትራቴጂ ለማጥራት ይህንን ይጠቀሙ።"
+      en: 'Identify and analyze your competitors in the Ethiopian market. Document their strengths, weaknesses, pricing, and key features to find your unique edge.',
+      am: 'በኢትዮጵያ ገበያ ውስጥ ተወዳዳሪዎችዎን ይለዩ እና ይተንትኑ። ልዩ ጠርዝዎን ለማግኘት ጥንካሬዎቻቸውን፣ ድክመቶቻቸውን፣ የዋጋ አወጣጣቸውን እና ቁልፍ ባህሪያቶቻቸውን ይመዝግቡ።'
     }
   },
   {
     title: ResearchSection.TRENDS,
-    sidebarTitle: {
-      en: "Industry Trends",
-      am: "የኢንዱስትሪ አዝማሚያዎች"
-    },
+    sidebarTitle: { en: 'Industry Trends', am: 'የኢንዱስትሪ አዝማሚያዎች' },
     explanation: {
-      en: "Identify and document key industry, technological, or consumer behavior trends relevant to your business domain in Ethiopia. For each trend, note its description, source/evidence, timeframe, observed location (e.g. Addis Ababa tech scene, rural mobile adoption), and potential impact on your business within the Ethiopian context.",
-      am: "በኢትዮጵያ ውስጥ ከንግድዎ መስክ ጋር ተዛማጅነት ያላቸውን ቁልፍ የኢንዱስትሪ፣ የቴክኖሎጂ ወይም የተጠቃሚ ባህሪ አዝማሚያዎችን ይለዩ እና ይመዝግቡ። ለእያንዳንዱ አዝማሚያ መግለጫውን、 ምንጩን/ማስረጃውን、 የጊዜ ገደቡን፣ የታየበትን ቦታ (ለምሳሌ የአዲስ አበባ የቴክኖሎጂ ትዕይንት፣ የገጠር የሞባይል ተጠቃሚነት) እና በኢትዮጵያ አውድ ውስጥ በንግድዎ ላይ ሊኖረው የሚችለውን ተጽዕኖ ልብ ይበሉ።"
+      en: 'Keep track of key trends in your industry, both locally in Ethiopia and globally. Note their potential impact on your business.',
+      am: 'በኢንዱስትሪዎ ውስጥ ያሉ ቁልፍ አዝማሚያዎችን በአገር ውስጥ በኢትዮጵያ እና በዓለም አቀፍ ደረጃ ይከታተሉ። በንግድዎ ላይ ሊኖራቸው የሚችለውን ተጽዕኖ ልብ ይበሉ።'
     }
   },
   {
     title: ResearchSection.AI_SUMMARY,
-    sidebarTitle: {
-      en: "AI Summary",
-      am: "የ AI ማጠቃለያ"
-    },
+    sidebarTitle: { en: 'AI Summary', am: 'የ AI ማጠቃለያ' },
     explanation: {
-      en: "Leverage AI to synthesize and analyze all the information you've gathered across the Market Research Accelerator sections (Research Questions, General Notes, Competitor Analysis, Trends), viewed through the lens of your Business Launch Canvas strategy for Ethiopia. The AI will provide key insights, identify opportunities, and suggest actionable recommendations tailored for the Ethiopian market. The summary will be in your selected language (English/Amharic).",
-      am: "በገበያ ጥናት ማፋጠኛ ክፍሎች (የምርምር ጥያቄዎች፣ አጠቃላይ ማስታወሻዎች፣ የተፎካካሪ ትንተና፣ አዝማሚያዎች) የሰበሰቡትን መረጃ ሁሉ、 ለኢትዮጵያ ባዘጋጁት የቢዝነስ ማስጀመሪያ ሸራ ስትራቴጂ መነጽር በመጠቀም ለማዋሃድ እና ለመተንተን AI ይጠቀሙ። AI ቁልፍ ግንዛቤዎችን ይሰጣል፣ ዕድሎችን ይለያል፣ እና ለኢትዮጵያ ገበያ የተዘጋጁ ተግባራዊ ምክሮችን ይጠቁማል። ማጠቃለያው እርስዎ በመረጡት ቋንቋ (እንግሊዝኛ/አማርኛ) ይሆናል።"
+      en: 'Use AI to synthesize all your research data from the other sections into a cohesive summary. This helps identify key insights, challenges, and opportunities.',
+      am: 'ከሌሎች ክፍሎች ሁሉንም የምርምር መረጃዎችዎን ወደ አንድ ወጥ ማጠቃለያ ለማዋሃድ AI ይጠቀሙ። ይህ ቁልፍ ግንዛቤዎችን፣ ተግዳሮቶችን እና እድሎችን ለመለየት ይረዳል።'
     }
-  }
+  },
 ];
 
 export const COPYWRITING_SECTIONS_HELP: CopywritingSectionHelp[] = [
   {
     title: CopywritingSubSection.MARKETING,
-    sidebarTitle: {
-      en: "Marketing Content",
-      am: "የግብይት ይዘት"
-    },
+    sidebarTitle: { en: 'Marketing Content', am: 'የግብይት ይዘት' },
     explanation: {
-      en: "Generate or manually create marketing content for various platforms (social media, blogs, traditional ads) relevant to the Ethiopian market. Plan weekly schedules, get recommendations for visuals (images/videos), and ensure content is SEO-friendly and contextually appropriate for Ethiopia. AI can help draft content based on your strategy and research.",
-      am: "ለተለያዩ መድረኮች (ማህበራዊ ሚዲያ፣ ብሎጎች፣ ባህላዊ ማስታወቂያዎች) ከኢትዮጵያ ገበያ ጋር ተዛማጅነት ያለው የግብይት ይዘት ይፍጠሩ ወይም በእጅ ያዘጋጁ። ሳምንታዊ ዕቅዶችን ያውጡ፣ ለምስሎች/ቪዲዮዎች ምክሮችን ያግኙ፣ እና ይዘቱ ለ SEO ተስማሚ እና ለኢትዮጵያ አውድ ተገቢ መሆኑን ያረጋግጡ። AI በስትራቴጂዎ እና በምርምርዎ ላይ ተመስርቶ ይዘትን ለመቅረጽ ሊረዳ ይችላል።"
+        en: 'Create and manage your social media posts, blog articles, and other marketing materials. Use the calendar view to plan your content schedule. Leverage AI to generate a full marketing plan based on your strategy.',
+        am: 'የማህበራዊ ሚዲያ ጽሑፎችዎን፣ የብሎግ ጽሑፎችዎን እና ሌሎች የግብይት ቁሳቁሶችን ይፍጠሩ እና ያስተዳድሩ። የይዘት መርሃ ግብርዎን ለማቀድ የቀን መቁጠሪያ እይታን ይጠቀሙ። በስትራቴጂዎ ላይ በመመስረት ሙሉ የግብይት እቅድ ለማመንጨት AI ይጠቀሙ።'
     }
   },
   {
     title: CopywritingSubSection.PITCH_REFINEMENT,
-    sidebarTitle: {
-      en: "Pitch Refinement",
-      am: "የሀሳብ ማቅረቢያ ማሻሻያ"
-    },
+    sidebarTitle: { en: 'Pitch Refinement', am: 'የሀሳብ ማቅረቢያ ማሻሻያ' },
     explanation: {
-      en: "Draft and refine investor pitches, sales pitches, and email campaigns tailored for Ethiopian audiences. Use AI to generate initial drafts or get suggestions based on your business strategy, market research, and specific goals for each pitch or campaign. Focus on clarity, persuasiveness, and cultural relevance for Ethiopia.",
-      am: "ለኢትዮጵያ ታዳሚዎች የተዘጋጁ የባለሀብቶች ሀሳብ ማቅረቢያዎችን፣ የሽያጭ ሀሳብ ማቅረቢያዎችን እና የኢሜል ዘመቻዎችን ይቅረጹ እና ያሻሽሉ። የንግድ ስትራቴጂዎን፣ የገበያ ጥናትዎን እና ለእያንዳንዱ ሀሳብ ማቅረቢያ ወይም ዘመቻ የተለዩ ግቦችዎን መሠረት በማድረግ የመጀመሪያ ረቂቆችን ለማመንጨት ወይም የአስተያየት ጥቆማዎችን ለማግኘት AI ይጠቀሙ። ለኢትዮጵያ ግልጽነት፣ አሳማኝነት እና የባህል ተገቢነት ላይ ያተኩሩ።"
+        en: 'Draft, refine, and store various pitches—whether for investors, sales, or email campaigns. Use the AI assistant to get a head start by generating drafts tailored to your specific audience and goals in the Ethiopian context.',
+        am: 'ለባለሀብቶች፣ ለሽያጭ ወይም ለኢሜል ዘመቻዎች ይሁኑ የተለያዩ የሀሳብ ማቅረቢያዎችን ይቅረጹ፣ ያሻሽሉ እና ያከማቹ። በኢትዮጵያ አውድ ውስጥ ለተወሰኑ ታዳሚዎችዎ እና ግቦችዎ የተዘጋጁ ረቂቆችን በማመንጨት ለመጀመር የ AI ረዳትን ይጠቀሙ።'
     }
   }
 ];
@@ -313,112 +296,76 @@ export const COPYWRITING_SECTIONS_HELP: CopywritingSectionHelp[] = [
 export const MINDSET_SECTIONS_HELP: MindsetSectionHelp[] = [
   {
     title: MindsetSubSection.ENTREPRENEURIAL_ASSESSMENT,
-    sidebarTitle: { en: 'mindset_assessment_title' as TranslationKey, am: 'mindset_assessment_title' as TranslationKey },
-    explanationKey: 'mindset_assessment_explanation' as TranslationKey,
+    sidebarTitle: { en: 'mindset_assessment_title', am: 'mindset_assessment_title' },
+    explanationKey: 'mindset_assessment_explanation'
   },
   {
     title: MindsetSubSection.PROFILE_REPORT,
-    sidebarTitle: { en: 'mindset_profile_report_title' as TranslationKey, am: 'mindset_profile_report_title' as TranslationKey },
-    explanationKey: 'mindset_profile_report_explanation' as TranslationKey,
+    sidebarTitle: { en: 'mindset_profile_report_title', am: 'mindset_profile_report_title' },
+    explanationKey: 'mindset_profile_report_explanation'
   },
   {
     title: MindsetSubSection.GOAL_SETTING,
-    sidebarTitle: { en: 'mindset_goal_setting_title' as TranslationKey, am: 'mindset_goal_setting_title' as TranslationKey },
-    explanationKey: 'mindset_goal_setting_explanation' as TranslationKey,
-  },
+    sidebarTitle: { en: 'mindset_goal_setting_title', am: 'mindset_goal_setting_title' },
+    explanationKey: 'mindset_goal_setting_explanation'
+  }
 ];
 
-// Assessment Questions
+export const PARTNERS_DATA: Partner[] = [
+  {
+    id: 'p1',
+    name: 'IntelMotion Lifts',
+    logoUrl: 'https://intelmotionlifts.com/wp-content/uploads/2023/06/cropped-image-removebg-preview-32-e1687085450126-234x70.png.webp',
+    description: 'IntelMotion is one of the leading lift/elevator provider company who has been working to provide top quality residential or commercial passenger and freight lifts, escalators, moving walks, together with training, maintenance and consultancy services from top experts.',
+    website: 'https://intelmotionlifts.com/'
+  },
+  {
+    id: 'p2',
+    name: 'Efuye Gela',
+    logoUrl: 'https://cdn.dribbble.com/userupload/15780745/file/original-e8c56ef20437f831d766a7376672402f.png',
+    description: 'Efuye Gela is a solutions company that employs a variety of resources, tools, and frameworks to design and deliver dynamic high-impact solutions that cater to specific ecosystems and audiences.',
+    website: 'https://efuyegela.com/'
+  },
+  {
+    id: 'p3',
+    name: 'GOMIDA Solutions',
+    logoUrl: 'https://www.gomidasolutions.com/gomidalogo.png',
+    description: 'GOMIDA Solutions is a pioneering technology company that leverages gamification to create interactive experiences for users while providing brands and influencers with new ways to engage and monetize. Through our House of Chewata platform, we develop hyper-casual, skill-based games that entertain, educate, and reward players—all seamlessly integrated into Telegram!',
+    website: 'https://www.gomidasolutions.com/'
+  }
+];
+
+export const TRAINERS_DATA: Trainer[] = [
+  { id: 't1', name: 'Bruk Anbessie', photoUrl: 'https://i.pravatar.cc/150?u=t1', specialty: 'Digital Marketing & Growth Hacking', bio: 'With over 10 years of experience, Bruk has helped scale multiple Ethiopian startups through innovative digital strategies.' },
+  { id: 't2', name: 'Hana Tadesse', photoUrl: 'https://i.pravatar.cc/150?u=t2', specialty: 'Financial Modeling & Investment Readiness', bio: 'Hana is a certified financial analyst who specializes in preparing early-stage ventures for investment.' },
+  { id: 't3', name: 'Yared Lemma', photoUrl: 'https://i.pravatar.cc/150?u=t3', specialty: 'Product Management & Agile Development', bio: 'A former product lead at a major tech company, Yared now mentors founders on building user-centric products.' }
+];
+
+export const TESTIMONIALS_DATA: Testimonial[] = [
+  { id: 'tes1', authorName: 'Abebe Kebede', authorTitle: 'Founder, Sheba Fresh', photoUrl: 'https://i.pravatar.cc/150?u=tes1', quote: '7set Spark was a game-changer. The hands-on approach helped us go from a simple idea to a revenue-generating business in months.' },
+  { id: 'tes2', authorName: 'Fatima Mohammed', authorTitle: 'CEO, Konjo Designs', photoUrl: 'https://i.pravatar.cc/150?u=tes2', quote: 'The mentorship and network are invaluable. I connected with my first investor through a 7set Spark event.' }
+];
+
 export const PERSONALITY_QUESTIONS: AssessmentQuestion[] = [
-  { id: 'p1', textKey: 'q_p1_text', type: 'multiple-choice-scale', scaleMin: 1, scaleMax: 5, category: 'personality' },
-  { 
-    id: 'p2', textKey: 'q_p2_text', type: 'multiple-choice-options', category: 'personality',
-    options: [
-      { value: 'analyze', labelKey: 'q_p2_opt_analyze' }, { value: 'action', labelKey: 'q_p2_opt_action' },
-      { value: 'seek_help', labelKey: 'q_p2_opt_seek_help' }, { value: 'wait', labelKey: 'q_p2_opt_wait' }
-    ]
-  },
-  { 
-    id: 'p3', textKey: 'q_p3_text', type: 'multiple-choice-options', category: 'personality',
-    options: [
-      { value: 'delegate', labelKey: 'q_p3_opt_delegate' }, { value: 'control', labelKey: 'q_p3_opt_control' },
-      { value: 'collaborate', labelKey: 'q_p3_opt_collaborate' }, { value: 'avoid', labelKey: 'q_p3_opt_avoid' }
-    ]
-  },
-  { id: 'p4', textKey: 'q_p4_text', type: 'multiple-choice-scale', scaleMin: 1, scaleMax: 5, category: 'personality' },
-  { 
-    id: 'p5', textKey: 'q_p5_text', type: 'multiple-choice-options', category: 'personality',
-    options: [
-      { value: 'data', labelKey: 'q_p5_opt_data' }, { value: 'intuition', labelKey: 'q_p5_opt_intuition' },
-      { value: 'advice', labelKey: 'q_p5_opt_advice' }, { value: 'trial_error', labelKey: 'q_p5_opt_trial_error' }
-    ]
-  },
+  { id: 'p1', textKey: 'q_p1_text', type: 'multiple-choice-scale', category: 'personality', scaleMin: 1, scaleMax: 5 },
+  { id: 'p2', textKey: 'q_p2_text', type: 'multiple-choice-options', category: 'personality', options: [ { value: 'analyze', labelKey: 'q_p2_opt_analyze'}, { value: 'action', labelKey: 'q_p2_opt_action'}, { value: 'seek_help', labelKey: 'q_p2_opt_seek_help'}, { value: 'wait', labelKey: 'q_p2_opt_wait'} ]},
+  { id: 'p3', textKey: 'q_p3_text', type: 'multiple-choice-options', category: 'personality', options: [ { value: 'delegate', labelKey: 'q_p3_opt_delegate'}, { value: 'control', labelKey: 'q_p3_opt_control'}, { value: 'collaborate', labelKey: 'q_p3_opt_collaborate'}, { value: 'avoid', labelKey: 'q_p3_opt_avoid'} ]},
+  { id: 'p4', textKey: 'q_p4_text', type: 'multiple-choice-scale', category: 'personality', scaleMin: 1, scaleMax: 5 },
+  { id: 'p5', textKey: 'q_p5_text', type: 'multiple-choice-options', category: 'personality', options: [ { value: 'data', labelKey: 'q_p5_opt_data'}, { value: 'intuition', labelKey: 'q_p5_opt_intuition'}, { value: 'advice', labelKey: 'q_p5_opt_advice'}, { value: 'trial_error', labelKey: 'q_p5_opt_trial_error'} ]}
 ];
 
 export const BUSINESS_ACUMEN_QUESTIONS: AssessmentQuestion[] = [
-  { 
-    id: 'ba1', textKey: 'q_ba1_text', type: 'multiple-choice-options', category: 'businessAcumen',
-    options: [
-      { value: 'detailed_plan', labelKey: 'q_ba1_opt_detailed_plan' }, { value: 'flexible_approach', labelKey: 'q_ba1_opt_flexible_approach' },
-      { value: 'customer_feedback', labelKey: 'q_ba1_opt_customer_feedback' }, { value: 'competitor_focus', labelKey: 'q_ba1_opt_competitor_focus' }
-    ]
-  },
-  { 
-    id: 'ba2', textKey: 'q_ba2_text', type: 'multiple-choice-options', category: 'businessAcumen',
-    options: [
-      { value: 'revenue_first', labelKey: 'q_ba2_opt_revenue_first' }, { value: 'profit_first', labelKey: 'q_ba2_opt_profit_first' },
-      { value: 'growth_first', labelKey: 'q_ba2_opt_growth_first' }, { value: 'balance', labelKey: 'q_ba2_opt_balance' }
-    ]
-  },
-  { id: 'ba3', textKey: 'q_ba3_text', type: 'multiple-choice-scale', scaleMin: 1, scaleMax: 5, category: 'businessAcumen' },
-  { 
-    id: 'ba4', textKey: 'q_ba4_text', type: 'multiple-choice-options', category: 'businessAcumen',
-    options: [
-      { value: 'organic', labelKey: 'q_ba4_opt_organic' }, { value: 'paid_ads', labelKey: 'q_ba4_opt_paid_ads' },
-      { value: 'partnerships', labelKey: 'q_ba4_opt_partnerships' }, { value: 'sales_team', labelKey: 'q_ba4_opt_sales_team' }
-    ]
-  },
-  { 
-    id: 'ba5', textKey: 'q_ba5_text', type: 'scenario-options', category: 'businessAcumen',
-    options: [
-      { value: 'cut_costs', labelKey: 'q_ba5_opt_cut_costs' }, { value: 'increase_marketing', labelKey: 'q_ba5_opt_increase_marketing' },
-      { value: 'pivot_product', labelKey: 'q_ba5_opt_pivot_product' }, { value: 'seek_funding', labelKey: 'q_ba5_opt_seek_funding' }
-    ]
-  },
+  { id: 'ba1', textKey: 'q_ba1_text', type: 'multiple-choice-options', category: 'businessAcumen', options: [ { value: 'detailed_plan', labelKey: 'q_ba1_opt_detailed_plan'}, { value: 'flexible_approach', labelKey: 'q_ba1_opt_flexible_approach'}, { value: 'customer_feedback', labelKey: 'q_ba1_opt_customer_feedback'}, { value: 'competitor_focus', labelKey: 'q_ba1_opt_competitor_focus'} ]},
+  { id: 'ba2', textKey: 'q_ba2_text', type: 'multiple-choice-options', category: 'businessAcumen', options: [ { value: 'revenue_first', labelKey: 'q_ba2_opt_revenue_first'}, { value: 'profit_first', labelKey: 'q_ba2_opt_profit_first'}, { value: 'growth_first', labelKey: 'q_ba2_opt_growth_first'}, { value: 'balance', labelKey: 'q_ba2_opt_balance'} ]},
+  { id: 'ba3', textKey: 'q_ba3_text', type: 'multiple-choice-scale', category: 'businessAcumen', scaleMin: 1, scaleMax: 5 },
+  { id: 'ba4', textKey: 'q_ba4_text', type: 'multiple-choice-options', category: 'businessAcumen', options: [ { value: 'organic', labelKey: 'q_ba4_opt_organic'}, { value: 'paid_ads', labelKey: 'q_ba4_opt_paid_ads'}, { value: 'partnerships', labelKey: 'q_ba4_opt_partnerships'}, { value: 'sales_team', labelKey: 'q_ba4_opt_sales_team'} ]},
+  { id: 'ba5', textKey: 'q_ba5_text', type: 'scenario-options', category: 'businessAcumen', options: [ { value: 'cut_costs', labelKey: 'q_ba5_opt_cut_costs'}, { value: 'increase_marketing', labelKey: 'q_ba5_opt_increase_marketing'}, { value: 'pivot_product', labelKey: 'q_ba5_opt_pivot_product'}, { value: 'seek_funding', labelKey: 'q_ba5_opt_seek_funding'} ]}
 ];
 
 export const STARTUP_KNOWLEDGE_QUESTIONS: AssessmentQuestion[] = [
-  { 
-    id: 'sk1', textKey: 'q_sk1_text', type: 'multiple-choice-options', category: 'startupKnowledge',
-    options: [
-      { value: 'mvp_basic', labelKey: 'q_sk1_opt_mvp_basic' }, { value: 'mvp_polished', labelKey: 'q_sk1_opt_mvp_polished' },
-      { value: 'mvp_many_features', labelKey: 'q_sk1_opt_mvp_many_features' }, { value: 'mvp_no_need', labelKey: 'q_sk1_opt_mvp_no_need' }
-    ]
-  },
-  { id: 'sk2', textKey: 'q_sk2_text', type: 'multiple-choice-scale', scaleMin: 1, scaleMax: 5, category: 'startupKnowledge' },
-  { 
-    id: 'sk3', textKey: 'q_sk3_text', type: 'multiple-choice-options', category: 'startupKnowledge',
-    options: [
-      { value: 'bootstrapping', labelKey: 'q_sk3_opt_bootstrapping' }, { value: 'friends_family', labelKey: 'q_sk3_opt_friends_family' },
-      { value: 'angel_investors', labelKey: 'q_sk3_opt_angel_investors' }, { value: 'venture_capital', labelKey: 'q_sk3_opt_venture_capital' }
-    ]
-  },
-  { 
-    id: 'sk4', textKey: 'q_sk4_text', type: 'scenario-options', category: 'startupKnowledge',
-    options: [
-      { value: 'surveys', labelKey: 'q_sk4_opt_surveys' }, { value: 'interviews', labelKey: 'q_sk4_opt_interviews' },
-      { value: 'presales', labelKey: 'q_sk4_opt_presales' }, { value: 'analytics', labelKey: 'q_sk4_opt_analytics' }
-    ]
-  },
-  { 
-    id: 'sk5', textKey: 'q_sk5_text', type: 'multiple-choice-options', category: 'startupKnowledge',
-    options: [
-      { value: 'solo', labelKey: 'q_sk5_opt_solo' }, { value: 'complementary', labelKey: 'q_sk5_opt_complementary' },
-      { value: 'similar_skills', labelKey: 'q_sk5_opt_similar_skills' }, { value: 'friends', labelKey: 'q_sk5_opt_friends' }
-    ]
-  },
+  { id: 'sk1', textKey: 'q_sk1_text', type: 'multiple-choice-options', category: 'startupKnowledge', options: [ { value: 'mvp_basic', labelKey: 'q_sk1_opt_mvp_basic'}, { value: 'mvp_polished', labelKey: 'q_sk1_opt_mvp_polished'}, { value: 'mvp_many_features', labelKey: 'q_sk1_opt_mvp_many_features'}, { value: 'mvp_no_need', labelKey: 'q_sk1_opt_mvp_no_need'} ]},
+  { id: 'sk2', textKey: 'q_sk2_text', type: 'multiple-choice-scale', category: 'startupKnowledge', scaleMin: 1, scaleMax: 5 },
+  { id: 'sk3', textKey: 'q_sk3_text', type: 'multiple-choice-options', category: 'startupKnowledge', options: [ { value: 'bootstrapping', labelKey: 'q_sk3_opt_bootstrapping'}, { value: 'friends_family', labelKey: 'q_sk3_opt_friends_family'}, { value: 'angel_investors', labelKey: 'q_sk3_opt_angel_investors'}, { value: 'venture_capital', labelKey: 'q_sk3_opt_venture_capital'} ]},
+  { id: 'sk4', textKey: 'q_sk4_text', type: 'scenario-options', category: 'startupKnowledge', options: [ { value: 'surveys', labelKey: 'q_sk4_opt_surveys'}, { value: 'interviews', labelKey: 'q_sk4_opt_interviews'}, { value: 'presales', labelKey: 'q_sk4_opt_presales'}, { value: 'analytics', labelKey: 'q_sk4_opt_analytics'} ]},
+  { id: 'sk5', textKey: 'q_sk5_text', type: 'multiple-choice-options', category: 'startupKnowledge', options: [ { value: 'solo', labelKey: 'q_sk5_opt_solo'}, { value: 'complementary', labelKey: 'q_sk5_opt_complementary'}, { value: 'similar_skills', labelKey: 'q_sk5_opt_similar_skills'}, { value: 'friends', labelKey: 'q_sk5_opt_friends'} ]}
 ];
-
-
-export const API_KEY_WARNING = "API_KEY environment variable is not set. AI features will be disabled.";
-export const GENERIC_ERROR_MESSAGE = "An unexpected error occurred. Please try again.";

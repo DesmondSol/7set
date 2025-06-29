@@ -67,6 +67,50 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    /* --- Partner Scroller Styles --- */
+    .scroller {
+      max-width: 900px;
+      margin: auto;
+      overflow: hidden;
+      -webkit-mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
+      mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
+    }
+
+    .scroller__inner {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 3rem; /* 48px */
+      padding-block: 1rem;
+      width: max-content;
+      animation: scroll-right 40s linear infinite;
+    }
+    
+    .scroller__inner a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .scroller__inner img {
+      filter: grayscale(100%) brightness(1.5);
+      opacity: 0.6;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .scroller__inner img:hover {
+      filter: grayscale(0%);
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    @keyframes scroll-right {
+      from {
+        transform: translateX(-50%);
+      }
+      to {
+        transform: translateX(0);
+      }
+    }
   </style>
 <script type="importmap">
 {

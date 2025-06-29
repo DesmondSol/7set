@@ -1,5 +1,3 @@
-
-
 import { 
     Page, 
     SubPage, 
@@ -320,6 +318,14 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     infographic_footer_copyright: "© {currentYear} 7set Spark. All rights reserved. Addis Ababa, Ethiopia.",
     infographic_footer_address: "Dembel city center 3rd floor +251923214663",
     infographic_footer_poweredby: "Powered by: ",
+
+    infographic_partners_title: "Our Partners & Network",
+    infographic_trainers_title: "Meet Our Trainers & Mentors",
+    infographic_testimonials_title: "Success Stories",
+    visit_website_button: "Visit Website",
+    partner_modal_title: "Partner Details",
+    trainer_modal_title: "Trainer Profile",
+    testimonial_modal_title: "Testimonial",
 
     mindset_page_title: "Mindset & Self-Discovery",
     mindset_sidebar_title: "Mindset Sections",
@@ -754,6 +760,13 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     infographic_footer_copyright: "© {currentYear} 7ሴት ስፓርክ። ሁሉም መብቶች የተጠበቁ ናቸው። አዲስ አበባ、 ኢትዮጵያ።",
     infographic_footer_address: "ደምበል ሲቲ ሴንተር 3ኛ ፎቅ +251923214663",
     infographic_footer_poweredby: "የቀረበው በ፦ ",
+    infographic_partners_title: "አጋሮቻችን እና ኔትወርክ",
+    infographic_trainers_title: "አሰልጣኞቻችንን እና አማካሪዎቻችንን ያግኙ",
+    infographic_testimonials_title: "የስኬት ታሪኮች",
+    visit_website_button: "ድህረ ገጽ ይጎብኙ",
+    partner_modal_title: "የአጋር ዝርዝሮች",
+    trainer_modal_title: "የአሰልጣኝ መገለጫ",
+    testimonial_modal_title: "ምስክርነት",
 
     mindset_page_title: "አስተሳሰብ እና ራስን የማግኘት ጉዞ",
     mindset_sidebar_title: "የአስተሳሰብ ክፍሎች",

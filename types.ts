@@ -259,6 +259,13 @@ export type TranslationKey =
   | 'infographic_footer_copyright'
   | 'infographic_footer_address'
   | 'infographic_footer_poweredby'
+  | 'infographic_partners_title'
+  | 'infographic_trainers_title'
+  | 'infographic_testimonials_title'
+  | 'visit_website_button'
+  | 'partner_modal_title'
+  | 'trainer_modal_title'
+  | 'testimonial_modal_title'
   | 'mindset_page_title'
   | 'mindset_sidebar_title'
   | 'mindset_assessment_title'
@@ -591,4 +598,28 @@ export interface MindsetSectionHelp {
   sidebarTitle: Record<Language, TranslationKey>; 
   explanationKey: TranslationKey; 
   icon?: React.FC<React.SVGProps<SVGSVGElement>>;
+}
+
+export interface Partner {
+  id: string;
+  name: string;
+  logoUrl: string;
+  description: string;
+  website: string;
+}
+
+export interface Trainer {
+  id: string;
+  name: string;
+  photoUrl: string;
+  specialty: string;
+  bio: string;
+}
+
+export interface Testimonial {
+  id: string;
+  authorName: string;
+  authorTitle: string;
+  photoUrl: string;
+  quote: string;
 }

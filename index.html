@@ -1,39 +1,57 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>7set Spark</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    @import url('https://rsms.me/inter/inter.css'); /* Moved to top */
+    @import url('https://rsms.me/inter/inter.css');
+
+    /* Moved to top */
     /* Custom scrollbar for webkit browsers - Dark Theme */
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
     }
+
     ::-webkit-scrollbar-track {
-      background: #0f172a; /* slate-900 */
+      background: #0f172a;
+      /* slate-900 */
       border-radius: 10px;
     }
+
     ::-webkit-scrollbar-thumb {
-      background: #334155; /* slate-700 */
+      background: #334155;
+      /* slate-700 */
       border-radius: 10px;
     }
+
     ::-webkit-scrollbar-thumb:hover {
-      background: #475569; /* slate-600 */
+      background: #475569;
+      /* slate-600 */
     }
+
     /* Simple body styling for better visual */
     body {
-      font-family: 'Inter', sans-serif; /* A common Tailwind font */
-      overscroll-behavior-y: contain; /* Prevents pull-to-refresh on mobile if content is scrollable */
+      font-family: 'Inter', sans-serif;
+      /* A common Tailwind font */
+      overscroll-behavior-y: contain;
+      /* Prevents pull-to-refresh on mobile if content is scrollable */
     }
-    html { font-family: 'Inter', sans-serif; }
+
+    html {
+      font-family: 'Inter', sans-serif;
+    }
+
     @supports (font-variation-settings: normal) {
-      html { font-family: 'Inter var', sans-serif; }
+      html {
+        font-family: 'Inter var', sans-serif;
+      }
     }
+
     /* --- Pre-React Loader Styles --- */
     .loader-container {
       position: fixed;
@@ -44,12 +62,15 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
-      color: #cbd5e1; /* slate-300 */
+      color: #cbd5e1;
+      /* slate-300 */
       transition: opacity 0.5s ease-in-out;
     }
+
     .loader-spinner {
       border: 4px solid rgba(255, 255, 255, 0.2);
-      border-left-color: #06D6A0; /* green accent */
+      border-left-color: #06D6A0;
+      /* green accent */
       border-radius: 50%;
       width: 50px;
       height: 50px;
@@ -57,16 +78,22 @@
       margin-top: 20px;
       margin-bottom: 20px;
     }
+
     .loader-quote {
       font-style: italic;
       max-width: 80%;
       text-align: center;
       font-size: 1.1rem;
-      color: #94a3b8; /* slate-400 */
+      color: #94a3b8;
+      /* slate-400 */
     }
+
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
+
     /* --- Partner Scroller Styles --- */
     .scroller {
       max-width: 900px;
@@ -79,12 +106,13 @@
     .scroller__inner {
       display: flex;
       flex-wrap: nowrap;
-      gap: 3rem; /* 48px */
+      gap: 3rem;
+      /* 48px */
       padding-block: 1rem;
       width: max-content;
       animation: scroll-right 40s linear infinite;
     }
-    
+
     .scroller__inner a {
       display: flex;
       align-items: center;
@@ -107,13 +135,14 @@
       from {
         transform: translateX(-50%);
       }
+
       to {
         transform: translateX(0);
       }
     }
   </style>
-<script type="importmap">
-{
+  <script type="importmap">
+    {
   "imports": {
     "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
     "react/": "https://esm.sh/react@^19.1.0/",
@@ -123,20 +152,24 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
+
 <body class="bg-[#073B4C] text-slate-200 font-inter">
   <div class="bg-[#FFD166] text-slate-900 py-2 px-4 text-center text-sm">
-    May class starting soon. <a href="#" class="font-semibold underline hover:text-yellow-800 transition-colors">Register here</a>.
+    May class starting soon. <a href="https://forms.gle/EG67kvukpZU3b5yD7"
+      class="font-semibold underline hover:text-yellow-800 transition-colors">Register here</a>.
   </div>
   <div id="root">
     <!-- Pre-React Loading Screen -->
     <div class="loader-container">
-      <img src="https://7setspark.com/wp-content/uploads/2023/12/Asset-5-179x35.webp" alt="7set Spark Logo" style="height: 35px; margin-bottom: 2rem;"/>
+      <img src="https://7setspark.com/wp-content/uploads/2023/12/Asset-5-179x35.webp" alt="7set Spark Logo"
+        style="height: 35px; margin-bottom: 2rem;" />
       <div class="loader-spinner"></div>
       <p class="loader-quote">"The best way to predict the future is to create it."</p>
     </div>
   </div>
   <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>

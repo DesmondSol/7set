@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { BusinessLaunchCanvas } from './components/BusinessLaunchCanvas/BusinessLaunchCanvas';
+import { PersonasPage } from './components/PersonasPage/PersonasPage';
 import { MarketResearchAccelerator } from './components/MarketResearchAccelerator/MarketResearchAccelerator';
 import { CopywritingPage } from './components/CopywritingPage'; 
 import MindsetPage from './components/MindsetPage'; // New Mindset Page
@@ -20,7 +21,8 @@ import {
     MarketResearchData, 
     ResearchSection,
     CopywritingData,
-    MindsetData, // New Mindset Data type
+    MindsetData,
+    PersonasData,
     TranslationKey
 } from './types';
 import { NAV_ITEMS } from './constants';
@@ -62,6 +64,8 @@ const initialMindsetData: MindsetData = {
   goalSettingAiChatHistory: [],
 };
 
+const initialPersonasData: PersonasData = [];
+
 
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<Page | null>(null);
@@ -89,6 +93,18 @@ const App: React.FC = () => {
       acc[section] = ""; 
       return acc;
     }, {} as CanvasData);
+  });
+
+  const [personasData, setPersonasData] = useState<PersonasData>(() => {
+    const storedPersonasData = localStorage.getItem('sparkPersonasData');
+    if (storedPersonasData) {
+        try {
+            return JSON.parse(storedPersonasData);
+        } catch (e) {
+            console.error("Failed to parse personasData from localStorage", e);
+        }
+    }
+    return initialPersonasData;
   });
 
   const [marketResearchData, setMarketResearchData] = useState<MarketResearchData>(() => {
@@ -201,6 +217,11 @@ const App: React.FC = () => {
     });
   };
 
+  const handleUpdatePersonasData = (data: PersonasData) => {
+    setPersonasData(data);
+    localStorage.setItem('sparkPersonasData', JSON.stringify(data));
+  };
+
   const handleUpdateMarketResearchData = (updatedData: MarketResearchData) => {
     setMarketResearchData(updatedData);
     localStorage.setItem('sparkMarketResearchData', JSON.stringify(updatedData));
@@ -235,6 +256,16 @@ const App: React.FC = () => {
                 canvasData={canvasData} 
                 onSaveSection={handleSaveCanvasSection}
                 onMassUpdate={handleUpdateCanvasData} 
+                language={currentLanguage}
+                t={t}
+                userProfile={userProfile}
+             />;
+    }
+    if (activePage === Page.START && activeSubPage === SubPage.PERSONAS) {
+      return <PersonasPage
+                initialData={personasData}
+                onUpdateData={handleUpdatePersonasData}
+                canvasData={canvasData}
                 language={currentLanguage}
                 t={t}
                 userProfile={userProfile}

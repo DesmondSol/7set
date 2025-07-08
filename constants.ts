@@ -3,7 +3,7 @@ import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSecti
 export const NAV_ITEMS: NavItem[] = [
   {
     label: Page.START,
-    subItems: [SubPage.MINDSET, SubPage.STRATEGY, SubPage.RESEARCH, SubPage.COPYWRITING],
+    subItems: [SubPage.MINDSET, SubPage.STRATEGY, SubPage.PERSONAS, SubPage.RESEARCH, SubPage.COPYWRITING],
   },
   {
     label: Page.BUILD,
@@ -106,28 +106,6 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
     example: {
       en: "Primary market: Smallholder farmers in Oromia and Amhara regions (estimated 2 million with mobile access) and urban consumers/small businesses in Addis Ababa (initial target of 50,000 tech-savvy individuals/businesses seeking quality local produce). Secondary market: NGOs and larger food processors.",
       am: "ዋና ገበያ፦ በኦሮሚያ እና በአማራ ክልሎች ያሉ አነስተኛ ይዞታ ገበሬዎች (በግምት 2 ሚሊዮን የሞባይል ተደራሽነት ያላቸው) እና በአዲስ አበባ ያሉ የከተማ ተጠቃሚዎች/አነስተኛ ንግዶች (የመጀመሪያ ዒላማ 50,000 ጥራት ያለው የአገር ውስጥ ምርት የሚፈልጉ በቴክኖሎጂ የተካኑ ግለሰቦች/ንግዶች)። ሁለተኛ ገበያ፦ መንግስታዊ ያልሆኑ ድርጅቶች እና ትላልቅ የምግብ አቀናባሪዎች።"
-    }
-  },
-  {
-    title: CanvasSection.PERSONAS,
-    explanation: {
-      en: "Create 2-3 fictional representations of your ideal Ethiopian customers. Give them names, backstories, motivations, and pain points related to your product/service and the Ethiopian context.",
-      am: "2-3 ተስማሚ የኢትዮጵያ ደንበኞችዎን ምናባዊ ውክልናዎች ይፍጠሩ። ከምርትዎ/አገልግሎትዎ እና ከኢትዮጵያ አውድ ጋር የተያያዙ ስሞችን፣ የሕይወት ታሪኮችን፣ ተነሳሽነቶችን እና የችግር ነጥቦችን ይስጧቸው።"
-    },
-    example: {
-      en: "1. Abebe: 45-yr old teff farmer in rural Gojjam, owns a feature phone, struggles with market price info and transport. Wants fair, consistent income. 2. Fatuma: 30-yr old restaurant owner in Bole, Addis Ababa, needs reliable supply of fresh vegetables, values quality and convenience, uses Telebirr.",
-      am: "1. አበበ፦ በገጠር ጎጃም የሚኖር የ45 ዓመት የጤፍ ገበሬ፣ የባህሪ ስልክ ያለው፣ የገበያ ዋጋ መረጃ እና የትራንስፖርት ችግር አለበት። ፍትሃዊ፣ ወጥ የሆነ ገቢ ይፈልጋል። 2. ፋጡማ፦ በቦሌ፣ አዲስ አበባ የምትኖር የ30 ዓመት የምግብ ቤት ባለቤት፣ አስተማማኝ ትኩስ አትክልት አቅርቦት ትፈልጋለች、 ጥራትንና ምቾትን ትመለከታለች、 ቴሌብር ትጠቀማለች።"
-    }
-  },
-  {
-    title: CanvasSection.JOBS_TO_BE_DONE,
-    explanation: {
-      en: "What 'job' are your Ethiopian customers hiring your product/service to do for them? Focus on the underlying need or progress they are trying to make, not just the features. (e.g., 'help me sell my harvest without hassle', 'find reliable ingredients for my business').",
-      am: "የኢትዮጵያ ደንበኞችዎ ምርትዎን/አገልግሎትዎን ምን 'ሥራ' እንዲሰራላቸው ነው የሚቀጥሩት? በባህሪያቱ ላይ ብቻ ሳይሆን ሊያከናውኑት በሚሞክሩት መሠረታዊ ፍላጎት ወይም እድገት ላይ ያተኩሩ። (ለምሳሌ፣ 'ያለምንም ውጣ ውረድ ምርቴን እንድሸጥ እርዳኝ'፣ 'ለንግዴ አስተማማኝ ግብአቶችን እንዳገኝ እርዳኝ')።"
-    },
-    example: {
-      en: "For Farmer Abebe: 'Help me efficiently reach a wider market and get a better price for my teff with minimal technical skill required.' For Restaurant Owner Fatuma: 'Provide me with a consistent and transparent way to source high-quality local ingredients for my restaurant menu via my smartphone.'",
-      am: "ለገበሬ አበበ፦ 'በትንሹ የቴክኒክ ክህሎት ሰፋ ያለ ገበያ በብቃት እንዳገኝና ለጤፌ የተሻለ ዋጋ እንዳገኝ እርዳኝ።' ለምግብ ቤት ባለቤት ፋጡማ፦ 'በስማርትፎኔ አማካኝነት ለምግብ ቤቴ ምናሌ ከፍተኛ ጥራት ያላቸውን የአገር ውስጥ ግብአቶች በተከታታይ እና ግልጽ በሆነ መንገድ እንዳገኝ አቅርብልኝ።'"
     }
   },
   {

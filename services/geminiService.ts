@@ -1,4 +1,5 @@
 
+
 import { GenerateContentResponse, Part } from "@google/genai";
 import { 
     CanvasData, 
@@ -20,7 +21,8 @@ import {
     FounderProfileReportData, 
     GoalSettingData, 
     AssessmentScores,
-    TranslationKey
+    TranslationKey,
+    Persona
 } from '../types';
 import { API_KEY_WARNING } from "../constants";
 
@@ -686,4 +688,111 @@ Coach:`;
     console.error("Error with AI Mindset Coach:", error);
     return language === 'am' ? "የ AI የአስተሳሰብ አሰልጣኝ ላይ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።" : "Error with AI Mindset Coach. Please try again.";
   }
+};
+
+
+export const generateAiPersona = async (
+    idea: string,
+    q1: string,
+    q2: string,
+    q3: string,
+    canvasData: Partial<CanvasData>,
+    language: Language
+): Promise<Omit<Persona, 'id' | 'icon'> | null> => {
+    const localAi = await getAiClient();
+    if (!localAi) {
+        console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
+        return null;
+    }
+
+    const langInstructions = language === 'am'
+        ? "All generated textual content (name, profession, bio, goals, etc.) MUST be in Amharic. The JSON keys and enum values ('Male', 'Single', etc.) MUST remain in English. Create a persona that is deeply rooted in Ethiopian culture and context."
+        : "All generated content should be in English. Create a persona that is deeply rooted in Ethiopian culture and context.";
+
+    const strategyContext = Object.entries(canvasData)
+        .filter(([, value]) => value && value.trim())
+        .map(([key, value]) => `- ${key}: ${value}`)
+        .join('\n');
+
+    const prompt = `You are an expert AI persona generator specializing in creating detailed, culturally relevant customer profiles for the Ethiopian market.
+${langInstructions}
+
+Your task is to generate a complete persona based on the user's idea and the business's strategic context.
+
+--- Business Strategy Context (for a business in Ethiopia) ---
+${strategyContext || "No strategy provided. Use general knowledge about Ethiopian business landscape."}
+---
+
+--- User's Persona Idea ---
+- Core Idea: ${idea}
+- Q1: Main problem this persona faces that the business solves: ${q1}
+- Q2: Typical day or key work challenge: ${q2}
+- Q3: How they discover new products/services: ${q3}
+---
+
+Now, generate a comprehensive persona. The output MUST be a single, valid JSON object that strictly follows this structure:
+{
+  "name": "string (A common Ethiopian name)",
+  "profession": "string",
+  "gender": "'Male' | 'Female' | 'Other'",
+  "age": "number (A realistic age)",
+  "location": "string (A specific, realistic location in Ethiopia, e.g., 'Addis Ababa, Bole' or 'Hawassa, Piassa')",
+  "maritalStatus": "'Single' | 'Married' | 'In a relationship' | 'Divorced' | 'Widowed'",
+  "education": "'High School' | 'Bachelor\\'s Degree' | 'Master\\'s Degree' | 'PhD' | 'Other'",
+  "bio": "string (A rich, 3-4 sentence background story based on inputs, incorporating Ethiopian cultural context)",
+  "personality": {
+    "analyticalCreative": "number (0-100, where 0 is purely analytical, 100 is purely creative)",
+    "busyTimeRich": "number (0-100, where 0 is very busy, 100 is time-rich)",
+    "messyOrganized": "number (0-100, where 0 is messy, 100 is organized)",
+    "independentTeamPlayer": "number (0-100, where 0 is independent, 100 is a team player)"
+  },
+  "traits": {
+    "buyingAuthority": "number (0-100, influence on purchasing decisions)",
+    "technical": "number (0-100, comfort with technology)",
+    "socialMedia": "number (0-100, savvy with platforms like Facebook, Telegram, Instagram, TikTok)",
+    "selfHelping": "number (0-100, tendency to find solutions independently)"
+  },
+  "goals": "string (What this persona wants to achieve, related to the business context)",
+  "likes": "string (Hobbies and interests common in Ethiopia, e.g., 'Spending time at cafes, following local football, attending cultural events')",
+  "dislikes": "string (Things they dislike, e.g., 'Inefficiency, unreliable service, lack of transparency')",
+  "frustrations": "string (Their main pain points your business can solve, based on Q1)",
+  "skills": "string (Relevant skills, e.g., 'Negotiation, basic accounting, using Telegram for business')",
+  "jobsToBeDone": [
+    {
+      "id": "jtbd-ai-1",
+      "title": "string (A short title for a key job, e.g., 'Find a reliable supplier')",
+      "situation": "string (WHEN I need to restock my shop...)",
+      "motivation": "string (I WANT TO find a supplier who delivers on time...)",
+      "outcome": "string (SO I CAN maintain my inventory and keep my customers happy.)",
+      "emotionalJob": "string (MAKING ME FEEL secure and professional.)",
+      "socialJob": "string (OTHERS SEE I'M running a successful, well-managed business.)"
+    }
+  ]
+}
+
+Ensure every field is populated with realistic and contextually appropriate data.
+The personality and traits scores should be inferred from the user's descriptions.
+The bio, goals, and frustrations must be detailed and directly reflect the provided inputs and Ethiopian context.
+`;
+    try {
+        const response: GenerateContentResponse = await localAi.models.generateContent({
+            model: TEXT_MODEL,
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            config: {
+                responseMimeType: "application/json",
+                temperature: 0.7,
+            },
+        });
+        const textResponse = response.text;
+        if (!textResponse) {
+            console.error("Gemini API returned no text for AI Persona.");
+            return null;
+        }
+
+        return parseJsonFromText<Omit<Persona, 'id' | 'icon'>>(textResponse);
+
+    } catch (error) {
+        console.error("Error generating AI persona:", error);
+        return null;
+    }
 };

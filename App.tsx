@@ -1,5 +1,11 @@
 
 
+
+
+
+
+
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { BusinessLaunchCanvas } from './components/BusinessLaunchCanvas/BusinessLaunchCanvas';
@@ -7,6 +13,9 @@ import { PersonasPage } from './components/PersonasPage/PersonasPage';
 import { MarketResearchAccelerator } from './components/MarketResearchAccelerator/MarketResearchAccelerator';
 import { CopywritingPage } from './components/CopywritingPage'; 
 import MindsetPage from './components/MindsetPage'; // New Mindset Page
+import ProductDesignPage from './components/ProductDesignPage/ProductDesignPage'; // New Product Design Page
+import EconomicsPage from './components/EconomicsPage/EconomicsPage'; // New Economics Page
+import SalesPage from './components/SalesPage/SalesPage'; // New Sales Page
 import { ComingSoon } from './components/ComingSoon';
 import { UserProfileModal } from './components/UserProfileModal';
 import InfographicPage from './components/InfographicPage'; 
@@ -23,6 +32,9 @@ import {
     CopywritingData,
     MindsetData,
     PersonasData,
+    ProductDesignData,
+    EconomicsData,
+    SalesData,
     TranslationKey
 } from './types';
 import { NAV_ITEMS } from './constants';
@@ -65,6 +77,44 @@ const initialMindsetData: MindsetData = {
 };
 
 const initialPersonasData: PersonasData = [];
+
+const initialProductDesignData: ProductDesignData = {
+  brainstormIdeas: [],
+  features: [],
+  actionItems: [],
+  feedbackItems: [],
+};
+
+const initialEconomicsData: EconomicsData = {
+    costs: [],
+    revenues: [],
+    unitEconomics: {
+      avgRevenue: '',
+      cogs: '',
+      cac: '',
+      customerLifetime: '',
+    },
+    burnRate: {
+        startingCapital: '',
+        additionalHiringSpend: '',
+        additionalMarketingSpend: '',
+    },
+    financialProjection: {
+      inputs: {
+        startingCapital: '',
+        products: [],
+        salesGrowthRate: '',
+        monthlyRevenue: '',
+        monthlyExpenses: '',
+      },
+      result: null,
+    }
+};
+
+const initialSalesData: SalesData = {
+    launchSequence: [],
+    crmLeads: [],
+};
 
 
 const App: React.FC = () => {
@@ -182,6 +232,72 @@ const App: React.FC = () => {
     return initialMindsetData;
   });
 
+  const [productDesignData, setProductDesignData] = useState<ProductDesignData>(() => {
+    const storedData = localStorage.getItem('sparkProductDesignData');
+    if (storedData) {
+      try {
+        const parsed = JSON.parse(storedData);
+        return {
+          brainstormIdeas: parsed.brainstormIdeas || [],
+          features: parsed.features || [],
+          actionItems: parsed.actionItems || [],
+          feedbackItems: parsed.feedbackItems || [],
+        };
+      } catch (e) {
+        console.error("Failed to parse productDesignData from localStorage", e);
+      }
+    }
+    return initialProductDesignData;
+  });
+
+  const [economicsData, setEconomicsData] = useState<EconomicsData>(() => {
+    const storedData = localStorage.getItem('sparkEconomicsData');
+    if (storedData) {
+        try {
+            const parsed = JSON.parse(storedData);
+            const now = new Date().toISOString().split('T')[0];
+            // Backward compatibility: ensure new fields exist
+            const costs = (parsed.costs || []).map((item: any) => ({
+                ...item,
+                date: item.date || now,
+                type: item.type || 'one_time',
+                details: item.details || '',
+            }));
+            const revenues = (parsed.revenues || []).map((item: any) => ({
+                ...item,
+                date: item.date || now,
+                type: item.type || 'one_time',
+                details: item.details || '',
+            }));
+            const unitEconomics = parsed.unitEconomics || initialEconomicsData.unitEconomics;
+            const burnRate = parsed.burnRate || initialEconomicsData.burnRate;
+            const financialProjection = parsed.financialProjection || initialEconomicsData.financialProjection;
+
+            return { costs, revenues, unitEconomics, burnRate, financialProjection };
+        } catch (e) {
+            console.error("Failed to parse economicsData from localStorage", e);
+        }
+    }
+    return initialEconomicsData;
+  });
+  
+  const [salesData, setSalesData] = useState<SalesData>(() => {
+    const storedData = localStorage.getItem('sparkSalesData');
+    if (storedData) {
+      try {
+        const parsed = JSON.parse(storedData);
+        return {
+          launchSequence: parsed.launchSequence || [],
+          crmLeads: parsed.crmLeads || [], // Handle new data structure
+        };
+      } catch (e) {
+        console.error("Failed to parse salesData from localStorage", e);
+      }
+    }
+    return initialSalesData;
+  });
+
+
   const t = useCallback(getTranslator(currentLanguage), [currentLanguage]);
 
   useEffect(() => {
@@ -237,6 +353,22 @@ const App: React.FC = () => {
     localStorage.setItem('sparkMindsetData', JSON.stringify(updatedData));
   };
 
+  const handleUpdateProductDesignData = (updatedData: ProductDesignData) => {
+    setProductDesignData(updatedData);
+    localStorage.setItem('sparkProductDesignData', JSON.stringify(updatedData));
+  };
+
+  const handleUpdateEconomicsData = (updatedData: EconomicsData) => {
+    setEconomicsData(updatedData);
+    localStorage.setItem('sparkEconomicsData', JSON.stringify(updatedData));
+  };
+
+  const handleUpdateSalesData = (updatedData: SalesData) => {
+    setSalesData(updatedData);
+    localStorage.setItem('sparkSalesData', JSON.stringify(updatedData));
+  };
+
+
   const changeLanguage = (lang: Language) => {
     setCurrentLanguage(lang);
   };
@@ -287,6 +419,33 @@ const App: React.FC = () => {
                 onUpdateData={handleUpdateCopywritingData}
                 strategyData={canvasData}
                 researchData={marketResearchData}
+                language={currentLanguage}
+                t={t}
+                userProfile={userProfile}
+              />;
+    }
+     if (activePage === Page.BUILD && activeSubPage === SubPage.PRODUCT_DESIGN) {
+      return <ProductDesignPage
+                initialData={productDesignData}
+                onUpdateData={handleUpdateProductDesignData}
+                language={currentLanguage}
+                t={t}
+                userProfile={userProfile}
+              />;
+    }
+    if (activePage === Page.BUILD && activeSubPage === SubPage.ECONOMICS) {
+      return <EconomicsPage
+                initialData={economicsData}
+                onUpdateData={handleUpdateEconomicsData}
+                language={currentLanguage}
+                t={t}
+                userProfile={userProfile}
+              />;
+    }
+    if (activePage === Page.BUILD && activeSubPage === SubPage.SALES) {
+      return <SalesPage
+                initialData={salesData}
+                onUpdateData={handleUpdateSalesData}
                 language={currentLanguage}
                 t={t}
                 userProfile={userProfile}

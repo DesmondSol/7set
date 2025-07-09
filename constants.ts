@@ -1,4 +1,4 @@
-import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey, AssessmentQuestion, Partner, Trainer, Testimonial } from './types';
+import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey, AssessmentQuestion, Partner, Trainer, Testimonial, ProductDesignSubSection, ProductDesignSectionHelp, EconomicsSubSection, EconomicsSectionHelp, SalesSubSection, SalesSectionHelp } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
   {
@@ -7,7 +7,7 @@ export const NAV_ITEMS: NavItem[] = [
   },
   {
     label: Page.BUILD,
-    subItems: [SubPage.CRM, SubPage.EXECUTION_TRACKING],
+    subItems: [SubPage.PRODUCT_DESIGN, SubPage.ECONOMICS, SubPage.SALES],
   },
   {
     label: Page.GROW,
@@ -182,7 +182,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
     },
     example: {
       en: "Per transaction: Avg. transaction value = 5000 ETB. Revenue (5% commission) = 250 ETB. Variable costs (SMS, payment gateway fee) = 10 ETB. Contribution margin = 240 ETB. Target CAC for a farmer: 100 ETB (via local agent outreach). LTV (farmer, 3 yrs): ~15,000 ETB profit contribution.",
-      am: "በአንድ ግብይት፦ አማካይ የግብይት ዋጋ = 5000 ብር። ገቢ (5% ኮሚሽን) = 250 ብር። ተለዋዋጭ ወጪዎች (SMS፣ የክፍያ መግቢያ ክፍያ) = 10 ብር። የአስተዋጽኦ ህዳግ = 240 ብр። ለአንድ ገበሬ ዒላማ የደንበኛ ማግኛ ወጪ (CAC)፦ 100 ብር (በአካባቢ ወኪል ተደራሽነት)። የአንድ ገበሬ የህይወት ዘመን ዋጋ (LTV) (3 ዓመታት)፦ ~15,000 ብር የትርፍ አስተዋጽኦ።"
+      am: "በአንድ ግብይት፦ አማካይ የግብይት ዋጋ = 5000 ብር። ገቢ (5% ኮሚሽን) = 250 ብር። ተለዋዋጭ ወጪዎች (SMS፣ የክፍያ መግቢያ ክፍያ) = 10 ብр። የአስተዋጽኦ ህዳግ = 240 ብр። ለአንድ ገበሬ ዒላማ የደንበኛ ማግኛ ወጪ (CAC)፦ 100 ብር (በአካባቢ ወኪል ተደራሽነት)። የአንድ ገበሬ የህይወት ዘመን ዋጋ (LTV) (3 ዓመታት)፦ ~15,000 ብር የትርፍ አስተዋጽኦ።"
     }
   },
   {
@@ -288,6 +288,66 @@ export const MINDSET_SECTIONS_HELP: MindsetSectionHelp[] = [
     explanationKey: 'mindset_goal_setting_explanation'
   }
 ];
+
+export const PRODUCT_DESIGN_SECTIONS_HELP: ProductDesignSectionHelp[] = [
+    {
+        title: ProductDesignSubSection.BRAINSTORM_BOARD,
+        sidebarTitle: { en: ProductDesignSubSection.BRAINSTORM_BOARD, am: ProductDesignSubSection.BRAINSTORM_BOARD },
+        explanationKey: 'brainstorm_board_explanation'
+    },
+    {
+        title: ProductDesignSubSection.PRODUCT_PLANNING,
+        sidebarTitle: { en: ProductDesignSubSection.PRODUCT_PLANNING, am: ProductDesignSubSection.PRODUCT_PLANNING },
+        explanationKey: 'product_planning_explanation'
+    },
+    {
+        title: ProductDesignSubSection.ACTION_BOARD,
+        sidebarTitle: { en: ProductDesignSubSection.ACTION_BOARD, am: ProductDesignSubSection.ACTION_BOARD },
+        explanationKey: 'action_board_explanation'
+    },
+    {
+        title: ProductDesignSubSection.FEEDBACK_AGGREGATOR,
+        sidebarTitle: { en: ProductDesignSubSection.FEEDBACK_AGGREGATOR, am: ProductDesignSubSection.FEEDBACK_AGGREGATOR },
+        explanationKey: 'feedback_aggregator_explanation'
+    }
+];
+
+export const ECONOMICS_SECTIONS_HELP: EconomicsSectionHelp[] = [
+    {
+        title: EconomicsSubSection.COST_REVENUE,
+        sidebarTitle: { en: EconomicsSubSection.COST_REVENUE, am: EconomicsSubSection.COST_REVENUE },
+        explanationKey: 'cost_revenue_explanation'
+    },
+    {
+        title: EconomicsSubSection.UNIT_ECONOMICS,
+        sidebarTitle: { en: EconomicsSubSection.UNIT_ECONOMICS, am: EconomicsSubSection.UNIT_ECONOMICS },
+        explanationKey: 'unit_economics_explanation'
+    },
+    {
+        title: EconomicsSubSection.BURN_RATE,
+        sidebarTitle: { en: EconomicsSubSection.BURN_RATE, am: EconomicsSubSection.BURN_RATE },
+        explanationKey: 'burn_rate_explanation'
+    },
+    {
+        title: EconomicsSubSection.FINANCIAL_PROJECTION,
+        sidebarTitle: { en: EconomicsSubSection.FINANCIAL_PROJECTION, am: EconomicsSubSection.FINANCIAL_PROJECTION },
+        explanationKey: 'financial_projection_explanation'
+    }
+];
+
+export const SALES_SECTIONS_HELP: SalesSectionHelp[] = [
+    {
+        title: SalesSubSection.GO_TO_MARKET,
+        sidebarTitle: { en: SalesSubSection.GO_TO_MARKET, am: SalesSubSection.GO_TO_MARKET },
+        explanationKey: 'goto_market_explanation'
+    },
+    {
+        title: SalesSubSection.CRM_PIPELINE,
+        sidebarTitle: { en: SalesSubSection.CRM_PIPELINE, am: SalesSubSection.CRM_PIPELINE },
+        explanationKey: 'crm_pipeline_explanation'
+    }
+];
+
 
 export const PARTNERS_DATA: Partner[] = [
   {

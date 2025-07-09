@@ -7,6 +7,9 @@ export type TranslationKey =
   | ResearchSection 
   | CopywritingSubSection 
   | MindsetSubSection
+  | ProductDesignSubSection
+  | EconomicsSubSection
+  | SalesSubSection
   | 'export_all_button'
   | 'ai_assistant_canvas_button_tooltip'
   | 'help_canvas_button_tooltip'
@@ -28,6 +31,7 @@ export type TranslationKey =
   | 'save_and_close_button'
   | 'delete_button'
   | 'cancel_button'
+  | 'confirm_button'
   | 'no_content_yet_placeholder'
   | 'error_ai_failed_generic'
   | 'error_ai_no_idea'
@@ -344,6 +348,194 @@ export type TranslationKey =
   | 'personas_help_goals_title' | 'personas_help_goals_desc'
   | 'personas_help_frustrations_title' | 'personas_help_frustrations_desc'
   | 'personas_help_jtbd_title' | 'personas_help_jtbd_desc'
+  | 'product_design_page_title'
+  | 'product_design_sidebar_title'
+  | 'brainstorm_board_explanation'
+  | 'product_planning_explanation'
+  | 'action_board_explanation'
+  | 'feedback_aggregator_explanation'
+  | 'brainstorm_add_idea_button'
+  | 'brainstorm_new_idea_placeholder'
+  | 'planning_add_feature_button'
+  | 'planning_no_features_placeholder'
+  | 'planning_feature_modal_title_add'
+  | 'planning_feature_modal_title_edit'
+  | 'planning_feature_name_label'
+  | 'planning_feature_priority_label'
+  | 'planning_version_history_title'
+  | 'planning_version_number_label'
+  | 'planning_active_version_label'
+  | 'planning_version_description_label'
+  | 'planning_version_problem_solved_label'
+  | 'planning_version_feedback_notes_label'
+  | 'planning_version_create_new_button'
+  | 'planning_priority_low'
+  | 'planning_priority_medium'
+  | 'planning_priority_high'
+  | 'planning_priority_critical'
+  | 'action_board_add_item_button'
+  | 'action_board_status_idea'
+  | 'action_board_status_design'
+  | 'action_board_status_build'
+  | 'action_board_status_deploy'
+  | 'action_item_modal_title_add'
+  | 'action_item_modal_title_edit'
+  | 'action_item_title_label'
+  | 'action_item_description_label'
+  | 'action_item_feature_link_label'
+  | 'action_item_no_feature_link_option'
+  | 'feedback_aggregator_add_button'
+  | 'feedback_aggregator_no_feedback_placeholder'
+  | 'feedback_modal_title_add'
+  | 'feedback_modal_title_edit'
+  | 'feedback_content_label'
+  | 'feedback_source_label'
+  | 'feedback_urgency_label'
+  | 'feedback_feature_link_label'
+  | 'feedback_source_app_store'
+  | 'feedback_source_survey'
+  | 'feedback_source_social_media'
+  | 'feedback_source_manual'
+  | 'feedback_urgency_low'
+  | 'feedback_urgency_medium'
+  | 'feedback_urgency_high'
+  | 'feedback_filter_by_source'
+  | 'feedback_filter_by_urgency'
+  | 'feedback_filter_all_sources'
+  | 'feedback_filter_all_urgencies'
+  | 'economics_page_title'
+  | 'economics_sidebar_title'
+  | 'economics_help_button_tooltip'
+  | 'cost_revenue_explanation'
+  | 'unit_economics_explanation'
+  | 'burn_rate_explanation'
+  | 'financial_projection_explanation'
+  | 'fp_title'
+  | 'fp_subtitle'
+  | 'fp_inputs_title'
+  | 'fp_results_title'
+  | 'fp_starting_capital_label'
+  | 'fp_products_services_title'
+  | 'fp_add_product_button'
+  | 'fp_product_name_label'
+  | 'fp_product_price_label'
+  | 'fp_product_cost_label'
+  | 'fp_product_initial_sales_label'
+  | 'fp_remove_product_button_tooltip'
+  | 'fp_growth_assumptions_title'
+  | 'fp_sales_growth_rate_label'
+  | 'fp_other_monthly_revenue_label'
+  | 'fp_other_monthly_expenses_label'
+  | 'fp_generate_button'
+  | 'fp_table_metric_header'
+  | 'fp_table_month1_header'
+  | 'fp_table_month2_header'
+  | 'fp_table_month3_header'
+  | 'fp_table_total_header'
+  | 'fp_table_revenue'
+  | 'fp_table_cogs'
+  | 'fp_table_gross_profit'
+  | 'fp_table_other_expenses'
+  | 'fp_table_net_profit'
+  | 'fp_table_ending_balance'
+  | 'costs_title'
+  | 'revenues_title'
+  | 'total_costs'
+  | 'total_revenues'
+  | 'net_profit'
+  | 'net_loss'
+  | 'add_cost_button'
+  | 'add_revenue_button'
+  | 'financial_item_name_label'
+  | 'financial_item_amount_label'
+  | 'financial_item_category_label'
+  | 'financial_item_type_label'
+  | 'financial_item_type_one_time'
+  | 'financial_item_type_recurring'
+  | 'financial_item_date_label'
+  | 'financial_item_details_label'
+  | 'financial_item_details_placeholder'
+  | 'cost_revenue_modal_title_add_cost'
+  | 'cost_revenue_modal_title_edit_cost'
+  | 'cost_revenue_modal_title_add_revenue'
+  | 'cost_revenue_modal_title_edit_revenue'
+  | 'ue_title'
+  | 'ue_subtitle'
+  | 'ue_inputs_title'
+  | 'ue_results_title'
+  | 'ue_avg_revenue_label'
+  | 'ue_avg_revenue_tooltip'
+  | 'ue_cogs_label'
+  | 'ue_cogs_tooltip'
+  | 'ue_cac_label'
+  | 'ue_cac_tooltip'
+  | 'ue_customer_lifetime_label'
+  | 'ue_customer_lifetime_tooltip'
+  | 'ue_gross_margin_label'
+  | 'ue_gross_margin_result'
+  | 'ue_ltv_label'
+  | 'ue_ltv_result'
+  | 'ue_ltv_cac_ratio_label'
+  | 'ue_ltv_cac_ratio_result'
+  | 'ue_breakeven_label'
+  | 'ue_breakeven_result'
+  | 'br_title'
+  | 'br_subtitle'
+  | 'br_inputs_title'
+  | 'br_results_title'
+  | 'br_starting_capital_label'
+  | 'br_hiring_spend_label'
+  | 'br_marketing_spend_label'
+  | 'br_base_burn_label'
+  | 'br_base_burn_tooltip'
+  | 'br_total_burn_label'
+  | 'br_total_burn_tooltip'
+  | 'br_net_burn_label'
+  | 'br_net_burn_tooltip'
+  | 'br_runway_label'
+  | 'br_runway_tooltip'
+  | 'br_runway_infinite'
+  | 'br_chart_title'
+  | 'br_chart_capital_label'
+  | 'br_chart_month_label'
+  | 'sales_page_title'
+  | 'sales_sidebar_title'
+  | 'sales_help_button_tooltip'
+  | 'goto_market_explanation'
+  | 'crm_pipeline_explanation'
+  | 'launch_sequence_builder_title'
+  | 'add_phase_button'
+  | 'new_phase_default_name'
+  | 'add_activity_button'
+  | 'new_activity_placeholder'
+  | 'activity_status_todo'
+  | 'activity_status_in_progress'
+  | 'activity_status_done'
+  | 'crm_pipeline_title'
+  | 'crm_stage_prospects'
+  | 'crm_stage_negotiation'
+  | 'crm_stage_closed'
+  | 'crm_stage_lost'
+  | 'crm_add_prospects_button'
+  | 'crm_add_prospects_modal_title'
+  | 'crm_add_prospects_instructions'
+  | 'crm_edit_lead_modal_title'
+  | 'crm_qualify_lead_modal_title'
+  | 'crm_lead_name_label'
+  | 'crm_lead_email_label'
+  | 'crm_lead_phone_label'
+  | 'crm_lead_details_label'
+  | 'crm_needs_analysis_label'
+  | 'crm_value_proposition_label'
+  | 'crm_comments_label'
+  | 'crm_lost_reason_label'
+  | 'crm_mark_as_lost_modal_title'
+  | 'crm_qualify_button'
+  | 'crm_mark_won_button'
+  | 'crm_mark_lost_button'
+  | 'crm_no_leads_in_stage'
+  | CostCategory
+  | RevenueCategory
   ;
 
 
@@ -362,8 +554,9 @@ export enum SubPage {
   PERSONAS = 'Personas',
   RESEARCH = 'Research',
   COPYWRITING = 'Copywriting',
-  CRM = 'CRM',
-  EXECUTION_TRACKING = 'Execution Tracking',
+  PRODUCT_DESIGN = 'Product Design',
+  ECONOMICS = 'Economics',
+  SALES = 'Sales',
   LEARN = 'Learn',
   AI_ADVISOR = 'AI Advisor',
 }
@@ -666,6 +859,227 @@ export interface MindsetData {
 
 export interface MindsetSectionHelp {
     title: MindsetSubSection;
+    sidebarTitle: Record<Language, TranslationKey>;
+    explanationKey: TranslationKey;
+}
+
+// PRODUCT DESIGN
+export enum ProductDesignSubSection {
+    BRAINSTORM_BOARD = 'Brainstorm Board',
+    PRODUCT_PLANNING = 'Product Planning',
+    ACTION_BOARD = 'Action Board',
+    FEEDBACK_AGGREGATOR = 'Feedback Aggregator',
+}
+
+export interface BrainstormIdea {
+    id: string;
+    content: string;
+    color: string;
+}
+
+export type FeaturePriority = 'low' | 'medium' | 'high' | 'critical';
+
+export interface FeatureVersion {
+  id: string;
+  versionNumber: number;
+  description: string;
+  problemSolved: string;
+  feedbackNotes: string; // Simplified from feedback linking for now
+  createdAt: string; // ISO Date
+}
+
+export interface ProductFeature {
+  id: string;
+  name: string;
+  priority: FeaturePriority;
+  versions: FeatureVersion[]; // Last item in the array is the active one
+  createdAt: string; // ISO Date
+}
+
+export enum ActionBoardStatus {
+    IDEA = 'idea',
+    DESIGN = 'design',
+    BUILD = 'build',
+    DEPLOY = 'deploy',
+}
+
+export interface ActionItem {
+    id: string;
+    title: string;
+    description: string;
+    status: ActionBoardStatus;
+    featureId: string | null; // Link to ProductFeature ID, can be null
+    createdAt: string; // ISO Date
+}
+
+export type FeedbackSource = 'app_store' | 'survey' | 'social_media' | 'manual';
+export type FeedbackUrgency = 'low' | 'medium' | 'high';
+
+export interface FeedbackItem {
+    id: string;
+    content: string;
+    source: FeedbackSource;
+    urgency: FeedbackUrgency;
+    featureId: string | null; // Link to ProductFeature ID
+    createdAt: string; // ISO Date
+}
+
+
+export interface ProductDesignData {
+    brainstormIdeas: BrainstormIdea[];
+    features: ProductFeature[];
+    actionItems: ActionItem[];
+    feedbackItems: FeedbackItem[];
+}
+
+export interface ProductDesignSectionHelp {
+    title: ProductDesignSubSection;
+    sidebarTitle: Record<Language, TranslationKey>;
+    explanationKey: TranslationKey;
+}
+
+// ECONOMICS
+export enum EconomicsSubSection {
+    COST_REVENUE = 'Cost & Revenue',
+    UNIT_ECONOMICS = 'EconomicsSection_UnitEconomics',
+    BURN_RATE = 'Burn Rate',
+    FINANCIAL_PROJECTION = 'Financial Projection Generator',
+}
+
+export enum CostCategory {
+    OPERATIONAL = 'cost_category_operational',
+    MARKETING_SALES = 'cost_category_marketing_sales',
+    SALARIES_FEES = 'cost_category_salaries_fees',
+    TAXES = 'cost_category_taxes',
+    CAPEX = 'cost_category_capex',
+    ADMIN_OVERHEADS = 'cost_category_admin_overheads',
+}
+
+export enum RevenueCategory {
+    PRODUCT_SALES = 'revenue_category_product_sales',
+    SERVICE_FEES = 'revenue_category_service_fees',
+    SUBSCRIPTION_FEES = 'revenue_category_subscription_fees',
+    INVESTMENT = 'revenue_category_investment',
+    OTHER = 'revenue_category_other',
+}
+
+interface FinancialItem {
+    id: string;
+    name: string;
+    amount: number;
+    date: string; // ISO Date string, e.g., "2024-07-30"
+    type: 'one_time' | 'recurring';
+    details: string;
+}
+
+export interface CostItem extends FinancialItem {
+    category: CostCategory;
+}
+
+export interface RevenueItem extends FinancialItem {
+    category: RevenueCategory;
+}
+
+export interface UnitEconomicsData {
+    avgRevenue: number | '';
+    cogs: number | ''; // Cost of Goods Sold
+    cac: number | ''; // Customer Acquisition Cost
+    customerLifetime: number | ''; // in months
+}
+
+export interface BurnRateData {
+    startingCapital: number | '';
+    additionalHiringSpend: number | '';
+    additionalMarketingSpend: number | '';
+}
+
+export interface ProjectionProduct {
+    id: string;
+    name: string;
+    price: number | '';
+    cost: number | '';
+    initialSales: number | '';
+}
+
+export interface FinancialProjectionInputs {
+    startingCapital: number | '';
+    products: ProjectionProduct[];
+    salesGrowthRate: number | ''; // as a percentage
+    monthlyRevenue: number | ''; // Other recurring revenue
+    monthlyExpenses: number | ''; // Other recurring expenses
+}
+
+export interface FinancialProjectionResultMonth {
+    month: number;
+    revenue: number;
+    cogs: number;
+    grossProfit: number;
+    otherExpenses: number;
+    netProfit: number;
+    endingBalance: number;
+}
+
+export interface FinancialProjection {
+    inputs: FinancialProjectionInputs;
+    result: FinancialProjectionResultMonth[] | null;
+}
+
+export interface EconomicsData {
+    costs: CostItem[];
+    revenues: RevenueItem[];
+    unitEconomics: UnitEconomicsData;
+    burnRate: BurnRateData;
+    financialProjection: FinancialProjection;
+}
+
+export interface EconomicsSectionHelp {
+    title: EconomicsSubSection;
+    sidebarTitle: Record<Language, TranslationKey>;
+    explanationKey: TranslationKey;
+}
+
+// SALES
+export enum SalesSubSection {
+    GO_TO_MARKET = 'Go-to-Market Architect',
+    CRM_PIPELINE = 'CRM Pipeline',
+}
+
+export type ActivityStatus = 'todo' | 'in_progress' | 'done';
+
+export interface Activity {
+    id: string;
+    name: string;
+    status: ActivityStatus;
+}
+
+export interface LaunchPhase {
+    id: string;
+    name: string;
+    activities: Activity[];
+}
+
+export type CrmStage = 'prospects' | 'negotiation' | 'closed' | 'lost';
+
+export interface CrmLead {
+    id: string;
+    name: string;
+    email?: string;
+    phone?: string;
+    details?: string;
+    stage: CrmStage;
+    needsAnalysis?: string;
+    valueProposition?: string;
+    comments?: string; // For lost reason or general notes
+    createdAt: string; // ISO date string
+}
+
+export interface SalesData {
+    launchSequence: LaunchPhase[];
+    crmLeads: CrmLead[];
+}
+
+export interface SalesSectionHelp {
+    title: SalesSubSection;
     sidebarTitle: Record<Language, TranslationKey>;
     explanationKey: TranslationKey;
 }

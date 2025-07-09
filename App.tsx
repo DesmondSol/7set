@@ -16,6 +16,7 @@ import MindsetPage from './components/MindsetPage'; // New Mindset Page
 import ProductDesignPage from './components/ProductDesignPage/ProductDesignPage'; // New Product Design Page
 import EconomicsPage from './components/EconomicsPage/EconomicsPage'; // New Economics Page
 import SalesPage from './components/SalesPage/SalesPage'; // New Sales Page
+import StrategyPage from './components/StrategyPage'; // New Strategy Page
 import { ComingSoon } from './components/ComingSoon';
 import { UserProfileModal } from './components/UserProfileModal';
 import InfographicPage from './components/InfographicPage'; 
@@ -384,20 +385,12 @@ const App: React.FC = () => {
              />;
     }
     if (activePage === Page.START && activeSubPage === SubPage.STRATEGY) {
-      return <BusinessLaunchCanvas 
-                canvasData={canvasData} 
-                onSaveSection={handleSaveCanvasSection}
-                onMassUpdate={handleUpdateCanvasData} 
-                language={currentLanguage}
-                t={t}
-                userProfile={userProfile}
-             />;
-    }
-    if (activePage === Page.START && activeSubPage === SubPage.PERSONAS) {
-      return <PersonasPage
-                initialData={personasData}
-                onUpdateData={handleUpdatePersonasData}
+      return <StrategyPage
                 canvasData={canvasData}
+                onSaveCanvasSection={handleSaveCanvasSection}
+                onMassUpdateCanvas={handleUpdateCanvasData}
+                personasData={personasData}
+                onUpdatePersonasData={handleUpdatePersonasData}
                 language={currentLanguage}
                 t={t}
                 userProfile={userProfile}

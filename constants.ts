@@ -1,9 +1,9 @@
-import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey, AssessmentQuestion, Partner, Trainer, Testimonial, ProductDesignSubSection, ProductDesignSectionHelp, EconomicsSubSection, EconomicsSectionHelp, SalesSubSection, SalesSectionHelp } from './types';
+import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey, AssessmentQuestion, Partner, Trainer, Testimonial, ProductDesignSubSection, ProductDesignSectionHelp, EconomicsSubSection, EconomicsSectionHelp, SalesSubSection, SalesSectionHelp, StrategySubSection, StrategySectionHelp } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
   {
     label: Page.START,
-    subItems: [SubPage.MINDSET, SubPage.STRATEGY, SubPage.PERSONAS, SubPage.RESEARCH, SubPage.COPYWRITING],
+    subItems: [SubPage.MINDSET, SubPage.STRATEGY, SubPage.RESEARCH, SubPage.COPYWRITING],
   },
   {
     label: Page.BUILD,
@@ -17,6 +17,20 @@ export const NAV_ITEMS: NavItem[] = [
 
 export const API_KEY_WARNING = "API key is not set. AI features will be disabled.";
 export const GENERIC_ERROR_MESSAGE = "An unexpected error occurred. Please try again later.";
+
+
+export const STRATEGY_SECTIONS_HELP: StrategySectionHelp[] = [
+  {
+    title: StrategySubSection.BUSINESS_CANVAS,
+    sidebarTitle: { en: StrategySubSection.BUSINESS_CANVAS, am: StrategySubSection.BUSINESS_CANVAS },
+    explanationKey: 'canvas_explanation'
+  },
+  {
+    title: StrategySubSection.PERSONAS,
+    sidebarTitle: { en: StrategySubSection.PERSONAS, am: StrategySubSection.PERSONAS },
+    explanationKey: 'personas_explanation'
+  }
+];
 
 
 export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
@@ -156,7 +170,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
     title: CanvasSection.PRICING,
     explanation: {
       en: "Detail your pricing strategy for Ethiopian customers. How much will your product/service cost (in ETB)? How does this compare to alternatives? Is it value-based, cost-plus, or competitive? Consider local affordability.",
-      am: "ለኢትዮጵያ ደንበኞች የዋጋ አወጣጥ ስትራቴጂዎን በዝርዝር ይግለጹ። ምርትዎ/አገልግሎትዎ ስንት ያስከፍላል (በኢትዮጵያ ብር)? ይህ ከአማራጮች ጋር ሲነጻጸር እንዴት ነው? በእሴት ላይ የተመሰረተ፣ ወጪ-ተጨማሪ፣ ወይስ ተወዳዳሪ ነው? የአካባቢውን የመግዛት አቅም ግምት ውስጥ ያስገቡ።"
+      am: "ለኢትዮጵያ ደንበኞች የዋጋ አወጣጥ ስትራቴጂዎን በዝርዝር ይግለጹ። ምርትዎ/አገልግሎትዎ ስንት ያስከፍላል (በኢትዮጵያ ብር)? ይህ ከአማራጮች ጋር ሲነጻጸር እንዴት ነው? በእሴት ላይ የተመሰረተ፣ ወጪ-ተጨማሪ、 ወይስ ተወዳዳሪ ነው? የአካባቢውን የመግዛት አቅም ግምት ውስጥ ያስገቡ።"
     },
     example: {
       en: "Commission: 5% of transaction value (ETB). This is competitive compared to traditional intermediaries who might take 20-40%. Value-based for farmers (higher net income) and buyers (fair prices, convenience). No subscription fees for basic access for farmers.",
@@ -178,7 +192,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
     title: CanvasSection.UNIT_ECONOMICS,
     explanation: {
       en: "Analyze the revenue and costs associated with a single unit of your product/service in Ethiopia (e.g., per customer, per transaction). What is your Customer Acquisition Cost (CAC) in ETB? What is the Lifetime Value (LTV) of an Ethiopian customer?",
-      am: "በኢትዮጵያ ውስጥ ካለው አንድ የምርትዎ/አገልግሎትዎ ክፍል ጋር የተያያዙ ገቢዎችን እና ወጪዎችን ይተንትኑ (ለምሳሌ፣ በአንድ ደንበኛ፣ በአንድ ግብይት)። የእርስዎ የደንበኛ ማግኛ ወጪ (CAC) በኢትዮጵያ ብር ስንት ነው? የአንድ ኢትዮጵያዊ ደንበኛ የህይወት ዘመን ዋጋ (LTV) ስንት ነው?"
+      am: "በኢትዮጵያ ውስጥ ካለው አንድ የምርትዎ/አገልግሎትዎ ክፍል ጋር የተያያዙ ገቢዎችን እና ወጪዎችን ይተንትኑ (ለምሳሌ፣ በአንድ ደንበኛ、 በአንድ ግብይት)። የእርስዎ የደንበኛ ማግኛ ወጪ (CAC) በኢትዮጵያ ብር ስንት ነው? የአንድ ኢትዮጵያዊ ደንበኛ የህይወት ዘመን ዋጋ (LTV) ስንት ነው?"
     },
     example: {
       en: "Per transaction: Avg. transaction value = 5000 ETB. Revenue (5% commission) = 250 ETB. Variable costs (SMS, payment gateway fee) = 10 ETB. Contribution margin = 240 ETB. Target CAC for a farmer: 100 ETB (via local agent outreach). LTV (farmer, 3 yrs): ~15,000 ETB profit contribution.",
@@ -189,11 +203,11 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
     title: CanvasSection.BRAND_STYLE_GUIDES,
     explanation: {
       en: "Define your brand's personality, voice, and visual identity (logo, colors, typography) as it relates to the Ethiopian market. How will you communicate your brand to resonate with Ethiopian users? (e.g., using local motifs, community-focused imagery).",
-      am: "ከኢትዮጵያ ገበያ ጋር በተያያዘ የምርትዎን ስብዕና፣ ድምጽ እና ምስላዊ ማንነት (አርማ፣ ቀለሞች፣ የፊደል አጻጻፍ) ይግለጹ። ከኢትዮጵያ ተጠቃሚዎች ጋር ለመስማማት የምርትዎን ስም እንዴት ያስተላልፋሉ? (ለምሳሌ፣ የአካባቢ ዘይቤዎችን፣ በማህበረሰብ ላይ ያተኮሩ ምስሎችን በመጠቀም)።"
+      am: "ከኢትዮጵያ ገበያ ጋር በተያያዘ የምርትዎን ስብዕና፣ ድምጽ እና ምስላዊ ማንነት (አርማ፣ ቀለሞች、 የፊደል አጻጻፍ) ይግለጹ። ከኢትዮጵያ ተጠቃሚዎች ጋር ለመስማማት የምርትዎን ስም እንዴት ያስተላልፋሉ? (ለምሳሌ፣ የአካባቢ ዘይቤዎችን፣ በማህበረሰብ ላይ ያተኮሩ ምስሎችን በመጠቀም)።"
     },
     example: {
       en: "Brand Voice: Trustworthy, empowering, community-oriented. Colors: Green (agriculture, growth), Yellow (optimism, harvest), Blue (technology, reliability). Logo: Stylized 'meskel' flower integrated with a network symbol. Imagery: Focus on real Ethiopian farmers and vibrant local markets.",
-      am: "የምርት ድምጽ፦ ታማኝ፣ አቅም ሰጪ፣ በማህበረሰብ ላይ ያተኮረ። ቀለሞች፦ አረንጓዴ (ግብርና፣ ዕድገት)፣ ቢጫ (ብሩህ ተስፋ፣ መከር)፣ ሰማያዊ (ቴክኖሎጂ፣ አስተማማኝነት)። አርማ፦ ከአውታረ መረብ ምልክት ጋር የተዋሃደ ቅጥ ያጣ 'መስቀል' አበባ። ምስሎች፦ በእውነተኛ የኢትዮጵያ ገበሬዎች እና በደመቁ የአካባቢ ገበያዎች ላይ ያተኩሩ።"
+      am: "የምርት ድምጽ፦ ታማኝ፣ አቅም ሰጪ፣ በማህበረሰብ ላይ ያተኮረ። ቀለሞች፦ አረንጓዴ (ግብርና፣ ዕድገት)፣ ቢጫ (ብሩህ ተስፋ、 መከር)፣ ሰማያዊ (ቴክኖሎጂ፣ አስተማማኝነት)። አርማ፦ ከአውታረ መረብ ምልክት ጋር የተዋሃደ ቅጥ ያጣ 'መስቀል' አበባ። ምስሎች፦ በእውነተኛ የኢትዮጵያ ገበሬዎች እና በደመቁ የአካባቢ ገበያዎች ላይ ያተኩሩ።"
     }
   },
   {
@@ -231,7 +245,7 @@ export const RESEARCH_SECTIONS_HELP: ResearchSectionHelp[] = [
     sidebarTitle: { en: 'Competitor Analysis', am: 'የተፎካካሪ ትንተና' },
     explanation: {
       en: 'Identify and analyze your competitors in the Ethiopian market. Document their strengths, weaknesses, pricing, and key features to find your unique edge.',
-      am: 'በኢትዮጵያ ገበያ ውስጥ ተወዳዳሪዎችዎን ይለዩ እና ይተንትኑ። ልዩ ጠርዝዎን ለማግኘት ጥንካሬዎቻቸውን፣ ድክመቶቻቸውን፣ የዋጋ አወጣጣቸውን እና ቁልፍ ባህሪያቶቻቸውን ይመዝግቡ።'
+      am: 'በኢትዮጵያ ገበያ ውስጥ ተወዳዳሪዎችዎን ይለዩ እና ይተንትኑ። ልዩ ጠርዝዎን ለማግኘት ጥንካሬዎቻቸውን፣ ድክመቶቻቸውን、 የዋጋ አወጣጣቸውን እና ቁልፍ ባህሪያቶቻቸውን ይመዝግቡ።'
     }
   },
   {
@@ -266,7 +280,7 @@ export const COPYWRITING_SECTIONS_HELP: CopywritingSectionHelp[] = [
     sidebarTitle: { en: 'Pitch Refinement', am: 'የሀሳብ ማቅረቢያ ማሻሻያ' },
     explanation: {
         en: 'Draft, refine, and store various pitches—whether for investors, sales, or email campaigns. Use the AI assistant to get a head start by generating drafts tailored to your specific audience and goals in the Ethiopian context.',
-        am: 'ለባለሀብቶች፣ ለሽያጭ ወይም ለኢሜል ዘመቻዎች ይሁኑ የተለያዩ የሀሳብ ማቅረቢያዎችን ይቅረጹ፣ ያሻሽሉ እና ያከማቹ። በኢትዮጵያ አውድ ውስጥ ለተወሰኑ ታዳሚዎችዎ እና ግቦችዎ የተዘጋጁ ረቂቆችን በማመንጨት ለመጀመር የ AI ረዳትን ይጠቀሙ።'
+        am: 'ለባለሀብቶች፣ ለሽያጭ ወይም ለኢሜል ዘመቻዎች ይሁኑ የተለያዩ የሀሳብ ማቅረቢያዎችን ይቅረጹ、 ያሻሽሉ እና ያከማቹ። በኢትዮጵያ አውድ ውስጥ ለተወሰኑ ታዳሚዎችዎ እና ግቦችዎ የተዘጋጁ ረቂቆችን በማመንጨት ለመጀመር የ AI ረዳትን ይጠቀሙ።'
     }
   }
 ];
@@ -274,17 +288,17 @@ export const COPYWRITING_SECTIONS_HELP: CopywritingSectionHelp[] = [
 export const MINDSET_SECTIONS_HELP: MindsetSectionHelp[] = [
   {
     title: MindsetSubSection.ENTREPRENEURIAL_ASSESSMENT,
-    sidebarTitle: { en: 'mindset_assessment_title', am: 'mindset_assessment_title' },
+    sidebarTitle: { en: MindsetSubSection.ENTREPRENEURIAL_ASSESSMENT, am: MindsetSubSection.ENTREPRENEURIAL_ASSESSMENT },
     explanationKey: 'mindset_assessment_explanation'
   },
   {
     title: MindsetSubSection.PROFILE_REPORT,
-    sidebarTitle: { en: 'mindset_profile_report_title', am: 'mindset_profile_report_title' },
+    sidebarTitle: { en: MindsetSubSection.PROFILE_REPORT, am: MindsetSubSection.PROFILE_REPORT },
     explanationKey: 'mindset_profile_report_explanation'
   },
   {
     title: MindsetSubSection.GOAL_SETTING,
-    sidebarTitle: { en: 'mindset_goal_setting_title', am: 'mindset_goal_setting_title' },
+    sidebarTitle: { en: MindsetSubSection.GOAL_SETTING, am: MindsetSubSection.GOAL_SETTING },
     explanationKey: 'mindset_goal_setting_explanation'
   }
 ];

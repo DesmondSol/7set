@@ -534,6 +534,12 @@ export type TranslationKey =
   | 'crm_mark_won_button'
   | 'crm_mark_lost_button'
   | 'crm_no_leads_in_stage'
+  | StrategySubSection
+  | 'strategy_page_title'
+  | 'strategy_sidebar_title'
+  | 'strategy_help_button_tooltip'
+  | 'canvas_explanation'
+  | 'personas_explanation'
   | CostCategory
   | RevenueCategory
   ;
@@ -551,7 +557,7 @@ export enum Page {
 export enum SubPage {
   MINDSET = 'Mindset',
   STRATEGY = 'Strategy',
-  PERSONAS = 'Personas',
+  // PERSONAS = 'Personas', // No longer a top-level subpage
   RESEARCH = 'Research',
   COPYWRITING = 'Copywriting',
   PRODUCT_DESIGN = 'Product Design',
@@ -573,6 +579,18 @@ export interface UserProfile {
     phone?: string;
     otherDetails?: string;
     photo?: string | null; // Base64 string for the photo
+}
+
+// STRATEGY HUB
+export enum StrategySubSection {
+  BUSINESS_CANVAS = 'Business Canvas',
+  PERSONAS = 'Personas',
+}
+
+export interface StrategySectionHelp {
+    title: StrategySubSection;
+    sidebarTitle: Record<Language, TranslationKey>;
+    explanationKey: TranslationKey;
 }
 
 // BUSINESS LAUNCH CANVAS (STRATEGY)

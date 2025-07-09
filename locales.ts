@@ -1,19 +1,19 @@
 
 
-import { 
-    Page, 
-    SubPage, 
-    CanvasSection, 
-    ResearchSection, 
-    Language, 
-    CopywritingSubSection, 
-    MindsetSubSection,
-    ProductDesignSubSection,
-    EconomicsSubSection,
-    SalesSubSection,
-    CostCategory,
-    RevenueCategory,
-    TranslationKey // Import TranslationKey from types.ts
+import {
+  Page,
+  SubPage,
+  CanvasSection,
+  ResearchSection,
+  Language,
+  CopywritingSubSection,
+  MindsetSubSection,
+  ProductDesignSubSection,
+  EconomicsSubSection,
+  SalesSubSection,
+  CostCategory,
+  RevenueCategory,
+  TranslationKey // Import TranslationKey from types.ts
 } from './types';
 
 export type LocalizedContent = Record<TranslationKey, string>;
@@ -57,7 +57,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [ResearchSection.COMPETITOR_ANALYSIS]: "Competitor Analysis",
     [ResearchSection.TRENDS]: "Industry Trends",
     [ResearchSection.AI_SUMMARY]: "AI Summary",
-    
+
     [CopywritingSubSection.MARKETING]: "Marketing Content & Plans",
     [CopywritingSubSection.PITCH_REFINEMENT]: "Pitch Refinement",
 
@@ -69,7 +69,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [ProductDesignSubSection.PRODUCT_PLANNING]: "Product Planning",
     [ProductDesignSubSection.ACTION_BOARD]: "Action Board",
     [ProductDesignSubSection.FEEDBACK_AGGREGATOR]: "Feedback Aggregator",
-    
+
     [EconomicsSubSection.COST_REVENUE]: "Cost & Revenue",
     [EconomicsSubSection.UNIT_ECONOMICS]: "Unit Economics Calculator",
     [EconomicsSubSection.BURN_RATE]: "Burn Rate Forecaster",
@@ -77,7 +77,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 
     [SalesSubSection.GO_TO_MARKET]: 'Go-to-Market Architect',
     [SalesSubSection.CRM_PIPELINE]: 'CRM Pipeline',
-    
+
     // Product Design
     product_design_page_title: "Product Design Hub",
     product_design_sidebar_title: "Design Sections",
@@ -326,7 +326,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     mra_questions_ai_generate_button: "Generate Questions with AI for this Set",
     mra_questions_ai_generating_button: "AI Generating...",
     mra_questions_ai_requires_canvas_note: "Note: AI generation requires Business Launch Canvas data to be filled for context.",
-    mra_questions_no_questions_placeholder:"No research questions added to this set yet.",
+    mra_questions_no_questions_placeholder: "No research questions added to this set yet.",
     mra_questions_select_set_prompt: "Please select a Research Set above to view or add questions.",
     mra_questions_no_sets_prompt: "No Research Sets created yet. Click 'Create New Research Set' to begin.",
     mra_general_notes_title: "General Notes & Bulk Data Import",
@@ -358,15 +358,15 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 
     welcome_title: "Welcome to 7set Spark!",
     welcome_message: "Your innovation and training hub for entrepreneurs. Select a section from the navigation bar above to begin your journey.",
-    lang_english: "English", 
-    lang_amharic: "Amharic", 
-    lang_en_short: "EN", 
-    lang_am_short: "አማ", 
+    lang_english: "English",
+    lang_amharic: "Amharic",
+    lang_en_short: "EN",
+    lang_am_short: "አማ",
     logo_alt_text: "7set Spark Logo",
 
 
     exported_on_label: "Exported on",
-    page_x_of_y: "Page {currentPage} of {totalPages}", 
+    page_x_of_y: "Page {currentPage} of {totalPages}",
     no_content_yet_placeholder_pdf: "No content provided.",
     mra_report_set_title: "Research Set",
     mra_report_goal_label: "Goal",
@@ -518,10 +518,10 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     infographic_eco_gamenights_title: "Game Nights",
     infographic_eco_gamenights_desc: "Build camaraderie and de-stress with the cohort.",
     infographic_goal_title: "The Ultimate Goal",
-    infographic_goal_prizes_amount: "1M ETB",
-    infographic_goal_prizes_desc: "In cash prizes for top performers.",
-    infographic_goal_investment_amount: "$50K+",
-    infographic_goal_investment_desc: "In potential seed investment for eligible ventures.",
+    infographic_goal_prizes_amount: "100K ETB",
+    infographic_goal_prizes_desc: "In prizes and seed money each round.",
+    infographic_goal_investment_amount: "1M ETB",
+    infographic_goal_investment_desc: "In investment at the last round for qualified ventures.",
     infographic_footer_copyright: "© 2024 7set Spark. All Rights Reserved.",
     infographic_footer_address: "Bole, Addis Ababa, Ethiopia",
     infographic_footer_poweredby: "Powered by",
@@ -567,7 +567,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [ResearchSection.COMPETITOR_ANALYSIS]: "የተወዳዳሪ ትንተና",
     [ResearchSection.TRENDS]: "የኢንዱስትሪ አዝማሚያዎች",
     [ResearchSection.AI_SUMMARY]: "AI ማጠቃለያ",
-    
+
     [CopywritingSubSection.MARKETING]: "የግብይት ይዘት እና እቅዶች",
     [CopywritingSubSection.PITCH_REFINEMENT]: "የሀሳብ ማቅረቢያ ማሻሻያ",
 
@@ -579,12 +579,12 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [ProductDesignSubSection.PRODUCT_PLANNING]: "የምርት እቅድ",
     [ProductDesignSubSection.ACTION_BOARD]: "የተግባር ሰሌዳ",
     [ProductDesignSubSection.FEEDBACK_AGGREGATOR]: "የአስተያየት ማሰባሰቢያ",
-    
+
     [EconomicsSubSection.COST_REVENUE]: "ወጪ እና ገቢ",
     [EconomicsSubSection.UNIT_ECONOMICS]: "የዩኒት ኢኮኖሚክስ ማስያ",
     [EconomicsSubSection.BURN_RATE]: "የገንዘብ ማቃጠል መጠን ትንበያ",
     [EconomicsSubSection.FINANCIAL_PROJECTION]: "የገንዘብ ትንበያ አመንጪ",
-    
+
     [SalesSubSection.GO_TO_MARKET]: 'የገበያ መግቢያ ስነ-ህንፃ',
     [SalesSubSection.CRM_PIPELINE]: 'የCRM መስመር',
 
@@ -644,7 +644,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     feedback_filter_by_urgency: "በአጣዳፊነት ማጣራት",
     feedback_filter_all_sources: "ሁሉም ምንጮች",
     feedback_filter_all_urgencies: "ሁሉም አጣዳፊነቶች",
-    
+
     // Economics (Amharic)
     economics_page_title: "የፋይናንስ እቅድ",
     economics_sidebar_title: "የፋይናንስ ክፍሎች",
@@ -752,7 +752,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     fp_table_other_expenses: "ሌሎች ወጪዎች",
     fp_table_net_profit: "የተጣራ ትርፍ / ኪሳራ",
     fp_table_ending_balance: "ቀሪ ጥሬ ገንዘብ",
-    
+
     // Sales (Amharic)
     sales_page_title: "ሽያጭ እና ወደ ገበያ መግባት",
     sales_sidebar_title: "የሽያጭ ክፍሎች",
@@ -835,7 +835,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     mra_questions_ai_generate_button: "ለዚህ ስብስብ በ AI ጥያቄዎችን አመንጭ",
     mra_questions_ai_generating_button: "AI እያመነጨ ነው...",
     mra_questions_ai_requires_canvas_note: "ማሳሰቢያ: የ AI አመንጭቶ ለአውድ የቢዝነስ ማስጀመሪያ ሸራ ውሂብ መሞላት ይፈልጋል።",
-    mra_questions_no_questions_placeholder:"በዚህ ስብስብ ውስጥ እስካሁን ምንም የምርምር ጥያቄዎች አልተጨመሩም።",
+    mra_questions_no_questions_placeholder: "በዚህ ስብስብ ውስጥ እስካሁን ምንም የምርምር ጥያቄዎች አልተጨመሩም።",
     mra_questions_select_set_prompt: "ጥያቄዎችን ለማየት ወይም ለመጨመር እባክዎ ከላይ የምርምር ስብስብ ይምረጡ።",
     mra_questions_no_sets_prompt: "እስካሁን የተፈጠሩ የምርምር ስብስቦች የሉም። ለመጀመር 'አዲስ የምርምር ስብስብ ፍጠር' የሚለውን ጠቅ ያድርጉ።",
     mra_general_notes_title: "አጠቃላይ ማስታወሻዎች እና የጅምላ ውሂብ ማስመጣት",
@@ -867,15 +867,15 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 
     welcome_title: "ወደ 7ሴት ስፓርክ እንኳን በደህና መጡ!",
     welcome_message: "የእርስዎ የስራ ፈጣሪዎች ፈጠራ እና ስልጠና ማዕከል። ጉዞዎን ለመጀመር ከላይ ካለው የአሰሳ አሞሌ አንድ ክፍል ይምረጡ።",
-    lang_english: "እንግሊዝኛ", 
-    lang_amharic: "አማርኛ", 
-    lang_en_short: "EN", 
-    lang_am_short: "አማ", 
+    lang_english: "እንግሊዝኛ",
+    lang_amharic: "አማርኛ",
+    lang_en_short: "EN",
+    lang_am_short: "አማ",
     logo_alt_text: "7ሴት ስፓርክ አርማ",
 
 
     exported_on_label: "የተላከበት ቀን",
-    page_x_of_y: "ገጽ {currentPage} ከ {totalPages}", 
+    page_x_of_y: "ገጽ {currentPage} ከ {totalPages}",
     no_content_yet_placeholder_pdf: "ምንም ይዘት አልቀረበም።",
     mra_report_set_title: "የምርምር ስብስብ",
     mra_report_goal_label: "ግብ",
@@ -1027,10 +1027,10 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     infographic_eco_gamenights_title: "የጨዋታ ምሽቶች",
     infographic_eco_gamenights_desc: "ከቡድን አባላት ጋር ወዳጅነት ይገንቡ እና ጭንቀትን ይቀንሱ።",
     infographic_goal_title: "ዋናው ግብ",
-    infographic_goal_prizes_amount: "1M ብር",
-    infographic_goal_prizes_desc: "ከፍተኛ አፈፃፀም ላሳዩ በጥሬ ገንዘብ ሽልማቶች።",
-    infographic_goal_investment_amount: "$50ሺ+",
-    infographic_goal_investment_desc: "ብቁ ለሆኑ ድርጅቶች ሊሰጥ የሚችል የመነሻ ኢንቨስትመንት።",
+    infographic_goal_prizes_amount: "100ሺ ብር",
+    infographic_goal_prizes_desc: "በእያንዳንዱ ዙር ሽልማቶች እና የመነሻ ገንዘብ።",
+    infographic_goal_investment_amount: "1M ብር",
+    infographic_goal_investment_desc: "ብቁ ለሆኑ ድርጅቶች በመጨረሻው ዙር የሚሰጥ ኢንቨስትመንት።",
     infographic_footer_copyright: "© 2024 7ሴት ስፓርክ። ሁሉም መብቶች የተጠበቁ ናቸው።",
     infographic_footer_address: "ቦሌ, አዲስ አበባ, ኢትዮጵያ",
     infographic_footer_poweredby: "የተጎላበተው በ",
@@ -1042,8 +1042,8 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 
 
 export const getTranslator = (language: Language) => {
-    return (key: TranslationKey, defaultText?: string): string => {
-        const translation = translations[language]?.[key] || translations.en[key];
-        return translation || defaultText || key;
-    };
+  return (key: TranslationKey, defaultText?: string): string => {
+    const translation = translations[language]?.[key] || translations.en[key];
+    return translation || defaultText || key;
+  };
 };

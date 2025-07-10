@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { BusinessLaunchCanvas } from './components/BusinessLaunchCanvas/BusinessLaunchCanvas';
@@ -421,6 +413,7 @@ const App: React.FC = () => {
       return <ProductDesignPage
                 initialData={productDesignData}
                 onUpdateData={handleUpdateProductDesignData}
+                canvasData={canvasData}
                 language={currentLanguage}
                 t={t}
                 userProfile={userProfile}

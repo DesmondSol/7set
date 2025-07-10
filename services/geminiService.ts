@@ -1,5 +1,3 @@
-
-
 import { GenerateContentResponse, Part } from "@google/genai";
 import { 
     CanvasData, 
@@ -22,7 +20,9 @@ import {
     GoalSettingData, 
     AssessmentScores,
     TranslationKey,
-    Persona
+    Persona,
+    ProductFeature,
+    FeaturePriority
 } from '../types';
 import { API_KEY_WARNING } from "../constants";
 
@@ -32,7 +32,7 @@ type GoogleGenAI = any;
 const API_KEY = process.env.API_KEY;
 let ai: GoogleGenAI | null = null; // AI client will be initialized on first use
 
-const TEXT_MODEL = 'gemini-2.5-flash-preview-04-17';
+const TEXT_MODEL = 'gemini-2.5-flash';
 
 // Singleton pattern to get the AI client asynchronously
 const getAiClient = async (): Promise<GoogleGenAI | null> => {
@@ -118,7 +118,7 @@ Ensure the entire output is a single JSON object.
   try {
     const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
-      contents: [{ role: "user", parts: [{text: prompt}] }],
+      contents: prompt,
       config: {
         responseMimeType: "application/json",
         temperature: 0.7, 
@@ -136,11 +136,12 @@ Ensure the entire output is a single JSON object.
       const result: Partial<CanvasData> = {};
       ALL_CANVAS_SECTIONS.forEach(section => { 
         if (sections.includes(section)) { 
-            if (parsedData[section]) {
-                result[section] = parsedData[section];
+            const key = section as keyof Partial<CanvasData>;
+            if (parsedData[key]) {
+                result[key] = parsedData[key];
             } else {
                 console.warn(`AI did not generate content for section: ${section}. Setting default.`);
-                result[section] = language === 'am' 
+                result[key] = language === 'am' 
                   ? "AI ለዚህ ክፍል ይዘት ማመንጨት አልቻለም። እባክዎ በእጅ ይሙሉ ወይም የ AI ጥያቄዎችን ያጥሩ، የኢትዮጵያን ሁኔታ ግምት ውስጥ ያስገቡ።"
                   : "AI could not generate content for this section. Please fill manually or refine AI prompt inputs, keeping the Ethiopian context in mind.";
             }
@@ -209,7 +210,7 @@ For example: ["Question 1?", "Question 2?", "Question 3?"]`;
   try {
     const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
-      contents: [{ role: "user", parts: [{text: prompt}] }],
+      contents: prompt,
       config: {
         responseMimeType: "application/json",
         temperature: 0.6, 
@@ -329,7 +330,7 @@ Generate the comprehensive summary:`;
   try {
     const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
-      contents: [{ role: "user", parts: [{text: prompt}] }],
+      contents: prompt,
        config: {
         temperature: 0.65, 
       }
@@ -419,7 +420,7 @@ Focus on providing actionable, creative, and "Jasper-style" content suggestions.
   try {
     const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
-      contents: [{ role: "user", parts: [{text: prompt}] }],
+      contents: prompt,
       config: { responseMimeType: "application/json", temperature: 0.75 }
     });
     const textResponse = response.text;
@@ -494,7 +495,7 @@ Ensure the content is actionable and reflects an understanding of Ethiopian busi
   try {
     const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
-      contents: [{ role: "user", parts: [{text: prompt}] }],
+      contents: prompt,
       config: { responseMimeType: "application/json", temperature: 0.7 }
     });
     const textResponse = response.text;
@@ -586,7 +587,7 @@ The scores should reflect a balanced view; avoid extreme highs or lows unless st
   try {
     const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
-      contents: [{ role: "user", parts: [{text: prompt}] }],
+      contents: prompt,
       config: { responseMimeType: "application/json", temperature: 0.6 }
     });
     const textResponse = response.text;
@@ -648,151 +649,193 @@ export const askAiMindsetCoach = async (
   }
   
   const langInstructions = language === 'am'
-    ? "Respond ONLY in Amharic. Act as an empathetic and insightful mindset coach for an entrepreneur in Ethiopia. Keep your responses concise (1-3 sentences)."
-    : "Respond ONLY in English. Act as an empathetic and insightful mindset coach for an entrepreneur in Ethiopia. Keep your responses concise (1-3 sentences).";
+    ? "Respond ONLY in Amharic. Act as an empathetic and insightful mindset coach for an entrepreneur in Ethiopia."
+    : "Respond ONLY in English. Act as an empathetic and insightful mindset coach for an entrepreneur in Ethiopia.";
 
-  const historyForPrompt = chatHistory
-    .map(entry => `${entry.role === 'user' ? 'Founder' : 'Coach'}: ${entry.parts[0].text}`)
+  const systemInstruction = `You are an AI Mindset Coach for entrepreneurs. Your role is to help users refine their goals to be more S.M.A.R.T. (Specific, Measurable, Achievable, Relevant, Time-bound), ambitious, and aligned with their values.
+${langInstructions}
+Keep your responses concise, encouraging, and focused on asking clarifying questions or offering concrete suggestions.
+
+User's current long-term goals (for context, in the user's language):
+${JSON.stringify(currentGoals, null, 2)}
+`;
+
+  try {
+    const chat = localAi.chats.create({
+      model: TEXT_MODEL,
+      config: {
+        systemInstruction: systemInstruction,
+        temperature: 0.7
+      },
+      history: chatHistory.slice(0, -1), // Send history without the latest user message
+    });
+    
+    const response: GenerateContentResponse = await chat.sendMessage({ message: userMessage });
+    return response.text;
+
+  } catch (error) {
+    console.error("Error asking AI mindset coach:", error);
+    return language === 'am' ? "ይቅርታ, ጥያቄዎን ማካሄድ አልቻልኩም። እባክዎ እንደገና ይሞክሩ።" : "Sorry, I couldn't process your request. Please try again.";
+  }
+};
+
+export const generateAiPersona = async (
+  idea: string,
+  problem: string,
+  dailyChallenge: string,
+  discoveryMethod: string,
+  canvasData: Partial<CanvasData>,
+  language: Language
+): Promise<Partial<Persona> | null> => {
+  const localAi = await getAiClient();
+  if (!localAi) {
+    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
+    return null;
+  }
+    const canvasContextString = Object.entries(canvasData)
+    .filter(([, value]) => value && value.trim())
+    .map(([key, value]) => `- ${key}: ${value}`)
     .join('\n');
 
-  const prompt = `You are an AI Mindset Coach for an Ethiopian entrepreneur.
-Your role is to be supportive, ask clarifying questions, and help the founder explore their motivations and goals deeper.
-Your responses must be concise, typically 1-3 sentences.
+  const langInstructions = language === 'am'
+    ? "The generated persona details (name, profession, bio, goals, frustrations, etc.) and JTBD texts MUST be in Amharic. JSON keys and enum-like values (gender, education, maritalStatus) must remain in English. The name should be a common Ethiopian name."
+    : "All generated content should be in English. The name should be a common Ethiopian name.";
+
+  const prompt = `You are an expert market researcher and storyteller specializing in creating detailed, realistic user personas for the Ethiopian market.
 ${langInstructions}
 
-Here is the conversation history so far:
---- HISTORY ---
-${historyForPrompt}
---- END HISTORY ---
+Business Context (from Business Launch Canvas):
+${canvasContextString}
 
-Here are the founder's current written goals, for your context:
---- GOALS ---
-6-Month: Self: ${currentGoals['6-month'].self}, Family: ${currentGoals['6-month'].family}, World: ${currentGoals['6-month'].world}
-2-Year: Self: ${currentGoals['2-year'].self}, Family: ${currentGoals['2-year'].family}, World: ${currentGoals['2-year'].world}
-5-Year: Self: ${currentGoals['5-year'].self}, Family: ${currentGoals['5-year'].family}, World: ${currentGoals['5-year'].world}
-10-Year: Self: ${currentGoals['10-year'].self}, Family: ${currentGoals['10-year'].family}, World: ${currentGoals['10-year'].world}
---- END GOALS ---
+User's description of a potential customer:
+- Business Idea they are targeting: ${idea}
+- Problem it solves for them: ${problem}
+- A typical day or key challenge they face: ${dailyChallenge}
+- How they might discover this service: ${discoveryMethod}
 
-Now, respond to the founder's LATEST message:
-Founder: "${userMessage}"
-Coach:`;
+Based on ALL the information above, create a single, detailed user persona. The persona should feel like a real person living in Ethiopia.
+
+Return the response as a single valid JSON object. This object should contain the following fields:
+- "name": "string" (A common Ethiopian name, e.g., 'Abebe Tadesse' or 'Fatuma Ahmed')
+- "profession": "string" (e.g., 'University Student', 'Small Kiosk Owner', 'Accountant at a private firm')
+- "gender": "string" ('Male' or 'Female')
+- "age": number
+- "location": "string" (A specific area in an Ethiopian city, e.g., 'Bole, Addis Ababa' or 'Piassa, Bahir Dar')
+- "maritalStatus": "string" ('Single', 'Married', 'In a relationship', 'Divorced', 'Widowed')
+- "education": "string" ('High School', "Bachelor's Degree", "Master's Degree", 'PhD', 'Other')
+- "bio": "string" (A short, compelling background story, 2-3 sentences)
+- "goals": "string" (1-2 main goals relevant to the product)
+- "frustrations": "string" (1-2 main pain points the product can solve)
+- "jobsToBeDone": An array of 1-2 objects, where each object represents a 'Job To Be Done' and has the following keys:
+  - "title": "string" (e.g., 'Get fresh produce delivered reliably')
+  - "situation": "string" ('WHEN I am planning meals for the week...')
+  - "motivation": "string" ('I WANT TO find high-quality, local ingredients...')
+  - "outcome": "string" ('SO I CAN cook healthy and delicious food for my family.')
+
+Example (for an organic vegetable delivery service):
+{
+  "name": "Hana Tsegaye",
+  "profession": "Bank Teller",
+  "gender": "Female",
+  "age": 32,
+  "location": "Kazanchis, Addis Ababa",
+  "maritalStatus": "Married",
+  "education": "Bachelor's Degree",
+  "bio": "Hana is a mother of two young children and works full-time at a bank. She values health and nutrition for her family but finds it difficult to find time to visit markets for fresh, trustworthy vegetables amidst her busy schedule.",
+  "goals": "To provide healthy, home-cooked meals for her family every day. To save time on weekly errands.",
+  "frustrations": "Lack of time for grocery shopping. Uncertainty about the quality and source of vegetables from local vendors.",
+  "jobsToBeDone": [
+    {
+      "title": "Source fresh and reliable ingredients for family meals",
+      "situation": "When I'm planning my family's meals for the week",
+      "motivation": "I want to easily order fresh, organic vegetables from a trusted source",
+      "outcome": "so I can be confident that I'm providing nutritious food for my children without spending hours at the market."
+    }
+  ]
+}
+`;
+  try {
+    const response: GenerateContentResponse = await localAi.models.generateContent({
+      model: TEXT_MODEL,
+      contents: prompt,
+      config: { responseMimeType: "application/json", temperature: 0.7 }
+    });
+    const textResponse = response.text;
+    if (!textResponse) return null;
+    return parseJsonFromText<Partial<Persona>>(textResponse);
+  } catch (error) {
+    console.error("Error generating AI persona:", error);
+    return null;
+  }
+};
+
+interface GeneratedFeature {
+    name: string;
+    description: string;
+    problemSolved: string;
+    priority: FeaturePriority;
+}
+
+export const generateProductFeatures = async (
+  canvasData: Partial<CanvasData>,
+  language: Language
+): Promise<GeneratedFeature[] | null> => {
+  const localAi = await getAiClient();
+  if (!localAi) {
+    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
+    return null;
+  }
+
+  const canvasContextString = Object.entries(canvasData)
+    .filter(([, value]) => value && value.trim())
+    .map(([key, value]) => `- ${key}: ${value}`)
+    .join('\n');
+  
+  const langInstructions = language === 'am'
+    ? "All generated feature names, descriptions, and problems solved MUST be in Amharic. The JSON keys and priority values must remain in English."
+    : "All generated content should be in English.";
+
+  const prompt = `You are a Senior Product Manager AI, expert in creating product roadmaps for startups in the Ethiopian market.
+${langInstructions}
+
+Here is the business context from the user's Business Launch Canvas:
+${canvasContextString}
+
+Based on this business context, generate a list of 5-7 initial product features.
+These features should be a mix of core functionalities and "quick wins".
+For each feature, provide a name, a description (what it is), the problem it solves (why it exists), and a suggested priority ('low', 'medium', 'high', 'critical').
+
+Return the response as a valid JSON array of objects, where each object has the following keys: "name" (string), "description" (string), "problemSolved" (string), "priority" (string, one of 'low', 'medium', 'high', 'critical').
+Example:
+[
+  {
+    "name": "User Registration (via Phone)",
+    "description": "Allows users to sign up and log in using their Ethiopian mobile phone number, receiving an OTP via SMS for verification.",
+    "problemSolved": "Addresses the need for simple, accessible registration in a market where email is less common than phone numbers.",
+    "priority": "critical"
+  },
+  {
+    "name": "Basic Product Listing",
+    "description": "Sellers can list their products with a name, description, price (in ETB), and one photo.",
+    "problemSolved": "Provides the core functionality for sellers to showcase what they are selling.",
+    "priority": "high"
+  }
+]`;
 
   try {
     const response: GenerateContentResponse = await localAi.models.generateContent({
       model: TEXT_MODEL,
-      contents: [{ role: "user", parts: [{text: prompt}] }],
-      config: { temperature: 0.75, stopSequences: ["Founder:"] }
+      contents: prompt,
+      config: { responseMimeType: "application/json", temperature: 0.7 }
     });
-    return response.text.trim() || (language === 'am' ? "ይቅርታ፣ ምላሽ ማመንጨት አልቻልኩም። እንደገና መሞከር ይችላሉ?" : "Sorry, I couldn't generate a response. Could you try again?");
+    const textResponse = response.text;
+    if (!textResponse) {
+        console.error("Gemini API returned no text for product features.");
+        return null;
+    }
+    return parseJsonFromText<GeneratedFeature[]>(textResponse);
   } catch (error) {
-    console.error("Error with AI Mindset Coach:", error);
-    return language === 'am' ? "የ AI የአስተሳሰብ አሰልጣኝ ላይ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።" : "Error with AI Mindset Coach. Please try again.";
+    console.error("Error generating product features:", error);
+    return null;
   }
-};
-
-
-export const generateAiPersona = async (
-    idea: string,
-    q1: string,
-    q2: string,
-    q3: string,
-    canvasData: Partial<CanvasData>,
-    language: Language
-): Promise<Omit<Persona, 'id' | 'icon'> | null> => {
-    const localAi = await getAiClient();
-    if (!localAi) {
-        console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
-        return null;
-    }
-
-    const langInstructions = language === 'am'
-        ? "All generated textual content (name, profession, bio, goals, etc.) MUST be in Amharic. The JSON keys and enum values ('Male', 'Single', etc.) MUST remain in English. Create a persona that is deeply rooted in Ethiopian culture and context."
-        : "All generated content should be in English. Create a persona that is deeply rooted in Ethiopian culture and context.";
-
-    const strategyContext = Object.entries(canvasData)
-        .filter(([, value]) => value && value.trim())
-        .map(([key, value]) => `- ${key}: ${value}`)
-        .join('\n');
-
-    const prompt = `You are an expert AI persona generator specializing in creating detailed, culturally relevant customer profiles for the Ethiopian market.
-${langInstructions}
-
-Your task is to generate a complete persona based on the user's idea and the business's strategic context.
-
---- Business Strategy Context (for a business in Ethiopia) ---
-${strategyContext || "No strategy provided. Use general knowledge about Ethiopian business landscape."}
----
-
---- User's Persona Idea ---
-- Core Idea: ${idea}
-- Q1: Main problem this persona faces that the business solves: ${q1}
-- Q2: Typical day or key work challenge: ${q2}
-- Q3: How they discover new products/services: ${q3}
----
-
-Now, generate a comprehensive persona. The output MUST be a single, valid JSON object that strictly follows this structure:
-{
-  "name": "string (A common Ethiopian name)",
-  "profession": "string",
-  "gender": "'Male' | 'Female' | 'Other'",
-  "age": "number (A realistic age)",
-  "location": "string (A specific, realistic location in Ethiopia, e.g., 'Addis Ababa, Bole' or 'Hawassa, Piassa')",
-  "maritalStatus": "'Single' | 'Married' | 'In a relationship' | 'Divorced' | 'Widowed'",
-  "education": "'High School' | 'Bachelor\\'s Degree' | 'Master\\'s Degree' | 'PhD' | 'Other'",
-  "bio": "string (A rich, 3-4 sentence background story based on inputs, incorporating Ethiopian cultural context)",
-  "personality": {
-    "analyticalCreative": "number (0-100, where 0 is purely analytical, 100 is purely creative)",
-    "busyTimeRich": "number (0-100, where 0 is very busy, 100 is time-rich)",
-    "messyOrganized": "number (0-100, where 0 is messy, 100 is organized)",
-    "independentTeamPlayer": "number (0-100, where 0 is independent, 100 is a team player)"
-  },
-  "traits": {
-    "buyingAuthority": "number (0-100, influence on purchasing decisions)",
-    "technical": "number (0-100, comfort with technology)",
-    "socialMedia": "number (0-100, savvy with platforms like Facebook, Telegram, Instagram, TikTok)",
-    "selfHelping": "number (0-100, tendency to find solutions independently)"
-  },
-  "goals": "string (What this persona wants to achieve, related to the business context)",
-  "likes": "string (Hobbies and interests common in Ethiopia, e.g., 'Spending time at cafes, following local football, attending cultural events')",
-  "dislikes": "string (Things they dislike, e.g., 'Inefficiency, unreliable service, lack of transparency')",
-  "frustrations": "string (Their main pain points your business can solve, based on Q1)",
-  "skills": "string (Relevant skills, e.g., 'Negotiation, basic accounting, using Telegram for business')",
-  "jobsToBeDone": [
-    {
-      "id": "jtbd-ai-1",
-      "title": "string (A short title for a key job, e.g., 'Find a reliable supplier')",
-      "situation": "string (WHEN I need to restock my shop...)",
-      "motivation": "string (I WANT TO find a supplier who delivers on time...)",
-      "outcome": "string (SO I CAN maintain my inventory and keep my customers happy.)",
-      "emotionalJob": "string (MAKING ME FEEL secure and professional.)",
-      "socialJob": "string (OTHERS SEE I'M running a successful, well-managed business.)"
-    }
-  ]
-}
-
-Ensure every field is populated with realistic and contextually appropriate data.
-The personality and traits scores should be inferred from the user's descriptions.
-The bio, goals, and frustrations must be detailed and directly reflect the provided inputs and Ethiopian context.
-`;
-    try {
-        const response: GenerateContentResponse = await localAi.models.generateContent({
-            model: TEXT_MODEL,
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-            config: {
-                responseMimeType: "application/json",
-                temperature: 0.7,
-            },
-        });
-        const textResponse = response.text;
-        if (!textResponse) {
-            console.error("Gemini API returned no text for AI Persona.");
-            return null;
-        }
-
-        return parseJsonFromText<Omit<Persona, 'id' | 'icon'>>(textResponse);
-
-    } catch (error) {
-        console.error("Error generating AI persona:", error);
-        return null;
-    }
 };

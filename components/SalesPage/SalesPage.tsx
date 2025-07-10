@@ -33,6 +33,9 @@ const SalesPage: React.FC<SalesPageProps> = ({
     }
   }, []);
 
+  const pageTitleObject = SALES_SECTIONS_HELP.find(s => s.title === activeSubSection);
+  const pageTitle = pageTitleObject ? t(pageTitleObject.sidebarTitle[language] as TranslationKey, pageTitleObject.title) : t(activeSubSection as TranslationKey, activeSubSection);
+
   const handleExportAll = async () => {
     const { default: jsPDF } = await import('jspdf');
     const doc = new jsPDF();
@@ -168,7 +171,7 @@ const SalesPage: React.FC<SalesPageProps> = ({
 
       <main className="flex-grow p-4 md:p-8 bg-transparent shadow-inner overflow-y-auto">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-slate-100">{t('sales_page_title')}</h2>
+          <h2 className="text-3xl font-bold text-slate-100">{pageTitle}</h2>
            <div className="flex items-center gap-4">
               <Button onClick={handleExportAll} variant="secondary">{t('export_all_button')}</Button>
               <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden">

@@ -1,4 +1,4 @@
-import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey, AssessmentQuestion, Partner, Trainer, Testimonial, ProductDesignSubSection, ProductDesignSectionHelp, EconomicsSubSection, EconomicsSectionHelp, SalesSubSection, SalesSectionHelp, StrategySubSection, StrategySectionHelp } from './types';
+import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey, AssessmentQuestion, Partner, Trainer, Testimonial, ProductDesignSubSection, ProductDesignSectionHelp, EconomicsSubSection, EconomicsSectionHelp, SalesSubSection, SalesSectionHelp, StrategySubSection, StrategySectionHelp, GrowSection, GrowSectionHelp, LegalTool, InvestmentTool, ManagementTool, ChecklistTool } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
   {
@@ -11,7 +11,7 @@ export const NAV_ITEMS: NavItem[] = [
   },
   {
     label: Page.GROW,
-    subItems: [SubPage.LEARN, SubPage.AI_ADVISOR],
+    subItems: [SubPage.LEGAL, SubPage.INVESTMENT, SubPage.MANAGEMENT, SubPage.CHECKLISTS],
   },
 ];
 
@@ -170,7 +170,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
     title: CanvasSection.PRICING,
     explanation: {
       en: "Detail your pricing strategy for Ethiopian customers. How much will your product/service cost (in ETB)? How does this compare to alternatives? Is it value-based, cost-plus, or competitive? Consider local affordability.",
-      am: "ለኢትዮጵያ ደንበኞች የዋጋ አወጣጥ ስትራቴጂዎን በዝርዝር ይግለጹ። ምርትዎ/አገልግሎትዎ ስንት ያስከፍላል (በኢትዮጵያ ብር)? ይህ ከአማራጮች ጋር ሲነጻጸር እንዴት ነው? በእሴት ላይ የተመሰረተ፣ ወጪ-ተጨማሪ、 ወይስ ተወዳዳሪ ነው? የአካባቢውን የመግዛት አቅም ግምት ውስጥ ያስገቡ።"
+      am: "ለኢትዮጵያ ደንበኞች የዋጋ አወጣጥ ስትራቴጂዎን በዝርዝር ይግለጹ። ምርትዎ/አገልግሎትዎ ስንት ያስከፍላል (በኢትዮጵያ ብር)? ይህ ከአማራጮች ጋር ሲነጻጸር እንዴት ነው? በእሴት ላይ የተመሰረተ、 ወጪ-ተጨማሪ、 ወይስ ተወዳዳሪ ነው? የአካባቢውን የመግዛት አቅም ግምት ውስጥ ያስገቡ።"
     },
     example: {
       en: "Commission: 5% of transaction value (ETB). This is competitive compared to traditional intermediaries who might take 20-40%. Value-based for farmers (higher net income) and buyers (fair prices, convenience). No subscription fees for basic access for farmers.",
@@ -360,6 +360,46 @@ export const SALES_SECTIONS_HELP: SalesSectionHelp[] = [
         sidebarTitle: { en: SalesSubSection.CRM_PIPELINE, am: SalesSubSection.CRM_PIPELINE },
         explanationKey: 'crm_pipeline_explanation'
     }
+];
+
+export const GROW_SECTIONS_HELP: GrowSectionHelp[] = [
+  {
+    title: GrowSection.LEGAL,
+    sidebarTitle: { en: GrowSection.LEGAL, am: GrowSection.LEGAL },
+    explanationKey: 'grow_legal_explanation',
+    tools: [
+      { tool: LegalTool.DOCUMENT_AUTOMATION, explanationKey: 'grow_legal_doc_auto_explanation' },
+      { tool: LegalTool.COMPLIANCE_MANAGEMENT, explanationKey: 'grow_legal_compliance_explanation' }
+    ]
+  },
+  {
+    title: GrowSection.INVESTMENT,
+    sidebarTitle: { en: GrowSection.INVESTMENT, am: GrowSection.INVESTMENT },
+    explanationKey: 'grow_investment_explanation',
+    tools: [
+      { tool: InvestmentTool.CAP_TABLE_MANAGEMENT, explanationKey: 'grow_investment_cap_table_explanation' },
+      { tool: InvestmentTool.INVESTOR_RELATIONS_CRM, explanationKey: 'grow_investment_ir_crm_explanation' }
+    ]
+  },
+  {
+    title: GrowSection.MANAGEMENT,
+    sidebarTitle: { en: GrowSection.MANAGEMENT, am: GrowSection.MANAGEMENT },
+    explanationKey: 'grow_management_explanation',
+    tools: [
+        { tool: ManagementTool.SUPPLY_CHAIN, explanationKey: 'grow_management_scm_explanation'},
+        { tool: ManagementTool.QUALITY_MANAGEMENT, explanationKey: 'grow_management_qms_explanation'},
+        { tool: ManagementTool.CUSTOMER_SERVICE, explanationKey: 'grow_management_cs_explanation'}
+    ]
+  },
+  {
+    title: GrowSection.CHECKLISTS,
+    sidebarTitle: { en: GrowSection.CHECKLISTS, am: GrowSection.CHECKLISTS },
+    explanationKey: 'grow_checklists_explanation',
+    tools: [
+        { tool: ChecklistTool.RELEASE_LIST, explanationKey: 'grow_checklists_release_explanation'},
+        { tool: ChecklistTool.GROWTH_LIST, explanationKey: 'grow_checklists_growth_explanation'}
+    ]
+  }
 ];
 
 

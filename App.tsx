@@ -9,6 +9,11 @@ import ProductDesignPage from './components/ProductDesignPage/ProductDesignPage'
 import EconomicsPage from './components/EconomicsPage/EconomicsPage'; // New Economics Page
 import SalesPage from './components/SalesPage/SalesPage'; // New Sales Page
 import StrategyPage from './components/StrategyPage'; // New Strategy Page
+// NOTE: Grow pages are temporarily disabled to fix module resolution errors, as component files were not provided.
+// import { LegalPage } from './components/Grow/LegalPage'; 
+// import { InvestmentPage } from './components/Grow/InvestmentPage';
+// import { ManagementPage } from './components/Grow/ManagementPage';
+// import { ChecklistsPage } from './components/Grow/ChecklistsPage';
 import { ComingSoon } from './components/ComingSoon';
 import { UserProfileModal } from './components/UserProfileModal';
 import InfographicPage from './components/InfographicPage'; 
@@ -28,6 +33,7 @@ import {
     ProductDesignData,
     EconomicsData,
     SalesData,
+    GrowData,
     TranslationKey
 } from './types';
 import { NAV_ITEMS } from './constants';
@@ -107,6 +113,26 @@ const initialEconomicsData: EconomicsData = {
 const initialSalesData: SalesData = {
     launchSequence: [],
     crmLeads: [],
+};
+
+const initialGrowData: GrowData = {
+  legal: {
+    documents: [],
+    complianceItems: [],
+  },
+  investment: {
+    capTable: [],
+    investorCrm: [],
+  },
+  management: {
+    inventory: [],
+    qmsItems: [],
+    supportTickets: [],
+  },
+  checklists: {
+    releaseList: [],
+    growthList: [],
+  }
 };
 
 
@@ -294,6 +320,25 @@ const App: React.FC = () => {
     return initialSalesData;
   });
 
+  const [growData, setGrowData] = useState<GrowData>(() => {
+    const storedData = localStorage.getItem('sparkGrowData');
+    if (storedData) {
+        try {
+            const parsed = JSON.parse(storedData);
+            // Basic validation and merging with defaults
+            return {
+                legal: { ...initialGrowData.legal, ...(parsed.legal || {}) },
+                investment: { ...initialGrowData.investment, ...(parsed.investment || {}) },
+                management: { ...initialGrowData.management, ...(parsed.management || {}) },
+                checklists: { ...initialGrowData.checklists, ...(parsed.checklists || {}) },
+            };
+        } catch (e) {
+            console.error("Failed to parse growData from localStorage", e);
+        }
+    }
+    return initialGrowData;
+  });
+
 
   const t = useCallback(getTranslator(currentLanguage), [currentLanguage]);
 
@@ -363,6 +408,11 @@ const App: React.FC = () => {
   const handleUpdateSalesData = (updatedData: SalesData) => {
     setSalesData(updatedData);
     localStorage.setItem('sparkSalesData', JSON.stringify(updatedData));
+  };
+  
+  const handleUpdateGrowData = (updatedData: GrowData) => {
+    setGrowData(updatedData);
+    localStorage.setItem('sparkGrowData', JSON.stringify(updatedData));
   };
 
 
@@ -436,11 +486,19 @@ const App: React.FC = () => {
       return <SalesPage
                 initialData={salesData}
                 onUpdateData={handleUpdateSalesData}
+                canvasData={canvasData}
+                personasData={personasData}
+                researchData={marketResearchData}
                 language={currentLanguage}
                 t={t}
                 userProfile={userProfile}
               />;
     }
+    if (activePage === Page.GROW) {
+        // Since the component files don't exist, we will show coming soon for now to fix the error.
+        return <ComingSoon featureName={t(activeSubPage as TranslationKey, activeSubPage || 'Grow')} language={currentLanguage} t={t} />;
+    }
+
     if (activePage && activeSubPage) { 
       return <ComingSoon 
                 featureName={t(activeSubPage as TranslationKey, activeSubPage)} 

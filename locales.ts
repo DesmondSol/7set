@@ -14,7 +14,12 @@ import {
     CostCategory,
     RevenueCategory,
     TranslationKey, // Import TranslationKey from types.ts
-    StrategySubSection
+    StrategySubSection,
+    GrowSection,
+    LegalTool,
+    InvestmentTool,
+    ManagementTool,
+    ChecklistTool,
 } from './types';
 
 export type LocalizedContent = Record<TranslationKey, string>;
@@ -31,8 +36,10 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [SubPage.PRODUCT_DESIGN]: 'Product Design',
     [SubPage.ECONOMICS]: 'Economics',
     [SubPage.SALES]: 'Sales',
-    [SubPage.LEARN]: 'Learn',
-    [SubPage.AI_ADVISOR]: 'AI Advisor',
+    [SubPage.LEGAL]: 'Legal',
+    [SubPage.INVESTMENT]: 'Investment',
+    [SubPage.MANAGEMENT]: 'Management',
+    [SubPage.CHECKLISTS]: 'Checklists',
 
     [StrategySubSection.BUSINESS_CANVAS]: 'Business Canvas',
     [StrategySubSection.PERSONAS]: 'Personas',
@@ -80,6 +87,40 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 
     [SalesSubSection.GO_TO_MARKET]: 'Go-to-Market Architect',
     [SalesSubSection.CRM_PIPELINE]: 'CRM Pipeline',
+
+    [LegalTool.DOCUMENT_AUTOMATION]: 'Legal Document Automation',
+    [LegalTool.COMPLIANCE_MANAGEMENT]: 'Compliance Management',
+    [InvestmentTool.CAP_TABLE_MANAGEMENT]: 'Cap Table Management',
+    [InvestmentTool.INVESTOR_RELATIONS_CRM]: 'Investor Relations CRM',
+    [ManagementTool.SUPPLY_CHAIN]: 'Supply Chain Management',
+    [ManagementTool.QUALITY_MANAGEMENT]: 'Quality Management System',
+    [ManagementTool.CUSTOMER_SERVICE]: 'Customer Service Platform',
+    [ChecklistTool.RELEASE_LIST]: 'Release List',
+    [ChecklistTool.GROWTH_LIST]: 'Growth List',
+
+    // Grow Page Explanations
+    grow_legal_explanation: "Navigate the legal landscape with tools to automate essential documents and manage compliance.",
+    grow_investment_explanation: "Streamline fundraising and equity management with cap table and investor relationship tools.",
+    grow_management_explanation: "Optimize your operations with tools for supply chain, quality, and customer service management.",
+    grow_checklists_explanation: "Stay organized and ensure nothing falls through the cracks with structured checklists for key business milestones.",
+    
+    // Legal Tool Explanations
+    grow_legal_doc_auto_explanation: "Generate automated templates for common legal documents such as Non-Disclosure Agreements (NDAs), employment contracts, and service agreements. Answer a few questions to get a customized, lawyer-grade document.",
+    grow_legal_compliance_explanation: "Use this guide to understand key compliance areas for Ethiopian startups. We'll provide a checklist and link to helpful resources and software.",
+    
+    // Investment Tool Explanations
+    grow_investment_cap_table_explanation: "Simplify the complex management of company ownership, equity, stock options, and investor shares. Get a clear, real-time view of your capitalization table.",
+    grow_investment_ir_crm_explanation: "Manage investor contacts, track communication, create investor updates, and streamline the fundraising process with a dedicated CRM.",
+    
+    // Management Tool Explanations
+    grow_management_scm_explanation: "For product-based startups, this tool helps manage inventory, orders, and logistics, providing real-time visibility into your supply chain.",
+    grow_management_qms_explanation: "Ensure product/service quality and manage compliance with industry standards using this Quality Management System (QMS) checklist tool.",
+    grow_management_cs_explanation: "Manage customer inquiries, support tickets, and feedback in a centralized system to improve your customer service interactions.",
+
+    // Checklist Tool Explanations
+    grow_checklists_release_explanation: "Organize all your tasks for a successful product release. This checklist covers everything from final testing to marketing announcements.",
+    grow_checklists_growth_explanation: "Plan and track your growth experiments and strategies. This checklist helps you stay focused on key growth levers.",
+
 
     // Strategy Hub
     strategy_page_title: "Strategy Hub",
@@ -306,6 +347,11 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     crm_mark_lost_button: "Mark as Lost",
     crm_no_leads_in_stage: "No leads in this stage.",
     confirm_button: "Confirm Lost",
+    sales_ai_button_tooltip: 'AI Go-to-Market Assistant',
+    ai_g2m_modal_title: 'AI Go-to-Market Sequence Generator',
+    ai_g2m_modal_description: "Based on your complete business profile (Strategy, Research, etc.), the AI will generate a detailed, step-by-step Go-to-Market launch sequence.\n\nThis will overwrite any existing sequence. Do you want to proceed?",
+    ai_g2m_modal_generate_button: 'Generate Launch Sequence',
+    ai_g2m_modal_generating_button: 'Generating Sequence...',
 
 
     // General
@@ -747,8 +793,10 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [SubPage.PRODUCT_DESIGN]: 'የምርት ንድፍ',
     [SubPage.ECONOMICS]: 'ኢኮኖሚክስ',
     [SubPage.SALES]: 'ሽያጭ',
-    [SubPage.LEARN]: 'ይማሩ',
-    [SubPage.AI_ADVISOR]: 'AI አማካሪ',
+    [SubPage.LEGAL]: 'ህጋዊ',
+    [SubPage.INVESTMENT]: 'ኢንቨስትመንት',
+    [SubPage.MANAGEMENT]: 'አስተዳደር',
+    [SubPage.CHECKLISTS]: 'የማረጋገጫ ዝርዝሮች',
 
     [StrategySubSection.BUSINESS_CANVAS]: 'የቢዝነስ ሸራ',
     [StrategySubSection.PERSONAS]: 'የደንበኛ መገለጫ',
@@ -796,6 +844,17 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     
     [SalesSubSection.GO_TO_MARKET]: 'የገበያ መግቢያ ስነ-ህንፃ',
     [SalesSubSection.CRM_PIPELINE]: 'የCRM መስመር',
+
+    [LegalTool.DOCUMENT_AUTOMATION]: 'የህግ ሰነድ አውቶሜሽን',
+    [LegalTool.COMPLIANCE_MANAGEMENT]: 'የህግ ተገዢነት አስተዳደር',
+    [InvestmentTool.CAP_TABLE_MANAGEMENT]: 'የካፕ ቴብል አስተዳደር',
+    [InvestmentTool.INVESTOR_RELATIONS_CRM]: 'የባለሃብቶች ግንኙነት CRM',
+    [ManagementTool.SUPPLY_CHAIN]: 'የአቅርቦት ሰንሰለት አስተዳደር',
+    [ManagementTool.QUALITY_MANAGEMENT]: 'የጥራት አስተዳደር ስርዓት',
+    [ManagementTool.CUSTOMER_SERVICE]: 'የደንበኞች አገልግሎት መድረክ',
+    [ChecklistTool.RELEASE_LIST]: 'የምረቃ ዝርዝር',
+    [ChecklistTool.GROWTH_LIST]: 'የእድገት ዝርዝር',
+
 
     // Strategy Hub
     strategy_page_title: "የስትራቴጂ ማዕከል",
@@ -1022,6 +1081,11 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     crm_mark_lost_button: "እንደጠፋ ምልክት አድርግ",
     crm_no_leads_in_stage: "በዚህ ደረጃ ምንም ፍንጮች የሉም።",
     confirm_button: "መጥፋቱን አረጋግጥ",
+    sales_ai_button_tooltip: 'AI የገበያ መግቢያ ረዳት',
+    ai_g2m_modal_title: 'AI የገበያ መግቢያ ቅደም ተከተል አመንጪ',
+    ai_g2m_modal_description: 'በተሟላ የንግድ መገለጫዎ (ስትራቴጂ፣ ምርምር፣ ወዘተ) ላይ በመመስረት፣ AI ዝርዝር፣ ደረጃ በደረጃ የገበያ መግቢያ ቅደም ተከተል ያመነጫል።\n\nይህ አሁን ያለውን ማንኛውንም ቅደም ተከተል ይተካል። መቀጠል ይፈልጋሉ?',
+    ai_g2m_modal_generate_button: 'የማስጀመሪያ ቅደም ተከተል አመንጭ',
+    ai_g2m_modal_generating_button: 'ቅደም ተከተል በማመንጨት ላይ...',
 
 
     // General (Amharic)

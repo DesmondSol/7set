@@ -63,7 +63,7 @@ export const CostRevenuePlanner: React.FC<CostRevenuePlannerProps> = ({ economic
   const totalRevenues = useMemo(() => revenues.reduce((sum, item) => sum + item.amount, 0), [revenues]);
   const netValue = totalRevenues - totalCosts;
 
-  const groupItems = <T extends CostItem | RevenueItem>(items: T[], categories: typeof CostCategory | typeof RevenueCategory) => {
+  const groupItems = (items: (CostItem | RevenueItem)[], categories: typeof CostCategory | typeof RevenueCategory) => {
     const categoryOrder = Object.values(categories);
     const grouped = items.reduce((acc, item) => {
         const category = item.category;
@@ -72,7 +72,7 @@ export const CostRevenuePlanner: React.FC<CostRevenuePlannerProps> = ({ economic
         }
         acc[category].push(item);
         return acc;
-    }, {} as Record<string, T[]>);
+    }, {} as Record<string, (CostItem | RevenueItem)[]>);
 
     return categoryOrder
         .map(categoryKey => ({

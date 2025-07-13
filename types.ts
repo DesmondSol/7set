@@ -1,8 +1,144 @@
-// Define the TranslationKey type directly in types.ts
-// This includes all string literals and enums previously defined in locales.ts for this type.
+// This file contains all the core type definitions for the application.
+
+export type Language = 'en' | 'am';
+
+// --- ENUMS for Navigation and Sections ---
+
+export enum Page {
+  START = 'Start',
+  BUILD = 'Build',
+  GROW = 'Grow',
+}
+
+export enum SubPage {
+  MINDSET = 'Mindset',
+  STRATEGY = 'Strategy',
+  RESEARCH = 'Research',
+  COPYWRITING = 'Copywriting',
+  PRODUCT_DESIGN = 'Product Design',
+  ECONOMICS = 'Economics',
+  SALES = 'Sales',
+  LEGAL = 'Legal',
+  INVESTMENT = 'Investment',
+  MANAGEMENT = 'Management',
+  CHECKLISTS = 'Checklists',
+}
+
+export enum StrategySubSection {
+    BUSINESS_CANVAS = 'Business Canvas',
+    PERSONAS = 'Personas'
+}
+
+export enum CanvasSection {
+    PROJECT_OVERVIEW = "Project Overview",
+    PRODUCT_VISION = "Product Vision",
+    NORTH_STAR_METRIC = "North Star Metric",
+    PRODUCT_WHY = "Product Why",
+    PROBLEM = "Problem",
+    SOLUTION = "Solution",
+    PRODUCT_DETAIL = "Product Detail",
+    MARKET = "Market",
+    USE_CASES = "Use Cases",
+    UNIQUE_VALUE_PROPOSITION = "Unique Value Proposition",
+    UNFAIR_ADVANTAGE = "Unfair Advantage",
+    BUSINESS_MODEL = "Business Model",
+    PRICING = "Pricing",
+    COMPETITORS = "Competitors",
+    UNIT_ECONOMICS = "Unit Economics",
+    BRAND_STYLE_GUIDES = "Brand & Style Guides",
+    PRODUCT_MARKET_FIT = "Product - Market Fit",
+}
+
+export const ALL_CANVAS_SECTIONS: CanvasSection[] = Object.values(CanvasSection);
+
+export enum ResearchSection {
+    QUESTIONS = "Questions & Responses",
+    GENERAL_NOTES_IMPORT = "General Notes / Import",
+    COMPETITOR_ANALYSIS = "Competitor Analysis",
+    TRENDS = "Industry Trends",
+    AI_SUMMARY = "AI Summary",
+}
+
+export enum CopywritingSubSection {
+    MARKETING = "Marketing Content & Plans",
+    PITCH_REFINEMENT = "Pitch Refinement",
+}
+
+export enum MindsetSubSection {
+    ENTREPRENEURIAL_ASSESSMENT = "Entrepreneurial Assessment",
+    PROFILE_REPORT = "Profile Report",
+    GOAL_SETTING = "Goal Setting",
+}
+
+export enum ProductDesignSubSection {
+    BRAINSTORM_BOARD = "Brainstorm Board",
+    PRODUCT_PLANNING = "Product Planning",
+    ACTION_BOARD = "Action Board",
+    FEEDBACK_AGGREGATOR = "Feedback Aggregator",
+}
+
+export enum EconomicsSubSection {
+    COST_REVENUE = "Cost & Revenue",
+    UNIT_ECONOMICS = "Unit Economics Calculator",
+    BURN_RATE = "Burn Rate Forecaster",
+    FINANCIAL_PROJECTION = "Financial Projection Generator",
+}
+
+export enum SalesSubSection {
+    GO_TO_MARKET = "Go-to-Market Architect",
+    CRM_PIPELINE = "CRM Pipeline",
+}
+
+export enum GrowSection {
+    LEGAL = "Legal",
+    INVESTMENT = "Investment",
+    MANAGEMENT = "Management",
+    CHECKLISTS = "Checklists",
+}
+
+export enum LegalTool {
+    DOCUMENT_AUTOMATION = "Legal Document Automation",
+    COMPLIANCE_MANAGEMENT = "Compliance Management",
+}
+
+export enum InvestmentTool {
+    CAP_TABLE_MANAGEMENT = "Cap Table Management",
+    INVESTOR_RELATIONS_CRM = "Investor Relations CRM",
+}
+
+export enum ManagementTool {
+    SUPPLY_CHAIN = "Supply Chain Management",
+    QUALITY_MANAGEMENT = "Quality Management System",
+    CUSTOMER_SERVICE = "Customer Service Platform",
+}
+
+export enum ChecklistTool {
+    RELEASE_LIST = "Release List",
+    GROWTH_LIST = "Growth List",
+}
+
+export enum CostCategory {
+    OPERATIONAL = 'operational',
+    MARKETING_SALES = 'marketing_sales',
+    SALARIES_FEES = 'salaries_fees',
+    TAXES = 'taxes',
+    CAPEX = 'capex',
+    ADMIN_OVERHEADS = 'admin_overheads',
+}
+export enum RevenueCategory {
+    PRODUCT_SALES = 'product_sales',
+    SERVICE_FEES = 'service_fees',
+    SUBSCRIPTION_FEES = 'subscription_fees',
+    INVESTMENT = 'investment',
+    OTHER = 'other',
+}
+
+// --- TRANSLATION KEY ---
+// This is the master list of all keys that can be translated.
 export type TranslationKey =
   | Page
   | SubPage
+  | StrategySubSection
   | CanvasSection 
   | ResearchSection 
   | CopywritingSubSection 
@@ -10,6 +146,13 @@ export type TranslationKey =
   | ProductDesignSubSection
   | EconomicsSubSection
   | SalesSubSection
+  | GrowSection
+  | LegalTool
+  | InvestmentTool
+  | ManagementTool
+  | ChecklistTool
+  | CostCategory
+  | RevenueCategory
   | 'export_all_button'
   | 'ai_assistant_canvas_button_tooltip'
   | 'help_canvas_button_tooltip'
@@ -543,41 +686,44 @@ export type TranslationKey =
   | 'crm_mark_won_button'
   | 'crm_mark_lost_button'
   | 'crm_no_leads_in_stage'
-  | StrategySubSection
   | 'strategy_page_title'
   | 'strategy_sidebar_title'
   | 'strategy_help_button_tooltip'
   | 'canvas_explanation'
   | 'personas_explanation'
-  | CostCategory
-  | RevenueCategory
   | 'ai_feedback_modal_title'
   | 'ai_feedback_modal_description'
   | 'ai_feedback_modal_placeholder'
   | 'ai_feedback_modal_process_button'
   | 'ai_feedback_modal_processing_button'
-  | 'feedback_source_ai_bulk_import';
+  | 'feedback_source_ai_bulk_import'
+  | 'sales_ai_button_tooltip'
+  | 'ai_g2m_modal_title'
+  | 'ai_g2m_modal_description'
+  | 'ai_g2m_modal_generate_button'
+  | 'ai_g2m_modal_generating_button'
+  | 'grow_legal_explanation'
+  | 'grow_investment_explanation'
+  | 'grow_management_explanation'
+  | 'grow_checklists_explanation'
+  | 'grow_legal_doc_auto_explanation'
+  | 'grow_legal_compliance_explanation'
+  | 'grow_investment_cap_table_explanation'
+  | 'grow_investment_ir_crm_explanation'
+  | 'grow_management_scm_explanation'
+  | 'grow_management_qms_explanation'
+  | 'grow_management_cs_explanation'
+  | 'grow_checklists_release_explanation'
+  | 'grow_checklists_growth_explanation';
 
-// GENERAL
-export type Language = 'en' | 'am';
+// --- DATA STRUCTURES ---
 
-export enum Page {
-  START = 'Start',
-  BUILD = 'Build',
-  GROW = 'Grow',
-}
-
-export enum SubPage {
-  MINDSET = 'Mindset',
-  STRATEGY = 'Strategy',
-  // PERSONAS = 'Personas', // No longer a top-level subpage
-  RESEARCH = 'Research',
-  COPYWRITING = 'Copywriting',
-  PRODUCT_DESIGN = 'Product Design',
-  ECONOMICS = 'Economics',
-  SALES = 'Sales',
-  LEARN = 'Learn',
-  AI_ADVISOR = 'AI Advisor',
+export interface UserProfile {
+  name: string;
+  email: string;
+  phone: string;
+  otherDetails: string;
+  photo: string | null;
 }
 
 export interface NavItem {
@@ -585,111 +731,138 @@ export interface NavItem {
   subItems: SubPage[];
 }
 
-// USER PROFILE
-export interface UserProfile {
-    name: string;
-    email?: string;
-    phone?: string;
-    otherDetails?: string;
-    photo?: string | null; // Base64 string for the photo
-}
+export type CanvasData = Record<CanvasSection, string>;
 
-// STRATEGY HUB
-export enum StrategySubSection {
-  BUSINESS_CANVAS = 'Business Canvas',
-  PERSONAS = 'Personas',
-}
-
-export interface StrategySectionHelp {
-    title: StrategySubSection;
-    sidebarTitle: Record<Language, TranslationKey>;
-    explanationKey: TranslationKey;
-}
-
-// BUSINESS LAUNCH CANVAS (STRATEGY)
-export enum CanvasSection {
-  PROJECT_OVERVIEW = "Project Overview",
-  PRODUCT_VISION = "Product Vision",
-  NORTH_STAR_METRIC = "North Star Metric",
-  PRODUCT_WHY = "Product Why",
-  PROBLEM = "Problem",
-  SOLUTION = "Solution",
-  PRODUCT_DETAIL = "Product Detail",
-  MARKET = "Market",
-  USE_CASES = "Use Cases",
-  UNIQUE_VALUE_PROPOSITION = "Unique Value Proposition",
-  UNFAIR_ADVANTAGE = "Unfair Advantage",
-  BUSINESS_MODEL = "Business Model",
-  PRICING = "Pricing",
-  COMPETITORS = "Competitors",
-  UNIT_ECONOMICS = "Unit Economics",
-  BRAND_STYLE_GUIDES = "Brand & Style Guides",
-  PRODUCT_MARKET_FIT = "Product - Market Fit",
-}
-
-export const ALL_CANVAS_SECTIONS: CanvasSection[] = [
-  CanvasSection.PROJECT_OVERVIEW,
-  CanvasSection.PRODUCT_VISION,
-  CanvasSection.NORTH_STAR_METRIC,
-  CanvasSection.PRODUCT_WHY,
-  CanvasSection.PROBLEM,
-  CanvasSection.SOLUTION,
-  CanvasSection.PRODUCT_DETAIL,
-  CanvasSection.MARKET,
-  CanvasSection.USE_CASES,
-  CanvasSection.UNIQUE_VALUE_PROPOSITION,
-  CanvasSection.UNFAIR_ADVANTAGE,
-  CanvasSection.BUSINESS_MODEL,
-  CanvasSection.PRICING,
-  CanvasSection.COMPETITORS,
-  CanvasSection.UNIT_ECONOMICS,
-  CanvasSection.BRAND_STYLE_GUIDES,
-  CanvasSection.PRODUCT_MARKET_FIT,
-];
-
-export type CanvasData = {
-  [key in CanvasSection]: string;
+export type ResearchQuestionItem = {
+    id: string;
+    text: string;
+    responses: { id: string, text: string }[];
 };
-
-export interface CanvasSectionHelp {
-    title: CanvasSection;
-    explanation: Record<Language, string>;
-    example?: Record<Language, string>;
+export type CompetitorProfile = {
+    id: string;
+    name: string;
+    pricingStrategy: string;
+    keyFeatures: string;
+    strengths: string;
+    weaknesses: string;
+    marketGapsAddressed: string;
+    notes: string;
+};
+export type TrendEntry = {
+    id: string;
+    title: string;
+    description: string;
+    sourceEvidence: string;
+    timeframe: string;
+    locationMarket: string;
+    potentialImpact: string;
+    notes: string;
+};
+export type ResearchQuestionnaireSet = {
+    id: string;
+    name: string;
+    researchGoal: string;
+    targetAudience: string;
+    questions: ResearchQuestionItem[];
+};
+export interface MarketResearchData {
+  [ResearchSection.QUESTIONS]: ResearchQuestionnaireSet[];
+  [ResearchSection.GENERAL_NOTES_IMPORT]: string;
+  [ResearchSection.COMPETITOR_ANALYSIS]: CompetitorProfile[];
+  [ResearchSection.TRENDS]: TrendEntry[];
+  [ResearchSection.AI_SUMMARY]: string;
 }
 
-// PERSONAS
-export interface JobToBeDone {
-  id: string;
-  title: string;
-  situation: string; // WHEN I...
-  motivation: string; // I WANT TO...
-  outcome: string; // SO I CAN...
-  emotionalJob: string; // MAKING ME FEEL...
-  socialJob: string; // OTHERS SEE I'M...
+export type MarketingPostStatus = 'todo' | 'in-progress' | 'done';
+export interface MarketingPost {
+    id: string;
+    title: string;
+    content: string;
+    platform: string;
+    scheduledDate: string;
+    visualRecommendation: string;
+    notes: string;
+    status: MarketingPostStatus;
+}
+export type PitchType = 'investor_pitch' | 'sales_pitch' | 'email_campaign';
+export interface Pitch {
+    id: string;
+    type: PitchType;
+    title: string;
+    targetAudience: string;
+    keyMessage: string;
+    content: string;
+    notes: string;
+}
+export interface CopywritingData {
+    marketingPosts: MarketingPost[];
+    pitches: Pitch[];
 }
 
-export interface Personality {
-  analyticalCreative: number; // 0-100, 0=Analytical, 100=Creative
-  busyTimeRich: number; // 0-100, 0=Busy, 100=Time Rich
-  messyOrganized: number; // 0-100, 0=Messy, 100=Organized
-  independentTeamPlayer: number; // 0-100, 0=Independent, 100=Team Player
+export type AssessmentCategory = 'personality' | 'businessAcumen' | 'startupKnowledge';
+export type AssessmentStatus = 'not-started' | 'in-progress' | 'completed';
+export interface AssessmentAnswers {
+    personality: Record<string, string | number>;
+    businessAcumen: Record<string, string | number>;
+    startupKnowledge: Record<string, string | number>;
 }
-
-export interface Traits {
-  buyingAuthority: number; // 0-100
-  technical: number; // 0-100
-  socialMedia: number; // 0-100
-  selfHelping: number; // 0-100
+export type GoalTimeframe = '6-month' | '2-year' | '5-year' | '10-year';
+export interface GoalDetail {
+    self: string;
+    family: string;
+    world: string;
+}
+export type GoalSettingData = Record<GoalTimeframe, GoalDetail>;
+export interface AssessmentScores {
+  riskTolerance: number;
+  leadership: number;
+  adaptability: number;
+  marketInsight: number;
+  financialLiteracy: number;
+  strategicThinking: number;
+  resilience: number;
+  creativity: number;
+  salesAbility: number;
+  technicalSkills: number;
+}
+export interface FounderProfileReportData {
+    founderTypeTitle: string;
+    founderTypeDescription: string;
+    scores: AssessmentScores;
+    cofounderPersonaSuggestion: string;
+    keyTakeaways: string[];
+    generatedDate: string;
+    language: Language;
+}
+export interface MindsetData {
+  assessmentAnswers: AssessmentAnswers;
+  assessmentStatus: {
+    personality: AssessmentStatus;
+    businessAcumen: AssessmentStatus;
+    startupKnowledge: AssessmentStatus;
+  };
+  profileReport: FounderProfileReportData | null;
+  goals: GoalSettingData;
+  goalsFirstSetDate?: string;
+  shouldAutoGenerateReport: boolean;
+  goalSettingAiChatHistory: { role: 'user' | 'model'; parts: { text: string }[] }[];
 }
 
 export type Gender = 'Male' | 'Female' | 'Other' | '';
 export type MaritalStatus = 'Single' | 'Married' | 'In a relationship' | 'Divorced' | 'Widowed' | '';
-export type Education = 'High School' | "Bachelor's Degree" | "Master's Degree" | 'PhD' | 'Other' | '';
-
-
+export type Education = "Bachelor's Degree" | "Master's Degree" | 'PhD' | 'High School' | 'Other' | '';
+export interface JobToBeDone {
+  id: string;
+  title: string;
+  situation: string;
+  motivation: string;
+  outcome: string;
+  emotionalJob: string;
+  socialJob: string;
+}
 export interface Persona {
   id: string;
-  icon: string; // e.g. an emoji or an identifier for an SVG icon
+  icon: string;
   name: string;
   profession: string;
   gender: Gender;
@@ -698,266 +871,74 @@ export interface Persona {
   maritalStatus: MaritalStatus;
   education: Education;
   bio: string;
-  personality: Personality;
-  traits: Traits;
+  personality: {
+    analyticalCreative: number;
+    busyTimeRich: number;
+    messyOrganized: number;
+    independentTeamPlayer: number;
+  };
+  traits: {
+    buyingAuthority: number;
+    technical: number;
+    socialMedia: number;
+    selfHelping: number;
+  };
   goals: string;
   likes: string;
   dislikes: string;
-  frustrations: string; // Frustrations & Pain Points
+  frustrations: string;
   skills: string;
   jobsToBeDone: JobToBeDone[];
 }
-
 export type PersonasData = Persona[];
-
-// MARKET RESEARCH
-export enum ResearchSection {
-  QUESTIONS = "Questions & Responses",
-  GENERAL_NOTES_IMPORT = "General Notes / Import",
-  COMPETITOR_ANALYSIS = "Competitor Analysis",
-  TRENDS = "Industry Trends",
-  AI_SUMMARY = "AI Summary",
-}
-
-export interface ResearchQuestionItem {
-  id: string;
-  text: string;
-  responses: { id: string; text: string }[];
-}
-
-export interface ResearchQuestionnaireSet {
-  id: string;
-  name: string;
-  researchGoal: string;
-  targetAudience: string;
-  questions: ResearchQuestionItem[];
-}
-
-export interface CompetitorProfile {
-  id: string;
-  name: string;
-  pricingStrategy: string;
-  keyFeatures: string;
-  strengths: string;
-  weaknesses: string;
-  marketGapsAddressed: string;
-  notes: string;
-}
-
-export interface TrendEntry {
-  id: string;
-  title: string;
-  description: string;
-  sourceEvidence: string;
-  timeframe: string;
-  locationMarket: string;
-  potentialImpact: string;
-  notes: string;
-}
-
-export type MarketResearchData = {
-  [ResearchSection.QUESTIONS]: ResearchQuestionnaireSet[];
-  [ResearchSection.GENERAL_NOTES_IMPORT]: string;
-  [ResearchSection.COMPETITOR_ANALYSIS]: CompetitorProfile[];
-  [ResearchSection.TRENDS]: TrendEntry[];
-  [ResearchSection.AI_SUMMARY]: string;
-};
-
-export interface ResearchSectionHelp {
-    title: ResearchSection;
-    sidebarTitle: Record<Language, string>;
-    explanation: Record<Language, string>;
-}
-
-// COPYWRITING
-export enum CopywritingSubSection {
-    MARKETING = "Marketing Content & Plans",
-    PITCH_REFINEMENT = "Pitch Refinement"
-}
-
-export type MarketingPostStatus = 'todo' | 'in-progress' | 'done';
-
-export interface MarketingPost {
-    id: string;
-    title: string;
-    content: string;
-    platform: string;
-    scheduledDate: string; // ISO format string
-    visualRecommendation: string;
-    notes: string;
-    status: MarketingPostStatus;
-}
-
-export type PitchType = 'investor_pitch' | 'sales_pitch' | 'email_campaign';
-
-export interface Pitch {
-    id: string;
-    type: PitchType;
-    title: string;
-    targetAudience: string;
-    keyMessage: string;
-    content: string; // For investor/sales pitch, this is the main text. For email, this could be a JSON string of the email sequence.
-    notes?: string;
-}
-
-export interface CopywritingData {
-    marketingPosts: MarketingPost[];
-    pitches: Pitch[];
-}
-
-export interface CopywritingSectionHelp {
-    title: CopywritingSubSection;
-    sidebarTitle: Record<Language, string>;
-    explanation: Record<Language, string>;
-}
-
-
-// MINDSET
-export enum MindsetSubSection {
-    ENTREPRENEURIAL_ASSESSMENT = "Entrepreneurial Assessment",
-    PROFILE_REPORT = "Profile Report",
-    GOAL_SETTING = "Goal Setting",
-}
-
-export type AssessmentCategory = 'personality' | 'businessAcumen' | 'startupKnowledge';
-
-export interface AssessmentQuestionOption {
-    value: string;
-    labelKey: TranslationKey;
-}
-
-export interface AssessmentQuestion {
-    id: string;
-    textKey: TranslationKey;
-    type: 'multiple-choice-scale' | 'multiple-choice-options' | 'scenario-options';
-    category: AssessmentCategory;
-    options?: AssessmentQuestionOption[];
-    scaleMin?: number;
-    scaleMax?: number;
-}
-
-
-export type AssessmentAnswers = {
-  [key in AssessmentCategory]?: Record<string, string | number>;
-};
-
-export type AssessmentStatus = {
-  [key in AssessmentCategory]: 'not-started' | 'completed';
-};
-
-export type GoalTimeframe = '6-month' | '2-year' | '5-year' | '10-year';
-export interface GoalDetail {
-  self: string;
-  family: string;
-  world: string;
-}
-export type GoalSettingData = {
-  [key in GoalTimeframe]: GoalDetail;
-};
-
-export interface AssessmentScores {
-    riskTolerance: number; // 0-100
-    leadership: number;
-    adaptability: number;
-    marketInsight: number;
-    financialLiteracy: number;
-    strategicThinking: number;
-    resilience: number;
-    creativity: number;
-    salesAbility: number;
-    technicalSkills: number;
-}
-
-export interface FounderProfileReportData {
-    founderTypeTitle: string;
-    founderTypeDescription: string;
-    scores: AssessmentScores;
-    cofounderPersonaSuggestion: string;
-    keyTakeaways: string[];
-    generatedDate: string; // ISO
-    language: Language;
-}
-
-export interface MindsetData {
-  assessmentAnswers: AssessmentAnswers;
-  assessmentStatus: AssessmentStatus;
-  profileReport: FounderProfileReportData | null;
-  goals: GoalSettingData;
-  goalsFirstSetDate?: string; // ISO date string
-  shouldAutoGenerateReport: boolean;
-  goalSettingAiChatHistory: { role: 'user' | 'model'; parts: {text: string}[] }[];
-}
-
-export interface MindsetSectionHelp {
-    title: MindsetSubSection;
-    sidebarTitle: Record<Language, TranslationKey>;
-    explanationKey: TranslationKey;
-}
-
-// PRODUCT DESIGN
-export enum ProductDesignSubSection {
-    BRAINSTORM_BOARD = 'Brainstorm Board',
-    PRODUCT_PLANNING = 'Product Planning',
-    ACTION_BOARD = 'Action Board',
-    FEEDBACK_AGGREGATOR = 'Feedback Aggregator',
-}
 
 export interface BrainstormIdea {
     id: string;
     content: string;
     color: string;
 }
-
-export type FeaturePriority = 'low' | 'medium' | 'high' | 'critical';
-
 export interface FeatureVersion {
-  id: string;
-  versionNumber: number;
-  description: string;
-  problemSolved: string;
-  feedbackNotes: string; // Simplified from feedback linking for now
-  createdAt: string; // ISO Date
+    id: string;
+    versionNumber: number;
+    description: string;
+    problemSolved: string;
+    feedbackNotes: string;
+    createdAt: string;
 }
-
+export type FeaturePriority = 'low' | 'medium' | 'high' | 'critical';
 export interface ProductFeature {
-  id: string;
-  name: string;
-  priority: FeaturePriority;
-  versions: FeatureVersion[]; // Last item in the array is the active one
-  createdAt: string; // ISO Date
+    id: string;
+    name: string;
+    priority: FeaturePriority;
+    createdAt: string;
+    versions: FeatureVersion[];
 }
-
 export enum ActionBoardStatus {
     IDEA = 'idea',
     DESIGN = 'design',
     BUILD = 'build',
-    DEPLOY = 'deploy',
+    DEPLOY = 'deploy'
 }
-
 export interface ActionItem {
     id: string;
     title: string;
     description: string;
     status: ActionBoardStatus;
-    featureId: string | null; // Link to ProductFeature ID, can be null
-    createdAt: string; // ISO Date
-    dueDate: string | null; // ISO Date string 'YYYY-MM-DD'
-    completedAt: string | null; // ISO Date string when moved to 'deploy'
+    featureId: string | null;
+    createdAt: string;
+    dueDate: string | null;
+    completedAt: string | null;
 }
-
 export type FeedbackSource = 'app_store' | 'survey' | 'social_media' | 'manual' | 'ai_bulk_import';
 export type FeedbackUrgency = 'low' | 'medium' | 'high';
-
 export interface FeedbackItem {
     id: string;
     content: string;
     source: FeedbackSource;
     urgency: FeedbackUrgency;
-    featureId: string | null; // Link to ProductFeature ID
-    createdAt: string; // ISO Date
+    featureId: string | null;
+    createdAt: string;
 }
-
-
 export interface ProductDesignData {
     brainstormIdeas: BrainstormIdea[];
     features: ProductFeature[];
@@ -965,67 +946,35 @@ export interface ProductDesignData {
     feedbackItems: FeedbackItem[];
 }
 
-export interface ProductDesignSectionHelp {
-    title: ProductDesignSubSection;
-    sidebarTitle: Record<Language, TranslationKey>;
-    explanationKey: TranslationKey;
+export interface CostItem {
+  id: string;
+  name: string;
+  amount: number;
+  category: CostCategory;
+  date: string;
+  type: 'one_time' | 'recurring';
+  details: string;
 }
-
-// ECONOMICS
-export enum EconomicsSubSection {
-    COST_REVENUE = 'Cost & Revenue',
-    UNIT_ECONOMICS = 'EconomicsSection_UnitEconomics',
-    BURN_RATE = 'Burn Rate',
-    FINANCIAL_PROJECTION = 'Financial Projection Generator',
+export interface RevenueItem {
+  id: string;
+  name: string;
+  amount: number;
+  category: RevenueCategory;
+  date: string;
+  type: 'one_time' | 'recurring';
+  details: string;
 }
-
-export enum CostCategory {
-    OPERATIONAL = 'cost_category_operational',
-    MARKETING_SALES = 'cost_category_marketing_sales',
-    SALARIES_FEES = 'cost_category_salaries_fees',
-    TAXES = 'cost_category_taxes',
-    CAPEX = 'cost_category_capex',
-    ADMIN_OVERHEADS = 'cost_category_admin_overheads',
-}
-
-export enum RevenueCategory {
-    PRODUCT_SALES = 'revenue_category_product_sales',
-    SERVICE_FEES = 'revenue_category_service_fees',
-    SUBSCRIPTION_FEES = 'revenue_category_subscription_fees',
-    INVESTMENT = 'revenue_category_investment',
-    OTHER = 'revenue_category_other',
-}
-
-interface FinancialItem {
-    id: string;
-    name: string;
-    amount: number;
-    date: string; // ISO Date string, e.g., "2024-07-30"
-    type: 'one_time' | 'recurring';
-    details: string;
-}
-
-export interface CostItem extends FinancialItem {
-    category: CostCategory;
-}
-
-export interface RevenueItem extends FinancialItem {
-    category: RevenueCategory;
-}
-
 export interface UnitEconomicsData {
     avgRevenue: number | '';
-    cogs: number | ''; // Cost of Goods Sold
-    cac: number | ''; // Customer Acquisition Cost
-    customerLifetime: number | ''; // in months
+    cogs: number | '';
+    cac: number | '';
+    customerLifetime: number | '';
 }
-
 export interface BurnRateData {
     startingCapital: number | '';
     additionalHiringSpend: number | '';
     additionalMarketingSpend: number | '';
 }
-
 export interface ProjectionProduct {
     id: string;
     name: string;
@@ -1033,15 +982,6 @@ export interface ProjectionProduct {
     cost: number | '';
     initialSales: number | '';
 }
-
-export interface FinancialProjectionInputs {
-    startingCapital: number | '';
-    products: ProjectionProduct[];
-    salesGrowthRate: number | ''; // as a percentage
-    monthlyRevenue: number | ''; // Other recurring revenue
-    monthlyExpenses: number | ''; // Other recurring expenses
-}
-
 export interface FinancialProjectionResultMonth {
     month: number;
     revenue: number;
@@ -1051,48 +991,37 @@ export interface FinancialProjectionResultMonth {
     netProfit: number;
     endingBalance: number;
 }
-
+export interface FinancialProjectionInputs {
+    startingCapital: number | '';
+    products: ProjectionProduct[];
+    salesGrowthRate: number | '';
+    monthlyRevenue: number | '';
+    monthlyExpenses: number | '';
+}
 export interface FinancialProjection {
     inputs: FinancialProjectionInputs;
     result: FinancialProjectionResultMonth[] | null;
 }
-
 export interface EconomicsData {
-    costs: CostItem[];
-    revenues: RevenueItem[];
-    unitEconomics: UnitEconomicsData;
-    burnRate: BurnRateData;
-    financialProjection: FinancialProjection;
-}
-
-export interface EconomicsSectionHelp {
-    title: EconomicsSubSection;
-    sidebarTitle: Record<Language, TranslationKey>;
-    explanationKey: TranslationKey;
-}
-
-// SALES
-export enum SalesSubSection {
-    GO_TO_MARKET = 'Go-to-Market Architect',
-    CRM_PIPELINE = 'CRM Pipeline',
+  costs: CostItem[];
+  revenues: RevenueItem[];
+  unitEconomics: UnitEconomicsData;
+  burnRate: BurnRateData;
+  financialProjection: FinancialProjection;
 }
 
 export type ActivityStatus = 'todo' | 'in_progress' | 'done';
-
 export interface Activity {
     id: string;
     name: string;
     status: ActivityStatus;
 }
-
 export interface LaunchPhase {
     id: string;
     name: string;
     activities: Activity[];
 }
-
 export type CrmStage = 'prospects' | 'negotiation' | 'closed' | 'lost';
-
 export interface CrmLead {
     id: string;
     name: string;
@@ -1100,25 +1029,159 @@ export interface CrmLead {
     phone?: string;
     details?: string;
     stage: CrmStage;
+    createdAt: string;
     needsAnalysis?: string;
     valueProposition?: string;
-    comments?: string; // For lost reason or general notes
-    createdAt: string; // ISO date string
+    comments?: string;
+}
+export interface SalesData {
+  launchSequence: LaunchPhase[];
+  crmLeads: CrmLead[];
 }
 
-export interface SalesData {
-    launchSequence: LaunchPhase[];
-    crmLeads: CrmLead[];
+export interface LegalDocument {
+  id: string;
+  name: string;
+  type: string; // e.g., 'NDA', 'Employment Contract'
+  content: string; // or link
+  createdAt: string;
+}
+export interface ComplianceItem {
+  id: string;
+  name: string;
+  status: 'pending' | 'in_progress' | 'completed';
+  dueDate?: string;
+  notes: string;
+}
+export interface CapTableEntry {
+  id: string;
+  stakeholder: string;
+  shareCount: number;
+  shareType: string; // 'Common', 'Preferred'
+  ownershipPercentage: number;
+}
+export interface InvestorCrmEntry {
+  id: string;
+  name: string;
+  contact: string;
+  stage: 'initial' | 'contacted' | 'meeting' | 'due_diligence' | 'closed' | 'passed';
+  lastContacted: string;
+  notes: string;
+}
+export interface InventoryItem {
+    id: string;
+    name: string;
+    sku: string;
+    quantity: number;
+    location: string;
+}
+export interface QmsItem {
+    id: string;
+    name: string;
+    category: string; // 'Process', 'Policy', 'Record'
+    status: 'draft' | 'review' | 'approved';
+    version: string;
+}
+export interface SupportTicket {
+    id: string;
+    subject: string;
+    customer: string;
+    status: 'open' | 'in_progress' | 'closed';
+    priority: 'low' | 'medium' | 'high';
+    createdAt: string;
+}
+export interface ChecklistItem {
+    id: string;
+    name: string;
+    completed: boolean;
+}
+export interface GrowData {
+  legal: {
+    documents: LegalDocument[];
+    complianceItems: ComplianceItem[];
+  };
+  investment: {
+    capTable: CapTableEntry[];
+    investorCrm: InvestorCrmEntry[];
+  };
+  management: {
+    inventory: InventoryItem[];
+    qmsItems: QmsItem[];
+    supportTickets: SupportTicket[];
+  };
+  checklists: {
+    releaseList: ChecklistItem[];
+    growthList: ChecklistItem[];
+  }
+}
+
+// --- HELP SECTION TYPES ---
+
+export interface CanvasSectionHelp {
+    title: CanvasSection;
+    explanation: { [key in Language]: string };
+    example?: { [key in Language]: string };
+}
+
+export interface ResearchSectionHelp {
+    title: ResearchSection;
+    sidebarTitle: { [key in Language]: string };
+    explanation: { [key in Language]: string };
+}
+
+export interface CopywritingSectionHelp {
+    title: CopywritingSubSection;
+    sidebarTitle: { [key in Language]: string };
+    explanation: { [key in Language]: string };
+}
+
+export interface MindsetSectionHelp {
+    title: MindsetSubSection;
+    sidebarTitle: { [key in Language]: string };
+    explanationKey: TranslationKey;
+}
+
+export interface AssessmentQuestion {
+    id: string;
+    textKey: TranslationKey;
+    type: 'multiple-choice-scale' | 'multiple-choice-options' | 'scenario-options';
+    category: AssessmentCategory;
+    options?: { value: string; labelKey: TranslationKey }[];
+    scaleMin?: number;
+    scaleMax?: number;
+}
+
+export interface ProductDesignSectionHelp {
+    title: ProductDesignSubSection;
+    sidebarTitle: { [key in Language]: string };
+    explanationKey: TranslationKey;
+}
+
+export interface EconomicsSectionHelp {
+    title: EconomicsSubSection;
+    sidebarTitle: { [key in Language]: string };
+    explanationKey: TranslationKey;
 }
 
 export interface SalesSectionHelp {
     title: SalesSubSection;
-    sidebarTitle: Record<Language, TranslationKey>;
+    sidebarTitle: { [key in Language]: string };
     explanationKey: TranslationKey;
 }
 
+export interface StrategySectionHelp {
+    title: StrategySubSection;
+    sidebarTitle: { [key in Language]: string };
+    explanationKey: TranslationKey;
+}
 
-// INFOGRAPHIC PAGE
+export interface GrowSectionHelp {
+    title: GrowSection;
+    sidebarTitle: { [key in Language]: string };
+    explanationKey: TranslationKey;
+    tools: { tool: LegalTool | InvestmentTool | ManagementTool | ChecklistTool, explanationKey: TranslationKey }[];
+}
+
 export interface Partner {
   id: string;
   name: string;
@@ -1126,7 +1189,6 @@ export interface Partner {
   description: string;
   website: string;
 }
-
 export interface Trainer {
   id: string;
   name: string;
@@ -1134,7 +1196,6 @@ export interface Trainer {
   specialty: string;
   bio: string;
 }
-
 export interface Testimonial {
   id: string;
   authorName: string;

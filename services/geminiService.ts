@@ -1,5 +1,4 @@
 
-
 import { GenerateContentResponse, Part, Type } from "@google/genai";
 import {
     CanvasData,
@@ -23,6 +22,8 @@ import {
     AssessmentScores,
     TranslationKey,
     Persona,
+    PersonasData,
+    LaunchPhase,
     ProductFeature,
     FeaturePriority,
     FeedbackUrgency
@@ -144,7 +145,7 @@ export const generateBusinessCanvasContent = async (
     const properties = sections.reduce((acc, section) => {
         acc[section] = { type: Type.STRING };
         return acc;
-    }, {} as Record<string, { type: Type }>)
+    }, {} as Record<CanvasSection, { type: Type.STRING }>);
 
     const schema = {
         type: Type.OBJECT,
@@ -388,11 +389,16 @@ export const generateFounderProfileReport = async (
             scores: {
                 type: Type.OBJECT,
                 properties: {
-                    riskTolerance: { type: Type.NUMBER }, leadership: { type: Type.NUMBER },
-                    adaptability: { type: Type.NUMBER }, marketInsight: { type: Type.NUMBER },
-                    financialLiteracy: { type: Type.NUMBER }, strategicThinking: { type: Type.NUMBER },
-                    resilience: { type: Type.NUMBER }, creativity: { type: Type.NUMBER },
-                    salesAbility: { type: Type.NUMBER }, technicalSkills: { type: Type.NUMBER },
+                    riskTolerance: { type: Type.NUMBER },
+                    leadership: { type: Type.NUMBER },
+                    adaptability: { type: Type.NUMBER },
+                    marketInsight: { type: Type.NUMBER },
+                    financialLiteracy: { type: Type.NUMBER },
+                    strategicThinking: { type: Type.NUMBER },
+                    resilience: { type: Type.NUMBER },
+                    creativity: { type: Type.NUMBER },
+                    salesAbility: { type: Type.NUMBER },
+                    technicalSkills: { type: Type.NUMBER },
                 }
             },
             cofounderPersonaSuggestion: { type: Type.STRING },
@@ -546,4 +552,66 @@ export const processBulkFeedback = async (
     };
     const textResponse = await callAi(prompt, schema);
     return textResponse ? parseJsonFromText<{ content: string, urgency: FeedbackUrgency, featureId: string | null }[]>(textResponse) : null;
+};
+
+export const generateLaunchSequence = async (
+    strategyData: Partial<CanvasData>,
+    personasData: PersonasData,
+    researchData: MarketResearchData,
+    language: Language
+): Promise<{ name: string; activities: { name: string }[] }[] | null> => {
+    const langInstructions = language === 'am' ? "The names for phases and activities must be in Amharic." : "The names for phases and activities must be in English.";
+    const personasSummary = personasData.map(p => `${p.name} (${p.profession}) who is frustrated by ${p.frustrations}`).join('; ');
+    const researchSummary = researchData[ResearchSection.AI_SUMMARY] || 'No summary available.';
+
+    const prompt = `
+    You are an expert Go-to-Market strategist specializing in the Ethiopian market.
+    Based on the provided business details, create a detailed, actionable launch sequence.
+    The sequence should be broken down into logical phases (e.g., Pre-Launch, Launch Week, Post-Launch).
+    Each phase must contain a list of specific, executable tasks relevant to the Ethiopian context.
+    ${langInstructions}
+
+    Business Strategy:
+    - Idea: ${strategyData[CanvasSection.PROJECT_OVERVIEW]}
+    - Problem: ${strategyData[CanvasSection.PROBLEM]}
+    - Solution: ${strategyData[CanvasSection.SOLUTION]}
+    - Target Market: ${strategyData[CanvasSection.MARKET]}
+    - Unique Value Proposition: ${strategyData[CanvasSection.UNIQUE_VALUE_PROPOSITION]}
+
+    Target Personas:
+    ${personasSummary}
+
+    Market Research Summary:
+    ${researchSummary}
+
+    Generate the launch sequence as a valid JSON array of phase objects.
+    Each phase object should have a 'name' (string) and an 'activities' array.
+    Each item in the 'activities' array should be an object with a single 'name' property (string).
+    `;
+
+    const schema = {
+        type: Type.ARRAY,
+        items: {
+            type: Type.OBJECT,
+            properties: {
+                name: { type: Type.STRING, description: "Name of the launch phase (e.g., 'Pre-Launch (T-4 Weeks)')" },
+                activities: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            name: { type: Type.STRING, description: "A specific, actionable task for this phase." }
+                        },
+                        required: ["name"]
+                    }
+                }
+            },
+            required: ["name", "activities"]
+        }
+    };
+
+    const textResponse = await callAi(prompt, schema);
+    if (!textResponse) return null;
+
+    return parseJsonFromText<{ name: string; activities: { name: string }[] }[]>(textResponse);
 };

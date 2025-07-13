@@ -123,13 +123,13 @@ const CompetitorProfileEditor: React.FC<CompetitorProfileEditorProps> = ({ profi
     };
     
     const fieldLabels: { key: keyof CompetitorProfile; label: string; type?: string }[] = [
-        { key: 'name', label: language === 'am' ? 'የተፎካካሪ ስም' : 'Competitor Name' },
-        { key: 'pricingStrategy', label: language === 'am' ? 'የዋጋ አወጣጥ ስትራቴጂ' : 'Pricing Strategy', type: 'textarea' },
-        { key: 'keyFeatures', label: language === 'am' ? 'ቁልፍ ባህሪዎች' : 'Key Features', type: 'textarea' },
-        { key: 'strengths', label: language === 'am' ? 'ጥንካሬዎች' : 'Strengths', type: 'textarea' },
-        { key: 'weaknesses', label: language === 'am' ? 'ድክመቶች' : 'Weaknesses', type: 'textarea' },
-        { key: 'marketGapsAddressed', label: language === 'am' ? 'የሚሸፍኗቸው/የሚፈጥሯቸው የገበያ ክፍተቶች' : 'Market Gaps They Address/Create', type: 'textarea' },
-        { key: 'notes', label: language === 'am' ? 'አጠቃላይ ማስታወሻዎች' : 'General Notes', type: 'textarea' },
+        { key: 'name', label: t('mra_competitor_analysis_title')},
+        { key: 'pricingStrategy', label: t('mra_report_pricing_label'), type: 'textarea' },
+        { key: 'keyFeatures', label: t('mra_report_features_label'), type: 'textarea' },
+        { key: 'strengths', label: t('mra_report_strengths_label'), type: 'textarea' },
+        { key: 'weaknesses', label: t('mra_report_weaknesses_label'), type: 'textarea' },
+        { key: 'marketGapsAddressed', label: t('mra_report_gaps_label'), type: 'textarea' },
+        { key: 'notes', label: t('mra_report_notes_label'), type: 'textarea' },
     ];
 
     return (
@@ -141,7 +141,7 @@ const CompetitorProfileEditor: React.FC<CompetitorProfileEditorProps> = ({ profi
                         <textarea
                             id={`${profile.id}-${field.key}`}
                             name={field.key}
-                            value={localProfile[field.key] as string}
+                            value={localProfile[field.key]}
                             onChange={handleChange}
                             rows={3}
                             className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-slate-400"
@@ -151,7 +151,7 @@ const CompetitorProfileEditor: React.FC<CompetitorProfileEditorProps> = ({ profi
                             type="text"
                             id={`${profile.id}-${field.key}`}
                             name={field.key}
-                            value={localProfile[field.key] as string}
+                            value={String(localProfile[field.key])}
                             onChange={handleChange}
                             className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-slate-400"
                         />
@@ -182,13 +182,13 @@ const TrendEntryEditor: React.FC<TrendEntryEditorProps> = ({ entry, onSave, onDe
     };
 
     const fieldLabels: { key: keyof TrendEntry; label: string; type?: string }[] = [
-        { key: 'title', label: language === 'am' ? 'የአዝማሚያ ርዕስ' : 'Trend Title' },
-        { key: 'description', label: language === 'am' ? 'መግለጫ' : 'Description', type: 'textarea' },
-        { key: 'sourceEvidence', label: language === 'am' ? 'ምንጭ/ማስረጃ (አገናኞች፣ ሪፖርቶች)' : 'Source/Evidence (links, reports)', type: 'textarea' },
-        { key: 'timeframe', label: language === 'am' ? 'የጊዜ ገደብ/ወቅታዊነት' : 'Timeframe/Recency' },
-        { key: 'locationMarket', label: language === 'am' ? 'የታየበት ቦታ/ገበያ' : 'Observed Location/Market' },
-        { key: 'potentialImpact', label: language === 'am' ? 'በንግድዎ ላይ ሊኖረው የሚችለው ተጽዕኖ' : 'Potential Impact on Your Business', type: 'textarea' },
-        { key: 'notes', label: language === 'am' ? 'አጠቃላይ ማስታወሻዎች' : 'General Notes', type: 'textarea' },
+        { key: 'title', label: t('mra_trends_title') },
+        { key: 'description', label: t('mra_report_description_label'), type: 'textarea' },
+        { key: 'sourceEvidence', label: t('mra_report_source_label'), type: 'textarea' },
+        { key: 'timeframe', label: t('mra_report_timeframe_label') },
+        { key: 'locationMarket', label: t('mra_report_location_label') },
+        { key: 'potentialImpact', label: t('mra_report_impact_label'), type: 'textarea' },
+        { key: 'notes', label: t('mra_report_notes_label'), type: 'textarea' },
     ];
 
     return (
@@ -200,7 +200,7 @@ const TrendEntryEditor: React.FC<TrendEntryEditorProps> = ({ entry, onSave, onDe
                         <textarea
                             id={`${entry.id}-${field.key}`}
                             name={field.key}
-                            value={localEntry[field.key] as string}
+                            value={localEntry[field.key]}
                             onChange={handleChange}
                             rows={3}
                             className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-slate-400"
@@ -210,7 +210,7 @@ const TrendEntryEditor: React.FC<TrendEntryEditorProps> = ({ entry, onSave, onDe
                             type="text"
                             id={`${entry.id}-${field.key}`}
                             name={field.key}
-                            value={localEntry[field.key] as string}
+                            value={String(localEntry[field.key])}
                             onChange={handleChange}
                             className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-slate-400"
                         />

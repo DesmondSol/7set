@@ -558,7 +558,6 @@ export type TranslationKey =
   | 'ai_feedback_modal_processing_button'
   | 'feedback_source_ai_bulk_import';
 
-
 // GENERAL
 export type Language = 'en' | 'am';
 

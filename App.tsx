@@ -233,7 +233,11 @@ const App: React.FC = () => {
         return {
           brainstormIdeas: parsed.brainstormIdeas || [],
           features: parsed.features || [],
-          actionItems: parsed.actionItems || [],
+          actionItems: (parsed.actionItems || []).map((item: any) => ({
+            ...item,
+            dueDate: item.dueDate || null,
+            completedAt: item.completedAt || null,
+          })),
           feedbackItems: parsed.feedbackItems || [],
         };
       } catch (e) {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ProductDesignData, ProductFeature, TranslationKey, Language, FeaturePriority } from '../../types';
+import { ProductDesignData, ProductFeature, TranslationKey, Language, FeaturePriority, ActionItem, ActionBoardStatus } from '../../types';
 import { Button } from '../common/Button';
 import { FeatureModal } from './FeatureModal';
 
@@ -25,6 +25,7 @@ export const ProductPlanning: React.FC<ProductPlanningProps> = ({ productDesignD
   const [editingFeature, setEditingFeature] = useState<ProductFeature | null>(null);
 
   const features = productDesignData.features || [];
+  const actionItems = productDesignData.actionItems || [];
 
   const handleOpenModal = (feature: ProductFeature | null) => {
     setEditingFeature(feature);
@@ -33,21 +34,38 @@ export const ProductPlanning: React.FC<ProductPlanningProps> = ({ productDesignD
 
   const handleSaveFeature = (featureToSave: ProductFeature) => {
     let updatedFeatures: ProductFeature[];
+    let updatedActionItems = [...actionItems];
+
     if (editingFeature) { // Editing existing feature
       updatedFeatures = features.map(f => f.id === featureToSave.id ? featureToSave : f);
     } else { // Adding new feature
       updatedFeatures = [...features, featureToSave];
+      
+      const newActionItem: ActionItem = {
+          id: `action-${Date.now()}`,
+          title: featureToSave.name,
+          description: t('action_item_linked_feature_desc', 'Initial action item for feature: {featureName}').replace('{featureName}', featureToSave.name),
+          status: ActionBoardStatus.IDEA,
+          featureId: featureToSave.id,
+          createdAt: new Date().toISOString(),
+          dueDate: null,
+          completedAt: null,
+      };
+      updatedActionItems.push(newActionItem);
     }
-    onUpdateData({ ...productDesignData, features: updatedFeatures });
+    onUpdateData({ ...productDesignData, features: updatedFeatures, actionItems: updatedActionItems });
     setIsModalOpen(false);
     setEditingFeature(null);
   };
   
   const handleDeleteFeature = (featureId: string) => {
-    if (window.confirm(t('delete_button') + ` feature?`)) {
+    if (window.confirm(t('delete_button') + ` feature? This will not delete linked action items.`)) {
       const updatedFeatures = features.filter(f => f.id !== featureId);
-      onUpdateData({ ...productDesignData, features: updatedFeatures });
-      setIsModalOpen(false); // Close modal if deleting from within
+      // Also unlink from action items
+      const updatedActionItems = actionItems.map(item => item.featureId === featureId ? {...item, featureId: null} : item);
+
+      onUpdateData({ ...productDesignData, features: updatedFeatures, actionItems: updatedActionItems });
+      setIsModalOpen(false);
       setEditingFeature(null);
     }
   };

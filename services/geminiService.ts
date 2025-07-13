@@ -1,4 +1,6 @@
-import { GenerateContentResponse, Part } from "@google/genai";
+
+
+import { GenerateContentResponse, Part, Type } from "@google/genai";
 import { 
     CanvasData, 
     CanvasSection, 
@@ -22,7 +24,8 @@ import {
     TranslationKey,
     Persona,
     ProductFeature,
-    FeaturePriority
+    FeaturePriority,
+    FeedbackUrgency
 } from '../types';
 import { API_KEY_WARNING } from "../constants";
 
@@ -52,7 +55,6 @@ const getAiClient = async (): Promise<GoogleGenAI | null> => {
     }
 };
 
-
 const parseJsonFromText = <T,>(text: string): T | null => {
   let jsonStr = text.trim();
   const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
@@ -68,6 +70,47 @@ const parseJsonFromText = <T,>(text: string): T | null => {
   }
 };
 
+const getAiResponseText = (response: GenerateContentResponse): string | null => {
+    try {
+        const text = response.text;
+        if (text) {
+            return text;
+        }
+        console.error("AI response is empty or invalid.");
+        return null;
+    } catch (e) {
+        console.error("Error accessing AI response text:", e, response);
+        return null;
+    }
+};
+
+const callAi = async (prompt: string, jsonSchema?: any): Promise<string | null> => {
+    const localAi = await getAiClient();
+    if (!localAi) {
+        console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
+        return null;
+    }
+    try {
+        const config: any = {
+            temperature: jsonSchema ? 0.2 : 0.7,
+        };
+        if (jsonSchema) {
+            config.responseMimeType = "application/json";
+            config.responseSchema = jsonSchema;
+        }
+        
+        const response: GenerateContentResponse = await localAi.models.generateContent({
+            model: TEXT_MODEL,
+            contents: prompt,
+            config: config,
+        });
+
+        return getAiResponseText(response);
+    } catch (error) {
+        console.error("Gemini API call failed:", error);
+        return null;
+    }
+};
 
 export const generateBusinessCanvasContent = async (
   businessIdea: string,
@@ -77,94 +120,43 @@ export const generateBusinessCanvasContent = async (
   sections: CanvasSection[],
   language: Language
 ): Promise<Partial<CanvasData> | null> => {
-  const localAi = await getAiClient();
-  if (!localAi) {
-    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
-    const errorResult: Partial<CanvasData> = {};
-    sections.forEach(section => {
-      errorResult[section] = language === 'am' ? "የ AI አገልግሎት በአሁኑ ጊዜ አይገኝም።" : "AI service unavailable.";
-    });
-    return errorResult;
-  }
+    const langInstructions = language === 'am'
+    ? "All generated textual content for the sections MUST be in Amharic. The JSON keys themselves MUST remain in English. Provide rich, culturally relevant Amharic content that is practical for an Ethiopian entrepreneur."
+    : "All generated content should be in English and be practical for an Ethiopian entrepreneur.";
 
-  const langInstructions = language === 'am'
-  ? "All generated textual content for the sections MUST be in Amharic. The JSON keys themselves (the section names like 'Project Overview', 'Product Vision', etc.) MUST remain in English as provided in the list of sections. Provide rich, culturally relevant Amharic content that is practical for an Ethiopian entrepreneur."
-  : "All generated content should be in English and be practical for an Ethiopian entrepreneur.";
+    const prompt = `
+    You are an AI assistant helping an entrepreneur develop a business plan for Ethiopia.
+    ${langInstructions}
 
+    Business Idea: ${businessIdea}
+    Problem Solved (in Ethiopian context): ${problemSolved}
+    Target Customer (Focus on Ethiopian demographics, psychographics, and cultural nuances): ${targetCustomer}
+    Unique Selling Proposition (for the Ethiopian market): ${uniqueSellingProposition}
 
-  const prompt = `
-You are an AI assistant helping an entrepreneur develop a business plan for Ethiopia.
-${langInstructions}
+    Based on the above information, generate concise and actionable content for a Business Launch Canvas. All generated content MUST be highly relevant and contextualized for the Ethiopian business environment. Financial figures should implicitly relate to Ethiopian Birr (ETB). Market examples, competitor considerations, and business model suggestions should reflect local Ethiopian realities (e.g., infrastructure, logistics, payment systems like Telebirr).
 
-Business Idea: ${businessIdea}
-Problem Solved (in Ethiopian context): ${problemSolved}
-Target Customer (Focus on Ethiopian demographics, psychographics, and cultural nuances): ${targetCustomer}
-Unique Selling Proposition (for the Ethiopian market): ${uniqueSellingProposition}
+    For each of the following sections, provide a practical description or strategy (2-4 sentences per section):
+    ${sections.join("\n")} 
 
-Based on the above information, generate concise and actionable content for a Business Launch Canvas.
-All generated content MUST be highly relevant and contextualized for the Ethiopian business environment.
-Financial figures should implicitly relate to Ethiopian Birr (ETB).
-Market examples, competitor considerations, and business model suggestions should reflect local Ethiopian realities, common practices, and potential challenges (e.g., infrastructure, logistics, payment systems like Telebirr or CBE Birr).
+    Return the response as a valid JSON object where keys are the section names (exactly as provided in English) and values are the generated content strings (in ${language === 'am' ? 'Amharic' : 'English'}).
+    `;
 
-For each of the following sections, provide a practical description or strategy (2-4 sentences per section):
-${sections.join("\n")} 
+    const properties = sections.reduce((acc, section) => {
+        acc[section] = { type: Type.STRING };
+        return acc;
+    }, {} as Record<string, { type: Type }>)
 
-When generating content for sections like 'Market', 'Pricing', 'Competitors', and 'Unit Economics', pay special attention to Ethiopian specifics (e.g., common distribution channels, local purchasing power, typical cost structures, regulatory landscape if generally applicable, local competition).
+    const schema = {
+        type: Type.OBJECT,
+        properties: properties,
+    };
 
-Return the response as a valid JSON object where keys are the section names (exactly as provided in English above) and values are the generated content strings (in ${language === 'am' ? 'Amharic' : 'English'}).
-Ensure the entire output is a single JSON object.
-  `;
+    const textResponse = await callAi(prompt, schema);
+    if (!textResponse) return null;
 
-  try {
-    const response: GenerateContentResponse = await localAi.models.generateContent({
-      model: TEXT_MODEL,
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        temperature: 0.7, 
-      },
-    });
-    
-    const textResponse = response.text;
-    if (!textResponse) {
-        console.error("Gemini API returned no text for Business Canvas.");
-        return null;
-    }
-    
     const parsedData = parseJsonFromText<Partial<CanvasData>>(textResponse);
-    if (parsedData) {
-      const result: Partial<CanvasData> = {};
-      ALL_CANVAS_SECTIONS.forEach(section => { 
-        if (sections.includes(section)) { 
-            const key = section as keyof Partial<CanvasData>;
-            if (parsedData[key]) {
-                result[key] = parsedData[key];
-            } else {
-                console.warn(`AI did not generate content for section: ${section}. Setting default.`);
-                result[key] = language === 'am' 
-                  ? "AI ለዚህ ክፍል ይዘት ማመንጨት አልቻለም። እባክዎ በእጅ ይሙሉ ወይም የ AI ጥያቄዎችን ያጥሩ، የኢትዮጵያን ሁኔታ ግምት ውስጥ ያስገቡ።"
-                  : "AI could not generate content for this section. Please fill manually or refine AI prompt inputs, keeping the Ethiopian context in mind.";
-            }
-        }
-      });
-      return result;
-    }
-    const errorResult: Partial<CanvasData> = {};
-    sections.forEach(section => {
-      errorResult[section] = language === 'am' ? "የ AI ምላሽ መተንተን አልተሳካም። እባክዎ የ AI ግብአቶችን ያረጋግጡ ወይም እንደገና ይሞክሩ።" : "AI response parsing failed. Please check AI inputs or try again.";
-    });
-    return errorResult;
-
-  } catch (error) {
-    console.error("Error generating business canvas content:", error);
-    const errorResult: Partial<CanvasData> = {};
-    sections.forEach(section => {
-      errorResult[section] = language === 'am' ? "AI መጥራት ላይ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ። ግብአቶችዎ የኢትዮጵያን የንግድ ሁኔታ በግልፅ ማንጸባረቃቸውን ያረጋግጡ።" : "Error calling AI. Please try again. Ensure your inputs clearly reflect your Ethiopian business context.";
-    });
-    return errorResult;
-  }
+    return parsedData;
 };
-
 
 export const generateMarketResearchQuestions = async (
   strategyData: Partial<CanvasData>,
@@ -172,670 +164,386 @@ export const generateMarketResearchQuestions = async (
   targetAudience: string,
   language: Language
 ): Promise<ResearchQuestionItem[]> => {
-  const localAi = await getAiClient();
-  if (!localAi) {
-    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
-    return [];
-  }
+    const langInstructions = language === 'am'
+        ? "The 'text' of each question must be in Amharic."
+        : "The 'text' of each question must be in English.";
+    
+    const prompt = `
+    Based on the following business strategy for an Ethiopian venture, generate 5-7 insightful market research questions.
+    ${langInstructions}
+    The questions should help validate the business idea and understand the target audience deeply.
 
-  const strategyContextString = `---BEGIN ETHIOPIAN BUSINESS STRATEGY (Language of strategy elements below is as provided by user, AI should process it for context)---
-Project Overview: ${strategyData[CanvasSection.PROJECT_OVERVIEW] || "Not defined"}
-Product Vision: ${strategyData[CanvasSection.PRODUCT_VISION] || "Not defined"}
-Problem (in Ethiopian context): ${strategyData[CanvasSection.PROBLEM] || "Not defined"}
-Solution (for Ethiopian market): ${strategyData[CanvasSection.SOLUTION] || "Not defined"}
-Unique Value Proposition (for Ethiopian market): ${strategyData[CanvasSection.UNIQUE_VALUE_PROPOSITION] || "Not defined"}
----END ETHIOPIAN BUSINESS STRATEGY---`.trim();
+    Business Strategy Summary:
+    - Problem: ${strategyData[CanvasSection.PROBLEM]}
+    - Solution: ${strategyData[CanvasSection.SOLUTION]}
+    - Target Market: ${strategyData[CanvasSection.MARKET]}
+    - Unique Value Proposition: ${strategyData[CanvasSection.UNIQUE_VALUE_PROPOSITION]}
 
-  const langInstructions = language === 'am'
-  ? "The generated market research questions MUST be in Amharic. These questions should be culturally sensitive and easy for Amharic speakers in Ethiopia to understand and respond to."
-  : "The generated market research questions should be in English.";
+    Current Research Goal: "${researchGoal}"
+    Target Audience for this research: "${targetAudience}"
 
+    Generate a list of questions that are open-ended, non-leading, and culturally sensitive to the Ethiopian context.
+    Return a valid JSON array of objects.
+    `;
+    const schema = {
+        type: Type.ARRAY,
+        items: {
+            type: Type.OBJECT,
+            properties: {
+                id: { type: Type.STRING },
+                text: { type: Type.STRING },
+                responses: { type: Type.ARRAY, items: { type: Type.OBJECT, properties: {id: {type: Type.STRING}, text: {type: Type.STRING}}} }
+            }
+        }
+    };
 
-  const prompt = `You are an expert market research consultant specializing in the Ethiopian market.
-You are assisting a client with their business in Ethiopia, detailed in the Business Launch Canvas context provided above.
-${langInstructions}
+    const textResponse = await callAi(prompt, schema);
+    if (!textResponse) return [];
 
-The client's specific goal for THIS market research set is: "${researchGoal}".
-The target audience for THIS research set is: "${targetAudience}" (within Ethiopia).
-
-Based on the comprehensive Ethiopian business strategy provided AND the specific research goal and target audience for this set,
-generate a list of 5 to 7 key, open-ended market research questions. These questions MUST be:
-1. Culturally sensitive and appropriate for the Ethiopian context. If in Amharic, use clear and common Amharic. If in English, ensure they are understandable for an Ethiopian audience.
-2. Designed to elicit insightful responses from Ethiopian consumers/stakeholders.
-3. Consider local consumer habits, infrastructure challenges (e.g., internet penetration, logistics), socio-economic factors, and common communication styles in Ethiopia.
-4. Directly help the client achieve their stated research goal and refine their business strategy for success in Ethiopia.
-
-Return the response as a valid JSON array of strings, where each string is a question (in ${language === 'am' ? 'Amharic' : 'English'}).
-For example: ["Question 1?", "Question 2?", "Question 3?"]`;
-  try {
-    const response: GenerateContentResponse = await localAi.models.generateContent({
-      model: TEXT_MODEL,
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        temperature: 0.6, 
-      }
-    });
-    const textResponse = response.text;
-     if (!textResponse) {
-        console.error("Gemini API returned no text for research questions.");
-        return [];
-    }
-    const questionsArray = parseJsonFromText<string[]>(textResponse); 
-    if (questionsArray && Array.isArray(questionsArray)) {
-      return questionsArray.map((qText, index) => ({ 
-        id: `q-${Date.now()}-${index}`, 
-        text: qText, 
-        responses: [] 
-      }));
-    }
-    return [];
-  } catch (error) {
-    console.error("Error generating market research questions:", error);
-    return [];
-  }
+    const parsedData = parseJsonFromText<{ text: string }[]>(textResponse);
+    return parsedData ? parsedData.map(q => ({ id: `ai-${Date.now()}-${Math.random()}`, text: q.text, responses: [] })) : [];
 };
 
 export const generateMarketResearchSummary = async (
-  researchData: Pick<MarketResearchData, ResearchSection.QUESTIONS | ResearchSection.GENERAL_NOTES_IMPORT | ResearchSection.COMPETITOR_ANALYSIS | ResearchSection.TRENDS>,
-  strategyData: Partial<CanvasData> | null,
+  researchData: {
+    [ResearchSection.QUESTIONS]: ResearchQuestionnaireSet[];
+    [ResearchSection.GENERAL_NOTES_IMPORT]: string;
+    [ResearchSection.COMPETITOR_ANALYSIS]: CompetitorProfile[];
+    [ResearchSection.TRENDS]: TrendEntry[];
+  },
+  strategyData: Partial<CanvasData>,
   language: Language
-): Promise<string> => {
-  const localAi = await getAiClient();
-  if (!localAi) {
-    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
-    return language === 'am' ? "የ AI ማጠቃለያ ማመንጨት ተሰናክሏል።" : "AI Summary generation disabled.";
-  }
+): Promise<string | null> => {
+    const prompt = `
+    Synthesize all the provided market research data for an Ethiopian business into a cohesive summary.
+    The output should be a well-structured analysis in ${language === 'am' ? 'Amharic' : 'English'}.
+    Highlight key insights, identify potential risks or challenges, and suggest opportunities.
 
-  let questionsAndResponsesSummary = language === 'am' ? "ምንም የምርምር ጥያቄ ስብስቦች አልቀረቡም ወይም በስብስቦች ውስጥ ምንም ጥያቄዎች የሉም።" : "No research question sets provided or no questions within sets.";
-  if (researchData[ResearchSection.QUESTIONS] && researchData[ResearchSection.QUESTIONS].length > 0) {
-    const allSetsSummaries = researchData[ResearchSection.QUESTIONS].map(set => {
-      let setSummary = `${language === 'am' ? 'የምርምር ስብስብ' : 'Research Set'}: "${set.name}" (${language === 'am' ? 'ግብ' : 'Goal'}: ${set.researchGoal}, ${language === 'am' ? 'ታዳሚ በኢትዮጵያ' : 'Audience in Ethiopia'}: ${set.targetAudience})\n`;
-      if (set.questions.length > 0) {
-        setSummary += set.questions.map(q => {
-          const responsesText = q.responses.length > 0 
-            ? `\n    ${language === 'am' ? 'የግል ምላሾች (ከኢትዮጵያ አውድ)' : 'Individual Responses (from Ethiopian context)'}:\n      - ${q.responses.map(r => r.text).join('\n      - ')}`
-            : `\n    (${language === 'am' ? 'ለዚህ ጥያቄ ምንም የግል ምላሾች አልተመዘገቡም' : 'No individual responses recorded for this question'})`;
-          return `  - ${language === 'am' ? 'ጥያቄ' : 'Question'}: ${q.text}${responsesText}`;
-        }).join('\n');
-      } else {
-        setSummary += `  (${language === 'am' ? 'በዚህ ስብስብ ውስጥ ምንም ጥያቄዎች የሉም' : 'No questions in this set'})`;
-      }
-      return setSummary;
-    });
-    questionsAndResponsesSummary = allSetsSummaries.join('\n\n');
-  }
+    Business Strategy:
+    ${JSON.stringify(strategyData, null, 2)}
 
-  let competitorsSummary = language === 'am' ? "ምንም የተፎካካሪ ትንተና አልቀረበም።" : "No competitor analysis provided.";
-  if (researchData[ResearchSection.COMPETITOR_ANALYSIS] && researchData[ResearchSection.COMPETITOR_ANALYSIS].length > 0) {
-    competitorsSummary = researchData[ResearchSection.COMPETITOR_ANALYSIS].map(c => 
-      `  - ${language === 'am' ? 'ተፎካካሪ (በኢትዮጵያ ገበያ)' : 'Competitor (in Ethiopian market)'}: ${c.name}\n` +
-      `    ${language === 'am' ? 'የዋጋ አወጣጥ (ብር)' : 'Pricing (ETB)'}: ${c.pricingStrategy || (language === 'am' ? 'N/A' : 'N/A')}\n` +
-      `    ${language === 'am' ? 'ቁልፍ ባህሪዎች' : 'Key Features'}: ${c.keyFeatures || (language === 'am' ? 'N/A' : 'N/A')}\n` +
-      `    ${language === 'am' ? 'ጥንካሬዎች' : 'Strengths'}: ${c.strengths || (language === 'am' ? 'N/A' : 'N/A')}\n` +
-      `    ${language === 'am' ? 'ድክመቶች' : 'Weaknesses'}: ${c.weaknesses || (language === 'am' ? 'N/A' : 'N/A')}`
-    ).join('\n\n');
-  }
-  
-  let trendsSummary = language === 'am' ? "ምንም የኢንዱስትሪ አዝማሚያዎች አልቀረቡም።" : "No industry trends provided.";
-    if (researchData[ResearchSection.TRENDS] && researchData[ResearchSection.TRENDS].length > 0) {
-    trendsSummary = researchData[ResearchSection.TRENDS].map(t => 
-      `  - ${language === 'am' ? 'አዝማሚያ' : 'Trend'}: ${t.title}\n` +
-      `    ${language === 'am' ? 'መግለጫ' : 'Description'}: ${t.description || (language === 'am' ? 'N/A' : 'N/A')}`
-    ).join('\n\n');
-  }
+    Research Data:
+    - Q&A Sets: ${JSON.stringify(researchData[ResearchSection.QUESTIONS], null, 2)}
+    - General Notes: ${researchData[ResearchSection.GENERAL_NOTES_IMPORT]}
+    - Competitor Analysis: ${JSON.stringify(researchData[ResearchSection.COMPETITOR_ANALYSIS], null, 2)}
+    - Industry Trends: ${JSON.stringify(researchData[ResearchSection.TRENDS], null, 2)}
 
+    Generate a summary covering:
+    1.  **Key Insights:** What are the most important findings from the research?
+    2.  **Customer Validation:** How does the research validate or challenge assumptions about the target customer?
+    3.  **Competitive Landscape:** What is the main takeaway from the competitor analysis?
+    4.  **Market Trends:** How do current trends affect the business opportunity?
+    5.  **Risks & Opportunities:** What are the biggest risks and actionable opportunities identified?
+    `;
 
-  let strategyContextStringForSummary = language === 'am' ? "ከቢዝነስ ማስጀመሪያ ሸራ ምንም የተለየ የንግድ ስትራቴጂ አውድ አልቀረበም።" : "No specific business strategy context provided from the Business Launch Canvas.";
-  if (strategyData) {
-     strategyContextStringForSummary = Object.entries(strategyData)
-      .filter(([key, value]) => value && value.trim() !== "Not defined")
-      .map(([key, value]) => `- ${key} (Ethiopia context): ${value}`)
-      .join('\n');
-    if (!strategyContextStringForSummary) strategyContextStringForSummary = language === 'am' ? "የስትራቴጂ ሸራ ባዶ ነው።" : "Strategy canvas is empty.";
-  }
-
-  const langInstructions = language === 'am'
-  ? "The summary MUST be in Amharic. It should be insightful and actionable for an Ethiopian entrepreneur. Analyze the provided data considering the Ethiopian market and cultural nuances."
-  : "The summary should be in English. It should be insightful and actionable for an Ethiopian entrepreneur, analyzing data within the Ethiopian market context.";
-
-  const prompt = `As an expert market research analyst with a deep understanding of the Ethiopian market, provide a concise and insightful summary (3-5 paragraphs) 
-based on the following comprehensive market research data AND the business's strategic context.
-${langInstructions}
-
-Business Strategic Context (for a business in Ethiopia - content language is as provided by user):
-${strategyContextStringForSummary}
-
-Market Research Data (gathered with an Ethiopian focus - content language is as provided or generated):
-1. Research Question Sets (including questions and individual responses):
-${questionsAndResponsesSummary}
-
-2. General Notes & Bulk Imported Data:
-${researchData[ResearchSection.GENERAL_NOTES_IMPORT] || (language === 'am' ? 'የለም' : "N/A")}
-
-3. Competitor Analysis (focusing on Ethiopian market):
-${competitorsSummary}
-
-4. Key Industry Trends (relevant to Ethiopia):
-${trendsSummary}
-
-
-Your summary MUST:
-1. Analyze how the research findings support, challenge, or refine the stated business strategy specifically within the Ethiopian context.
-2. Highlight key findings, patterns, and insights particularly relevant to operating and succeeding in Ethiopia. Consider local consumer behavior, economic conditions, infrastructure, and cultural factors.
-3. Identify potential opportunities and critical considerations unique to or pronounced in the Ethiopian market (e.g., leveraging mobile money like Telebirr, addressing logistical challenges, adapting to local digital literacy levels).
-4. Provide strategic recommendations that are actionable and practical for a business in Ethiopia. Financial aspects should implicitly consider Ethiopian Birr (ETB).
-Ensure the summary clearly links research findings back to the business strategy for success in Ethiopia.
-Generate the comprehensive summary:`;
-  try {
-    const response: GenerateContentResponse = await localAi.models.generateContent({
-      model: TEXT_MODEL,
-      contents: prompt,
-       config: {
-        temperature: 0.65, 
-      }
-    });
-    return response.text || (language === 'am' ? "AI ማጠቃለያ ማመንጨት አልቻለም። እባክዎ ለኢትዮጵያ በቂ የአውድ መረጃ መኖሩን ያረጋግጡ።" : "AI could not generate a summary. Please ensure sufficient contextual data for Ethiopia is present.");
-  } catch (error) {
-    console.error("Error generating market research summary:", error);
-    return language === 'am' ? "ማጠቃለያ በማመንጨት ላይ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ። የምርምር እና የስትራቴጂ ክፍሎች የኢትዮጵያን አውድ የሚያንጸባርቅ ይዘት እንዳላቸው ያረጋግጡ።" : "Error generating summary. Please try again. Ensure that both research and strategy sections have some content reflecting the Ethiopian context.";
-  }
+    return callAi(prompt);
 };
 
 export const generateMarketingPlan = async (
   strategyData: Partial<CanvasData>,
-  researchData: Pick<MarketResearchData, ResearchSection.QUESTIONS | ResearchSection.COMPETITOR_ANALYSIS | ResearchSection.TRENDS>,
-  userInputs: { campaignGoal: string; targetPlatforms: string[]; contentTone: string; duration: string, referenceWeekStartDate: string },
+  researchData: MarketResearchData,
+  inputs: { campaignGoal: string; targetPlatforms: string[]; contentTone: string; duration: string, referenceWeekStartDate: string },
   language: Language
 ): Promise<MarketingPost[] | null> => {
-  const localAi = await getAiClient();
-  if (!localAi) {
-    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
-    return null;
-  }
+    const langInstructions = language === 'am' ? "All text content (title, content, visualRecommendation, notes) must be in Amharic." : "All text content must be in English.";
+    
+    const prompt = `
+    Create a marketing content plan for an Ethiopian business.
+    ${langInstructions}
+    Context:
+    - Business Idea: ${strategyData[CanvasSection.PROJECT_OVERVIEW]}
+    - Target Audience from Personas: ${researchData[ResearchSection.AI_SUMMARY] || 'Not summarized'}
+    - Unique Value Proposition: ${strategyData[CanvasSection.UNIQUE_VALUE_PROPOSITION]}
+    - Brand Voice: ${strategyData[CanvasSection.BRAND_STYLE_GUIDES]}
 
-  const strategyContextString = Object.entries(strategyData)
-    .filter(([, value]) => value && value.trim() !== "Not defined")
-    .map(([key, value]) => `- ${key}: ${value}`)
-    .join('\n');
+    Campaign Details:
+    - Goal: ${inputs.campaignGoal}
+    - Platforms: ${inputs.targetPlatforms.join(', ')}
+    - Tone: ${inputs.contentTone}
+    - Duration: ${inputs.duration}
+    - Reference Start Date for Scheduling: ${inputs.referenceWeekStartDate}
 
-  const researchContextString = `
-Competitors: ${researchData[ResearchSection.COMPETITOR_ANALYSIS]?.map(c => c.name).join(', ') || 'N/A'}
-Trends: ${researchData[ResearchSection.TRENDS]?.map(t => t.title).join(', ') || 'N/A'}
-Key Customer Insights (from questions): ${researchData[ResearchSection.QUESTIONS]?.[0]?.questions.slice(0,2).map(q => q.text).join('; ') || 'N/A'}
-  `.trim();
+    Generate 3-5 distinct marketing posts for this campaign. Schedule them logically based on the start date.
+    Return a valid JSON array of marketing post objects.
+    `;
+    const schema = {
+        type: Type.ARRAY,
+        items: {
+            type: Type.OBJECT,
+            properties: {
+                title: { type: Type.STRING },
+                content: { type: Type.STRING },
+                platform: { type: Type.STRING },
+                scheduledDate: { type: Type.STRING, description: "ISO 8601 format: YYYY-MM-DDTHH:mm" },
+                visualRecommendation: { type: Type.STRING },
+                notes: { type: Type.STRING },
+                status: { type: Type.STRING, enum: ['todo', 'in-progress', 'done'] }
+            }
+        }
+    };
 
-  const langInstructions = language === 'am'
-    ? "All generated marketing post content (title, content, visualRecommendation) MUST be in Amharic. The JSON keys and other structural elements like 'platform' and 'status' MUST remain in English as specified. Ensure content is culturally relevant for Ethiopia and SEO-friendly."
-    : "All generated marketing post content should be in English, SEO-friendly, and practical for an Ethiopian entrepreneur targeting the Ethiopian market.";
-
-  const prompt = `You are an expert AI Marketing Strategist specializing in the Ethiopian market. Your writing style is similar to Jasper AI - creative, engaging, and effective.
-${langInstructions}
-
-Business Strategy Context (Ethiopian Focus):
-${strategyContextString || 'No detailed strategy provided.'}
-
-Market Research Insights (Ethiopian Focus):
-${researchContextString}
-
-User Request for Marketing Plan:
-- Campaign Goal: ${userInputs.campaignGoal}
-- Target Platforms: ${userInputs.targetPlatforms.join(', ')}
-- Desired Content Tone: ${userInputs.contentTone}
-- Campaign Duration: ${userInputs.duration}
-- Reference Week Start Date for Scheduling: ${userInputs.referenceWeekStartDate} (Format: YYYY-MM-DD)
-
-Based on all the above, generate a list of 3-5 marketing posts for the specified duration and platforms.
-Each post object should have the following fields: "id" (string, generate a unique one like post-timestamp-index), "title" (string, catchy headline), "content" (string, detailed post body, aim for SEO optimization if it's for a blog), "platform" (string, from user's target platforms), "scheduledDate" (string), "visualRecommendation" (string, description of a suitable image/video for an Ethiopian audience), "status" (string, default to 'todo').
-
-IMPORTANT: The "scheduledDate" MUST be an actual date in 'YYYY-MM-DDTHH:mm' format (e.g., '2024-07-29T10:00').
-These dates MUST fall within the 7-day period starting from the 'Reference Week Start Date' (${userInputs.referenceWeekStartDate}).
-Distribute the posts reasonably across this week. Choose appropriate times within those days.
-
-Output: Return a valid JSON array of these MarketingPost objects.
-Example (if English requested and referenceWeekStartDate was '2024-07-29'):
-[
-  {
-    "id": "post-1721110000-0",
-    "title": "Exciting News for Addis Ababa!",
-    "content": "Discover how our new service is changing lives in Ethiopia... #Ethiopia #AddisAbaba #Innovation",
-    "platform": "Facebook",
-    "scheduledDate": "2024-07-29T10:00", 
-    "visualRecommendation": "Vibrant photo of diverse Ethiopians benefiting from the service.",
-    "status": "todo"
-  },
-  {
-    "id": "post-1721110000-1",
-    "title": "Blog: Top 5 Benefits for Local Businesses",
-    "content": "Our latest blog post dives deep into how Ethiopian SMEs can leverage...",
-    "platform": "Blog",
-    "scheduledDate": "2024-07-31T14:30",
-    "visualRecommendation": "Infographic summarizing benefits, with Amharic text option.",
-    "status": "todo"
-  }
-]
-Consider local Ethiopian events, holidays, or cultural moments if relevant for scheduling or content ideas.
-Focus on providing actionable, creative, and "Jasper-style" content suggestions.`;
-
-  try {
-    const response: GenerateContentResponse = await localAi.models.generateContent({
-      model: TEXT_MODEL,
-      contents: prompt,
-      config: { responseMimeType: "application/json", temperature: 0.75 }
-    });
-    const textResponse = response.text;
+    const textResponse = await callAi(prompt, schema);
     if (!textResponse) return null;
-    return parseJsonFromText<MarketingPost[]>(textResponse);
-  } catch (error) {
-    console.error("Error generating marketing plan:", error);
-    return null;
-  }
+
+    const parsedData = parseJsonFromText<Omit<MarketingPost, 'id'>[]>(textResponse);
+    return parsedData ? parsedData.map(p => ({ ...p, id: `ai-${Date.now()}-${Math.random()}`})) : null;
 };
 
 export const generatePitchContent = async (
   strategyData: Partial<CanvasData>,
-  researchData: Pick<MarketResearchData, ResearchSection.QUESTIONS | ResearchSection.COMPETITOR_ANALYSIS>,
-  userInputs: { pitchType: PitchType; targetAudience: string; keyMessage: string; numEmails?: number },
+  researchData: MarketResearchData,
+  inputs: { pitchType: PitchType; targetAudience: string; keyMessage: string; numEmails?: number },
   language: Language
-): Promise<Partial<Pick<Pitch, 'title' | 'content'>> | null> => {
-  const localAi = await getAiClient();
-  if (!localAi) {
-    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
-    return null;
-  }
+): Promise<{ title: string; content: string } | null> => {
+    const langInstructions = language === 'am' ? "The title and content must be in Amharic." : "The title and content must be in English.";
+    const emailInstructions = inputs.pitchType === 'email_campaign' ? `This is an email campaign, generate a sequence of ${inputs.numEmails || 3} emails. Separate each email clearly with a separator like '--- EMAIL X ---'.` : '';
 
-  const strategyContextString = Object.entries(strategyData)
-    .filter(([, value]) => value && value.trim() !== "Not defined")
-    .map(([key, value]) => `- ${key}: ${value}`)
-    .join('\n');
+    const prompt = `
+    Draft a pitch for an Ethiopian business.
+    ${langInstructions}
 
-  const langInstructions = language === 'am'
-    ? "The generated pitch content (title and body/details) MUST be in Amharic. JSON keys must remain in English. The content should be persuasive and culturally adapted for the Ethiopian target audience."
-    : "The generated pitch content should be in English, persuasive, and tailored for the Ethiopian target audience.";
+    Business Context:
+    - Idea: ${strategyData[CanvasSection.PROJECT_OVERVIEW]}
+    - Problem: ${strategyData[CanvasSection.PROBLEM]}
+    - Solution: ${strategyData[CanvasSection.SOLUTION]}
+    - Market: ${strategyData[CanvasSection.MARKET]}
+    - Unfair Advantage: ${strategyData[CanvasSection.UNFAIR_ADVANTAGE]}
+    - Business Model: ${strategyData[CanvasSection.BUSINESS_MODEL]}
 
-  let pitchTypeSpecifics = "";
-  if (userInputs.pitchType === 'investor_pitch') {
-    pitchTypeSpecifics = "Generate a compelling outline for an investor pitch deck, focusing on key slides like Problem (Ethiopian context), Solution, Market Opportunity in Ethiopia, Business Model (revenue in ETB), Team, Financial Projections (ETB), and Ask. The content for each slide should be a few bullet points or short paragraphs.";
-  } else if (userInputs.pitchType === 'sales_pitch') {
-    pitchTypeSpecifics = "Generate 3-5 key talking points for a sales pitch. These points should highlight the main benefits and address potential Ethiopian customer concerns.";
-  } else if (userInputs.pitchType === 'email_campaign') {
-    pitchTypeSpecifics = `Generate a sequence of ${userInputs.numEmails || 3} emails for a campaign. Each email should have a "subject" and "body". The sequence should build interest and lead to a call to action relevant for Ethiopian customers. Return this as a JSON array of objects, where each object has 'subject' and 'body' keys.`;
-  }
+    Pitch Details:
+    - Type: ${inputs.pitchType.replace('_', ' ')}
+    - Target Audience: ${inputs.targetAudience}
+    - Key Message: ${inputs.keyMessage}
+    ${emailInstructions}
 
-  const prompt = `You are an AI Pitching and Communication Coach specializing in the Ethiopian business landscape.
-${langInstructions}
-
-Business Strategy Context (Ethiopian Focus):
-${strategyContextString || 'No detailed strategy provided.'}
-
-User Request for Pitch Content:
-- Pitch Type: ${userInputs.pitchType}
-- Target Audience (in Ethiopia): ${userInputs.targetAudience}
-- Key Message/Objective: ${userInputs.keyMessage}
-
-Task:
-${pitchTypeSpecifics}
-
-The generated content should be highly persuasive and directly address the target audience's needs and interests within the Ethiopian context.
-For the overall pitch, suggest a concise and impactful "title".
-
-Output: Return a valid JSON object with two keys: "title" (string, the overall title for this pitch/campaign) and "content" (string for investor/sales pitch, or a JSON string representing an array of email objects for email_campaign).
-Example for investor_pitch (if English):
-{
-  "title": "Revolutionizing Ethiopian Logistics with Tech",
-  "content": "Slide 1: Problem - Current logistics inefficiencies in Addis Ababa...\\nSlide 2: Solution - Our platform provides real-time tracking..."
-}
-Example for email_campaign (if English):
-{
-  "title": "Exclusive Offer for Ethiopian SMEs",
-  "content": "[{\\"subject\\":\\"Unlock Growth for Your Business\\",\\"body\\":\\"Dear Ethiopian Entrepreneur...\\"}, {\\"subject\\":\\"Don't Miss Out!\\",\\"body\\":\\"Following up on...\\"}]"
-}
-Ensure the content is actionable and reflects an understanding of Ethiopian business communication styles.`;
-
-  try {
-    const response: GenerateContentResponse = await localAi.models.generateContent({
-      model: TEXT_MODEL,
-      contents: prompt,
-      config: { responseMimeType: "application/json", temperature: 0.7 }
-    });
-    const textResponse = response.text;
-    if (!textResponse) return null;
-    
-    const parsedData = parseJsonFromText<Pick<Pitch, 'title' | 'content'>>(textResponse);
-    if (parsedData && userInputs.pitchType === 'email_campaign' && typeof parsedData.content === 'string') {
-        try {
-            JSON.parse(parsedData.content); 
-        } catch (e) {
-            console.warn("AI returned email campaign content as a non-JSON string, or malformed JSON string:", parsedData.content);
-             if (parsedData.content.trim().startsWith("{") && parsedData.content.trim().endsWith("}")) {
-                try {
-                    JSON.parse('[' + parsedData.content + ']');
-                } catch (e2) { /* still not valid */ }
-            }
+    Generate a compelling title and the full content for the pitch.
+    Return a single valid JSON object.
+    `;
+    const schema = {
+        type: Type.OBJECT,
+        properties: {
+            title: { type: Type.STRING },
+            content: { type: Type.STRING }
         }
-    }
-    return parsedData;
-
-  } catch (error) {
-    console.error("Error generating pitch content:", error);
-    return null;
-  }
-};
-
-// --- Mindset Section AI Functions ---
-
-export const generateFounderProfileReport = async (
-  assessmentAnswers: MindsetData['assessmentAnswers'],
-  language: Language,
-  t: (key: TranslationKey, defaultText?: string) => string // For potential mapping
-): Promise<FounderProfileReportData | null> => {
-  const localAi = await getAiClient();
-  if (!localAi) {
-    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
-    return null;
-  }
-
-  const langInstructions = language === 'am'
-    ? "The analysis and generated textual content (founderTypeTitle, founderTypeDescription, cofounderPersonaSuggestion, keyTakeaways) MUST be in Amharic. The JSON keys (like 'founderTypeTitle', 'scores') MUST remain in English as specified."
-    : "The analysis and generated textual content should be in English.";
-
-  const defaultScores: AssessmentScores = {
-    riskTolerance: 50, leadership: 50, adaptability: 50,
-    marketInsight: 50, financialLiteracy: 50, strategicThinking: 50,
-    resilience: 50, creativity: 50, salesAbility: 50, technicalSkills: 50,
-  };
-
-  const prompt = `You are an AI Business Profiling Expert specializing in entrepreneurial assessments for the Ethiopian context.
-${langInstructions}
-
-Analyze the following assessment answers from an Ethiopian entrepreneur:
-Personality Assessment Answers:
-${JSON.stringify(assessmentAnswers.personality, null, 2)}
-
-Business Acumen Assessment Answers:
-${JSON.stringify(assessmentAnswers.businessAcumen, null, 2)}
-
-Startup Knowledge Assessment Answers:
-${JSON.stringify(assessmentAnswers.startupKnowledge, null, 2)}
-
-Based on this comprehensive data, generate a Founder Profile Report.
-The report MUST be a valid JSON object with the following structure:
-{
-  "founderTypeTitle": "string (A concise, descriptive title for the founder archetype, e.g., 'The Resilient Innovator', 'Pragmatic Operator')",
-  "founderTypeDescription": "string (A 2-3 sentence paragraph describing this founder archetype and their general tendencies relevant to Ethiopian entrepreneurship)",
-  "scores": { 
-    "riskTolerance": number (0-100), 
-    "leadership": number (0-100), 
-    "adaptability": number (0-100), 
-    "marketInsight": number (0-100), 
-    "financialLiteracy": number (0-100), 
-    "strategicThinking": number (0-100),
-    "resilience": number (0-100),
-    "creativity": number (0-100),
-    "salesAbility": number (0-100),
-    "technicalSkills": number (0-100, if applicable, otherwise reasonable default)
-  },
-  "cofounderPersonaSuggestion": "string (A suggestion for a complementary co-founder type, considering the analyzed strengths and weaknesses, e.g., 'Consider a co-founder strong in areas X and Y to balance your Z.')",
-  "keyTakeaways": ["string", "string", "string"] (An array of 3 actionable insights or recommendations for the founder based on the profile)
-}
-
-When generating scores, interpret the answers to provide a realistic assessment. For example, high comfort with ambiguity might relate to higher risk tolerance.
-Ensure all text content (titles, descriptions, suggestions, takeaways) is culturally sensitive and practical for an Ethiopian entrepreneur.
-The scores should reflect a balanced view; avoid extreme highs or lows unless strongly indicated by diverse answers.
-`;
-
-  try {
-    const response: GenerateContentResponse = await localAi.models.generateContent({
-      model: TEXT_MODEL,
-      contents: prompt,
-      config: { responseMimeType: "application/json", temperature: 0.6 }
-    });
-    const textResponse = response.text;
-    if (!textResponse) {
-        console.error("Gemini API returned no text for Founder Profile Report.");
-        return null;
-    }
-
-    const parsedReport = parseJsonFromText<{
-        founderTypeTitle: string;
-        founderTypeDescription: string;
-        scores: Partial<AssessmentScores>;
-        cofounderPersonaSuggestion: string;
-        keyTakeaways: string[];
-    }>(textResponse);
-
-    if (parsedReport) {
-        const finalScores: AssessmentScores = {
-            ...defaultScores,
-            ...(parsedReport.scores || {}),
-        };
-
-        return {
-            founderTypeTitle: parsedReport.founderTypeTitle,
-            founderTypeDescription: parsedReport.founderTypeDescription,
-            scores: finalScores,
-            cofounderPersonaSuggestion: parsedReport.cofounderPersonaSuggestion,
-            keyTakeaways: parsedReport.keyTakeaways || [],
-            generatedDate: new Date().toISOString(),
-            language: language,
-        };
-    }
-    return null;
-  } catch (error) {
-    console.error("Error generating founder profile report:", error);
-    return {
-        founderTypeTitle: t('error_ai_failed_generic'),
-        founderTypeDescription: t('error_ai_failed_generic'),
-        scores: defaultScores,
-        cofounderPersonaSuggestion: t('error_ai_failed_generic'),
-        keyTakeaways: [t('error_ai_failed_generic')],
-        generatedDate: new Date().toISOString(),
-        language: language,
     };
-  }
+    
+    const textResponse = await callAi(prompt, schema);
+    return textResponse ? parseJsonFromText<{ title: string; content: string }>(textResponse) : null;
 };
-
 
 export const askAiMindsetCoach = async (
-  currentGoals: GoalSettingData,
-  userMessage: string,
-  chatHistory: { role: 'user' | 'model', parts: {text: string}[] }[],
+  goals: GoalSettingData,
+  userInput: string,
+  chatHistory: { role: 'user' | 'model'; parts: {text: string}[] }[],
   language: Language
 ): Promise<string> => {
-  const localAi = await getAiClient();
-  if (!localAi) {
-    console.warn(API_KEY_WARNING, "AI Mindset Coach disabled.");
-    return language === 'am' ? "የ AI የአስተሳሰብ አሰልጣኝ ተሰናክሏል።" : "AI Mindset Coach disabled.";
-  }
-  
-  const langInstructions = language === 'am'
-    ? "Respond ONLY in Amharic. Act as an empathetic and insightful mindset coach for an entrepreneur in Ethiopia."
-    : "Respond ONLY in English. Act as an empathetic and insightful mindset coach for an entrepreneur in Ethiopia.";
+    const prompt = `
+    You are an encouraging and practical mindset coach for an Ethiopian entrepreneur.
+    Your response must be in ${language === 'am' ? 'Amharic' : 'English'}.
+    Keep your responses concise, actionable, and supportive.
 
-  const systemInstruction = `You are an AI Mindset Coach for entrepreneurs. Your role is to help users refine their goals to be more S.M.A.R.T. (Specific, Measurable, Achievable, Relevant, Time-bound), ambitious, and aligned with their values.
-${langInstructions}
-Keep your responses concise, encouraging, and focused on asking clarifying questions or offering concrete suggestions.
+    Their stated goals are: ${JSON.stringify(goals, null, 2)}
 
-User's current long-term goals (for context, in the user's language):
-${JSON.stringify(currentGoals, null, 2)}
-`;
+    Their new message is: "${userInput}"
 
-  try {
-    const chat = localAi.chats.create({
-      model: TEXT_MODEL,
-      config: {
-        systemInstruction: systemInstruction,
-        temperature: 0.7
-      },
-      history: chatHistory.slice(0, -1), // Send history without the latest user message
-    });
+    Review the chat history for context if needed.
+    Provide a helpful response that either helps them refine their goals, provides motivation, or gives a practical next step.
+    `;
+    // Using a chat-optimized model might be better, but for now we format it for generateContent
+    const historyPrompt = chatHistory.map(h => `${h.role}: ${h.parts[0].text}`).join('\n');
+    const fullPrompt = `${historyPrompt}\n${prompt}`;
     
-    const response: GenerateContentResponse = await chat.sendMessage({ message: userMessage });
-    return response.text;
+    const response = await callAi(fullPrompt);
+    return response || (language === 'am' ? "ይቅርታ, ምላሽ መስጠት አልቻልኩም. እንደገና ይሞክሩ." : "Sorry, I couldn't generate a response. Please try again.");
+};
 
-  } catch (error) {
-    console.error("Error asking AI mindset coach:", error);
-    return language === 'am' ? "ይቅርታ, ጥያቄዎን ማካሄድ አልቻልኩም። እባክዎ እንደገና ይሞክሩ።" : "Sorry, I couldn't process your request. Please try again.";
-  }
+export const generateFounderProfileReport = async (
+  answers: AssessmentAnswers,
+  language: Language,
+  t: (key: TranslationKey, defaultText?: string) => string,
+): Promise<FounderProfileReportData | null> => {
+    const langInstructions = language === 'am'
+        ? "All textual descriptions ('founderTypeTitle', 'founderTypeDescription', 'cofounderPersonaSuggestion', 'keyTakeaways' array items) MUST be in Amharic."
+        : "All textual descriptions must be in English.";
+
+    const prompt = `
+    Analyze the following entrepreneurial assessment answers and generate a founder profile report.
+    ${langInstructions}
+
+    Assessment Answers:
+    ${JSON.stringify(answers, null, 2)}
+
+    Based on the answers, generate a JSON object with the following structure:
+    1. founderTypeTitle: A catchy archetype name (e.g., "The Visionary Catalyst", "The Pragmatic Builder").
+    2. founderTypeDescription: A short paragraph describing this founder type's main characteristics.
+    3. scores: An object with scores from 0-100 for each of these 10 dimensions: 'riskTolerance', 'leadership', 'adaptability', 'marketInsight', 'financialLiteracy', 'strategicThinking', 'resilience', 'creativity', 'salesAbility', 'technicalSkills'. Infer scores logically from the answers.
+    4. cofounderPersonaSuggestion: A brief description of an ideal co-founder profile that would complement this founder's strengths and weaknesses.
+    5. keyTakeaways: An array of 3-4 short, actionable pieces of advice for this founder.
+    `;
+    const schema = {
+        type: Type.OBJECT,
+        properties: {
+            founderTypeTitle: { type: Type.STRING },
+            founderTypeDescription: { type: Type.STRING },
+            scores: {
+                type: Type.OBJECT,
+                properties: {
+                    riskTolerance: { type: Type.NUMBER }, leadership: { type: Type.NUMBER },
+                    adaptability: { type: Type.NUMBER }, marketInsight: { type: Type.NUMBER },
+                    financialLiteracy: { type: Type.NUMBER }, strategicThinking: { type: Type.NUMBER },
+                    resilience: { type: Type.NUMBER }, creativity: { type: Type.NUMBER },
+                    salesAbility: { type: Type.NUMBER }, technicalSkills: { type: Type.NUMBER },
+                }
+            },
+            cofounderPersonaSuggestion: { type: Type.STRING },
+            keyTakeaways: { type: Type.ARRAY, items: { type: Type.STRING } }
+        }
+    };
+    
+    const textResponse = await callAi(prompt, schema);
+    if (!textResponse) return null;
+    
+    const parsedData = parseJsonFromText<Omit<FounderProfileReportData, 'generatedDate' | 'language'>>(textResponse);
+    return parsedData ? { ...parsedData, generatedDate: new Date().toISOString(), language: language } : null;
 };
 
 export const generateAiPersona = async (
   idea: string,
   problem: string,
-  dailyChallenge: string,
+  dayInLife: string,
   discoveryMethod: string,
   canvasData: Partial<CanvasData>,
   language: Language
-): Promise<Partial<Persona> | null> => {
-  const localAi = await getAiClient();
-  if (!localAi) {
-    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
-    return null;
-  }
-    const canvasContextString = Object.entries(canvasData)
-    .filter(([, value]) => value && value.trim())
-    .map(([key, value]) => `- ${key}: ${value}`)
-    .join('\n');
+): Promise<Partial<Omit<Persona, 'id' | 'icon'>>> | null> => {
+    const langInstructions = language === 'am' ? "All string values in the JSON output must be in Amharic." : "All string values in the JSON output must be in English.";
+    
+    const prompt = `
+    Generate a detailed customer persona for an Ethiopian business.
+    ${langInstructions}
+    The persona should be a realistic representation of a target customer in Ethiopia.
 
-  const langInstructions = language === 'am'
-    ? "The generated persona details (name, profession, bio, goals, frustrations, etc.) and JTBD texts MUST be in Amharic. JSON keys and enum-like values (gender, education, maritalStatus) must remain in English. The name should be a common Ethiopian name."
-    : "All generated content should be in English. The name should be a common Ethiopian name.";
+    Context:
+    - Business Idea: ${idea}
+    - Problem this persona faces: ${problem}
+    - A key challenge or a typical day for this persona: ${dayInLife}
+    - How they might discover a service like this: ${discoveryMethod}
+    - Broader Business Strategy: ${JSON.stringify(canvasData, null, 2)}
 
-  const prompt = `You are an expert market researcher and storyteller specializing in creating detailed, realistic user personas for the Ethiopian market.
-${langInstructions}
-
-Business Context (from Business Launch Canvas):
-${canvasContextString}
-
-User's description of a potential customer:
-- Business Idea they are targeting: ${idea}
-- Problem it solves for them: ${problem}
-- A typical day or key challenge they face: ${dailyChallenge}
-- How they might discover this service: ${discoveryMethod}
-
-Based on ALL the information above, create a single, detailed user persona. The persona should feel like a real person living in Ethiopia.
-
-Return the response as a single valid JSON object. This object should contain the following fields:
-- "name": "string" (A common Ethiopian name, e.g., 'Abebe Tadesse' or 'Fatuma Ahmed')
-- "profession": "string" (e.g., 'University Student', 'Small Kiosk Owner', 'Accountant at a private firm')
-- "gender": "string" ('Male' or 'Female')
-- "age": number
-- "location": "string" (A specific area in an Ethiopian city, e.g., 'Bole, Addis Ababa' or 'Piassa, Bahir Dar')
-- "maritalStatus": "string" ('Single', 'Married', 'In a relationship', 'Divorced', 'Widowed')
-- "education": "string" ('High School', "Bachelor's Degree", "Master's Degree", 'PhD', 'Other')
-- "bio": "string" (A short, compelling background story, 2-3 sentences)
-- "goals": "string" (1-2 main goals relevant to the product)
-- "frustrations": "string" (1-2 main pain points the product can solve)
-- "jobsToBeDone": An array of 1-2 objects, where each object represents a 'Job To Be Done' and has the following keys:
-  - "title": "string" (e.g., 'Get fresh produce delivered reliably')
-  - "situation": "string" ('WHEN I am planning meals for the week...')
-  - "motivation": "string" ('I WANT TO find high-quality, local ingredients...')
-  - "outcome": "string" ('SO I CAN cook healthy and delicious food for my family.')
-
-Example (for an organic vegetable delivery service):
-{
-  "name": "Hana Tsegaye",
-  "profession": "Bank Teller",
-  "gender": "Female",
-  "age": 32,
-  "location": "Kazanchis, Addis Ababa",
-  "maritalStatus": "Married",
-  "education": "Bachelor's Degree",
-  "bio": "Hana is a mother of two young children and works full-time at a bank. She values health and nutrition for her family but finds it difficult to find time to visit markets for fresh, trustworthy vegetables amidst her busy schedule.",
-  "goals": "To provide healthy, home-cooked meals for her family every day. To save time on weekly errands.",
-  "frustrations": "Lack of time for grocery shopping. Uncertainty about the quality and source of vegetables from local vendors.",
-  "jobsToBeDone": [
-    {
-      "title": "Source fresh and reliable ingredients for family meals",
-      "situation": "When I'm planning my family's meals for the week",
-      "motivation": "I want to easily order fresh, organic vegetables from a trusted source",
-      "outcome": "so I can be confident that I'm providing nutritious food for my children without spending hours at the market."
-    }
-  ]
-}
-`;
-  try {
-    const response: GenerateContentResponse = await localAi.models.generateContent({
-      model: TEXT_MODEL,
-      contents: prompt,
-      config: { responseMimeType: "application/json", temperature: 0.7 }
-    });
-    const textResponse = response.text;
+    Generate a single JSON object representing the persona.
+    - Demographics (name, profession, gender, age, location, maritalStatus, education) should be realistic for Ethiopia.
+    - Personality and Traits sliders should be numbers between 0 and 100.
+    - Bio, Goals, Frustrations, etc., should be detailed and reflect the provided context.
+    - Generate 2-3 'Jobs To Be Done' (JTBD) that are specific and follow the situation/motivation/outcome format.
+    `;
+    const schema = {
+        type: Type.OBJECT,
+        properties: {
+            name: { type: Type.STRING }, profession: { type: Type.STRING },
+            gender: { type: Type.STRING, enum: ['Male', 'Female', 'Other'] }, age: { type: Type.NUMBER },
+            location: { type: Type.STRING }, maritalStatus: { type: Type.STRING, enum: ['Single', 'Married', 'In a relationship', 'Divorced', 'Widowed'] },
+            education: { type: Type.STRING, enum: ["Bachelor's Degree", "Master's Degree", "PhD", "High School", "Other"]},
+            bio: { type: Type.STRING },
+            personality: {
+                type: Type.OBJECT,
+                properties: { analyticalCreative: { type: Type.NUMBER }, busyTimeRich: { type: Type.NUMBER }, messyOrganized: { type: Type.NUMBER }, independentTeamPlayer: { type: Type.NUMBER } }
+            },
+            traits: {
+                type: Type.OBJECT,
+                properties: { buyingAuthority: { type: Type.NUMBER }, technical: { type: Type.NUMBER }, socialMedia: { type: Type.NUMBER }, selfHelping: { type: Type.NUMBER } }
+            },
+            goals: { type: Type.STRING }, likes: { type: Type.STRING }, dislikes: { type: Type.STRING },
+            frustrations: { type: Type.STRING }, skills: { type: Type.STRING },
+            jobsToBeDone: {
+                type: Type.ARRAY,
+                items: {
+                    type: Type.OBJECT,
+                    properties: { title: { type: Type.STRING }, situation: { type: Type.STRING }, motivation: { type: Type.STRING }, outcome: { type: Type.STRING }, emotionalJob: { type: Type.STRING }, socialJob: { type: Type.STRING } }
+                }
+            }
+        }
+    };
+    
+    const textResponse = await callAi(prompt, schema);
     if (!textResponse) return null;
-    return parseJsonFromText<Partial<Persona>>(textResponse);
-  } catch (error) {
-    console.error("Error generating AI persona:", error);
-    return null;
-  }
-};
 
-interface GeneratedFeature {
-    name: string;
-    description: string;
-    problemSolved: string;
-    priority: FeaturePriority;
-}
+    const parsedData = parseJsonFromText<Partial<Omit<Persona, 'id' | 'icon'>>>(textResponse);
+    if (parsedData && parsedData.jobsToBeDone) {
+        parsedData.jobsToBeDone = parsedData.jobsToBeDone.map(job => ({...job, id: `jtbd-ai-${Date.now()}-${Math.random()}`}));
+    }
+    return parsedData;
+};
 
 export const generateProductFeatures = async (
   canvasData: Partial<CanvasData>,
   language: Language
-): Promise<GeneratedFeature[] | null> => {
-  const localAi = await getAiClient();
-  if (!localAi) {
-    console.warn(API_KEY_WARNING, "Gemini AI client not initialized.");
-    return null;
-  }
+): Promise<{ name: string, description: string, problemSolved: string, priority: FeaturePriority }[] | null> => {
+    const langInstructions = language === 'am' ? "All text content (name, description, problemSolved) must be in Amharic." : "All text content must be in English.";
+    
+    const prompt = `
+    Based on the provided Business Launch Canvas for an Ethiopian venture, generate a list of 5-7 core product features.
+    ${langInstructions}
 
-  const canvasContextString = Object.entries(canvasData)
-    .filter(([, value]) => value && value.trim())
-    .map(([key, value]) => `- ${key}: ${value}`)
-    .join('\n');
-  
-  const langInstructions = language === 'am'
-    ? "All generated feature names, descriptions, and problems solved MUST be in Amharic. The JSON keys and priority values must remain in English."
-    : "All generated content should be in English.";
+    Business Canvas Summary:
+    - Problem: ${canvasData[CanvasSection.PROBLEM]}
+    - Solution: ${canvasData[CanvasSection.SOLUTION]}
+    - Unique Value Proposition: ${canvasData[CanvasSection.UNIQUE_VALUE_PROPOSITION]}
+    - Use Cases: ${canvasData[CanvasSection.USE_CASES]}
 
-  const prompt = `You are a Senior Product Manager AI, expert in creating product roadmaps for startups in the Ethiopian market.
-${langInstructions}
+    For each feature, provide a name, a brief description of what it does, the specific problem it solves for the user, and a priority level ('low', 'medium', 'high', 'critical').
+    Focus on features that would constitute a strong Minimum Viable Product (MVP).
+    Return a valid JSON array of feature objects.
+    `;
+    const schema = {
+        type: Type.ARRAY,
+        items: {
+            type: Type.OBJECT,
+            properties: {
+                name: { type: Type.STRING },
+                description: { type: Type.STRING },
+                problemSolved: { type: Type.STRING },
+                priority: { type: Type.STRING, enum: ['low', 'medium', 'high', 'critical'] }
+            }
+        }
+    };
 
-Here is the business context from the user's Business Launch Canvas:
-${canvasContextString}
+    const textResponse = await callAi(prompt, schema);
+    return textResponse ? parseJsonFromText<{ name: string, description: string, problemSolved: string, priority: FeaturePriority }[]>(textResponse) : null;
+};
 
-Based on this business context, generate a list of 5-7 initial product features.
-These features should be a mix of core functionalities and "quick wins".
-For each feature, provide a name, a description (what it is), the problem it solves (why it exists), and a suggested priority ('low', 'medium', 'high', 'critical').
+export const processBulkFeedback = async (
+  bulkText: string,
+  features: ProductFeature[],
+  language: Language
+): Promise<{ content: string, urgency: FeedbackUrgency, featureId: string | null }[] | null> => {
+    const langInstructions = language === 'am' ? "The 'content' of each feedback item must be in Amharic." : "The 'content' of each feedback item must be in English.";
+    const featureList = features.map(f => ({ id: f.id, name: f.name, description: f.versions[f.versions.length-1].description })).join('\n');
+    
+    const prompt = `
+    Analyze the following block of unstructured user feedback.
+    ${langInstructions}
+    Extract each distinct piece of feedback into a separate item. For each item, determine its urgency ('low', 'medium', 'high') and attempt to link it to one of the existing product features provided below. If no feature is a clear match, set featureId to null.
 
-Return the response as a valid JSON array of objects, where each object has the following keys: "name" (string), "description" (string), "problemSolved" (string), "priority" (string, one of 'low', 'medium', 'high', 'critical').
-Example:
-[
-  {
-    "name": "User Registration (via Phone)",
-    "description": "Allows users to sign up and log in using their Ethiopian mobile phone number, receiving an OTP via SMS for verification.",
-    "problemSolved": "Addresses the need for simple, accessible registration in a market where email is less common than phone numbers.",
-    "priority": "critical"
-  },
-  {
-    "name": "Basic Product Listing",
-    "description": "Sellers can list their products with a name, description, price (in ETB), and one photo.",
-    "problemSolved": "Provides the core functionality for sellers to showcase what they are selling.",
-    "priority": "high"
-  }
-]`;
+    Existing Features (for linking):
+    ${featureList}
 
-  try {
-    const response: GenerateContentResponse = await localAi.models.generateContent({
-      model: TEXT_MODEL,
-      contents: prompt,
-      config: { responseMimeType: "application/json", temperature: 0.7 }
-    });
-    const textResponse = response.text;
-    if (!textResponse) {
-        console.error("Gemini API returned no text for product features.");
-        return null;
-    }
-    return parseJsonFromText<GeneratedFeature[]>(textResponse);
-  } catch (error) {
-    console.error("Error generating product features:", error);
-    return null;
-  }
+    Bulk Feedback Text:
+    ---
+    ${bulkText}
+    ---
+
+    Return a valid JSON array of feedback objects.
+    `;
+    const schema = {
+        type: Type.ARRAY,
+        items: {
+            type: Type.OBJECT,
+            properties: {
+                content: { type: Type.STRING },
+                urgency: { type: Type.STRING, enum: ['low', 'medium', 'high'] },
+                featureId: { type: Type.STRING, description: "ID of the linked feature, or null if no match." }
+            }
+        }
+    };
+    const textResponse = await callAi(prompt, schema);
+    return textResponse ? parseJsonFromText<{ content: string, urgency: FeedbackUrgency, featureId: string | null }[]>(textResponse) : null;
 };

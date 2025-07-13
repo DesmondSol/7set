@@ -384,6 +384,9 @@ export type TranslationKey =
   | 'action_item_description_label'
   | 'action_item_feature_link_label'
   | 'action_item_no_feature_link_option'
+  | 'action_item_due_date_label'
+  | 'action_item_completed_at_label'
+  | 'action_item_linked_feature_desc'
   | 'feedback_aggregator_add_button'
   | 'feedback_aggregator_no_feedback_placeholder'
   | 'feedback_modal_title_add'
@@ -548,7 +551,12 @@ export type TranslationKey =
   | 'personas_explanation'
   | CostCategory
   | RevenueCategory
-  ;
+  | 'ai_feedback_modal_title'
+  | 'ai_feedback_modal_description'
+  | 'ai_feedback_modal_placeholder'
+  | 'ai_feedback_modal_process_button'
+  | 'ai_feedback_modal_processing_button'
+  | 'feedback_source_ai_bulk_import';
 
 
 // GENERAL
@@ -934,9 +942,11 @@ export interface ActionItem {
     status: ActionBoardStatus;
     featureId: string | null; // Link to ProductFeature ID, can be null
     createdAt: string; // ISO Date
+    dueDate: string | null; // ISO Date string 'YYYY-MM-DD'
+    completedAt: string | null; // ISO Date string when moved to 'deploy'
 }
 
-export type FeedbackSource = 'app_store' | 'survey' | 'social_media' | 'manual';
+export type FeedbackSource = 'app_store' | 'survey' | 'social_media' | 'manual' | 'ai_bulk_import';
 export type FeedbackUrgency = 'low' | 'medium' | 'high';
 
 export interface FeedbackItem {

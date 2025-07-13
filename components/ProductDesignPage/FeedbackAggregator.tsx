@@ -2,12 +2,16 @@ import React, { useState, useMemo } from 'react';
 import { ProductDesignData, FeedbackItem, TranslationKey, Language, FeedbackSource, FeedbackUrgency } from '../../types';
 import { Button } from '../common/Button';
 import { FeedbackModal } from './FeedbackModal';
+import { AiFeedbackAggregatorModal } from './AiFeedbackAggregatorModal';
+import { processBulkFeedback } from '../../services/geminiService';
 
 interface FeedbackAggregatorProps {
   productDesignData: ProductDesignData;
   onUpdateData: (data: ProductDesignData) => void;
   t: (key: TranslationKey, defaultText?: string) => string;
   language: Language;
+  isAiModalOpen: boolean;
+  setIsAiModalOpen: (isOpen: boolean) => void;
 }
 
 const SourceIcon: React.FC<{ source: FeedbackSource }> = ({ source }) => {
@@ -17,6 +21,7 @@ const SourceIcon: React.FC<{ source: FeedbackSource }> = ({ source }) => {
     case 'survey': return <svg {...iconProps} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>;
     case 'social_media': return <svg {...iconProps} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2V7a2 2 0 012-2h6l2-2h2l-2 2z" /></svg>;
     case 'manual': return <svg {...iconProps} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>;
+    case 'ai_bulk_import': return <svg {...iconProps} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L1.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.25 7.5l.813 2.846a4.5 4.5 0 01-3.09 3.09L12.187 15l-2.846.813a4.5 4.5 0 01-3.09-3.09L5.437 10.5l2.846-.813a4.5 4.5 0 013.09-3.09L12 3.75l.813 2.846a4.5 4.5 0 013.09 3.09L18.75 9l-2.846.813a4.5 4.5 0 01-3.09-3.09L12.187 6 12 5.25l.187.75z" /></svg>;
     default: return null;
   }
 };
@@ -39,11 +44,13 @@ const UrgencyBadge: React.FC<{ urgency: FeedbackUrgency, t: (key: TranslationKey
   );
 };
 
-export const FeedbackAggregator: React.FC<FeedbackAggregatorProps> = ({ productDesignData, onUpdateData, t }) => {
+export const FeedbackAggregator: React.FC<FeedbackAggregatorProps> = ({ productDesignData, onUpdateData, t, language, isAiModalOpen, setIsAiModalOpen }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FeedbackItem | null>(null);
   const [sourceFilter, setSourceFilter] = useState<FeedbackSource | 'all'>('all');
   const [urgencyFilter, setUrgencyFilter] = useState<FeedbackUrgency | 'all'>('all');
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   const feedbackItems = useMemo(() => productDesignData.feedbackItems || [], [productDesignData.feedbackItems]);
   const features = useMemo(() => productDesignData.features || [], [productDesignData.features]);
@@ -72,6 +79,73 @@ export const FeedbackAggregator: React.FC<FeedbackAggregatorProps> = ({ productD
     }
   };
 
+  const handleAiProcess = async (bulkText: string) => {
+    setIsAiLoading(true);
+    setAiError(null);
+    try {
+        const processedItems = await processBulkFeedback(bulkText, features, language);
+
+        if (processedItems) {
+            let updatedFeedbackItems = [...feedbackItems];
+            let updatedFeatures = [...features];
+
+            processedItems.forEach(item => {
+                const newFeedback: FeedbackItem = {
+                    id: `fb-ai-${Date.now()}-${Math.random()}`,
+                    content: item.content,
+                    source: 'ai_bulk_import',
+                    urgency: item.urgency,
+                    featureId: item.featureId,
+                    createdAt: new Date().toISOString(),
+                };
+                updatedFeedbackItems.push(newFeedback);
+
+                if (item.featureId) {
+                    let featureFound = false;
+                    updatedFeatures = updatedFeatures.map(f => {
+                        if (f.id === item.featureId) {
+                            featureFound = true;
+                            const latestVersionIndex = f.versions.length - 1;
+                            const latestVersion = f.versions[latestVersionIndex];
+                            
+                            const updatedVersion = {
+                                ...latestVersion,
+                                feedbackNotes: `${latestVersion.feedbackNotes}\n- (AI Insight): ${item.content}`.trim()
+                            };
+                            
+                            const newVersions = [...f.versions];
+                            newVersions[latestVersionIndex] = updatedVersion;
+
+                            return { ...f, versions: newVersions };
+                        }
+                        return f;
+                    });
+                    if (!featureFound) {
+                        console.warn(`AI returned featureId ${item.featureId} which was not found in the features list.`);
+                    }
+                }
+            });
+
+            onUpdateData({
+                ...productDesignData,
+                feedbackItems: updatedFeedbackItems,
+                features: updatedFeatures,
+            });
+            
+            setIsAiModalOpen(false);
+
+        } else {
+            setAiError(t('error_ai_failed_generic'));
+        }
+    } catch (e) {
+        console.error(e);
+        setAiError(t('error_ai_failed_generic'));
+    } finally {
+        setIsAiLoading(false);
+    }
+  };
+
+
   const filteredItems = useMemo(() => feedbackItems.filter(item => {
     const sourceMatch = sourceFilter === 'all' || item.source === sourceFilter;
     const urgencyMatch = urgencyFilter === 'all' || item.urgency === urgencyFilter;
@@ -84,6 +158,7 @@ export const FeedbackAggregator: React.FC<FeedbackAggregatorProps> = ({ productD
     { value: 'survey', labelKey: 'feedback_source_survey' },
     { value: 'social_media', labelKey: 'feedback_source_social_media' },
     { value: 'manual', labelKey: 'feedback_source_manual' },
+    { value: 'ai_bulk_import', labelKey: 'feedback_source_ai_bulk_import'},
   ];
 
   const urgencyOptions: { value: FeedbackUrgency | 'all', labelKey: TranslationKey }[] = [
@@ -155,6 +230,16 @@ export const FeedbackAggregator: React.FC<FeedbackAggregatorProps> = ({ productD
           onSave={handleSaveItem}
           itemData={editingItem}
           features={features}
+          t={t}
+        />
+      )}
+      {isAiModalOpen && (
+        <AiFeedbackAggregatorModal
+          isOpen={isAiModalOpen}
+          onClose={() => setIsAiModalOpen(false)}
+          onProcess={handleAiProcess}
+          isLoading={isAiLoading}
+          error={aiError}
           t={t}
         />
       )}

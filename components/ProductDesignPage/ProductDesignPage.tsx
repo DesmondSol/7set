@@ -32,7 +32,8 @@ const ProductDesignPage: React.FC<ProductDesignPageProps> = ({
   const [activeSubSection, setActiveSubSection] = useState<ProductDesignSubSection>(ProductDesignSubSection.BRAINSTORM_BOARD);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
-  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [isFeatureAiModalOpen, setIsFeatureAiModalOpen] = useState(false);
+  const [isFeedbackAiModalOpen, setIsFeedbackAiModalOpen] = useState(false);
   const [isLoadingAi, setIsLoadingAi] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -175,7 +176,7 @@ const ProductDesignPage: React.FC<ProductDesignPageProps> = ({
                 ...initialData,
                 features: [...initialData.features, ...newProductFeatures],
             });
-            setIsAiModalOpen(false);
+            setIsFeatureAiModalOpen(false);
         } else {
             setError(t('error_ai_failed_generic'));
         }
@@ -206,7 +207,14 @@ const ProductDesignPage: React.FC<ProductDesignPageProps> = ({
       case ProductDesignSubSection.ACTION_BOARD:
         return <ActionBoard productDesignData={initialData} onUpdateData={onUpdateData} t={t} language={language} />;
       case ProductDesignSubSection.FEEDBACK_AGGREGATOR:
-        return <FeedbackAggregator productDesignData={initialData} onUpdateData={onUpdateData} t={t} language={language} />;
+        return <FeedbackAggregator
+          productDesignData={initialData}
+          onUpdateData={onUpdateData}
+          t={t}
+          language={language}
+          isAiModalOpen={isFeedbackAiModalOpen}
+          setIsAiModalOpen={setIsFeedbackAiModalOpen}
+        />;
       default:
         return <ComingSoon featureName={t(activeSubSection as TranslationKey, activeSubSection)} language={language} t={t} />;
     }
@@ -273,7 +281,17 @@ const ProductDesignPage: React.FC<ProductDesignPageProps> = ({
         <FloatingActionButton
           icon={<SparklesIcon className="h-7 w-7" />}
           tooltip={t('product_design_ai_button_tooltip')}
-          onClick={() => setIsAiModalOpen(true)}
+          onClick={() => setIsFeatureAiModalOpen(true)}
+          className="bottom-6 right-6 z-30"
+          colorClass="bg-blue-600 hover:bg-blue-500"
+          size="lg"
+        />
+      )}
+       {activeSubSection === ProductDesignSubSection.FEEDBACK_AGGREGATOR && (
+        <FloatingActionButton
+          icon={<SparklesIcon className="h-7 w-7" />}
+          tooltip={t('ai_feedback_modal_title')}
+          onClick={() => setIsFeedbackAiModalOpen(true)}
           className="bottom-6 right-6 z-30"
           colorClass="bg-blue-600 hover:bg-blue-500"
           size="lg"
@@ -292,8 +310,8 @@ const ProductDesignPage: React.FC<ProductDesignPageProps> = ({
       </Modal>
 
       <Modal
-        isOpen={isAiModalOpen}
-        onClose={() => setIsAiModalOpen(false)}
+        isOpen={isFeatureAiModalOpen}
+        onClose={() => setIsFeatureAiModalOpen(false)}
         title={t('ai_feature_modal_title')}
         size="lg"
       >

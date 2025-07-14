@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { BusinessLaunchCanvas } from './components/BusinessLaunchCanvas/BusinessLaunchCanvas';
@@ -11,7 +12,7 @@ import SalesPage from './components/SalesPage/SalesPage'; // New Sales Page
 import StrategyPage from './components/StrategyPage'; // New Strategy Page
 import { LegalPage } from './components/Grow/LegalPage'; 
 import { InvestmentPage } from './components/Grow/InvestmentPage';
-// import { ManagementPage } from './components/Grow/ManagementPage';
+import ManagementPage from './components/Grow/ManagementPage';
 // import { ChecklistsPage } from './components/Grow/ChecklistsPage';
 import { ComingSoon } from './components/ComingSoon';
 import { UserProfileModal } from './components/UserProfileModal';
@@ -522,6 +523,14 @@ const App: React.FC = () => {
                 return <InvestmentPage 
                             initialData={growData.investment}
                             onUpdateData={(updatedInvestmentData) => handleUpdateGrowData({...growData, investment: updatedInvestmentData})}
+                            language={currentLanguage}
+                            t={t}
+                            userProfile={userProfile}
+                        />;
+            case SubPage.MANAGEMENT:
+                return <ManagementPage 
+                            initialData={growData.management}
+                            onUpdateData={(updatedManagementData) => handleUpdateGrowData({...growData, management: updatedManagementData})}
                             language={currentLanguage}
                             t={t}
                             userProfile={userProfile}

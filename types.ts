@@ -751,7 +751,40 @@ export type TranslationKey =
   | 'legal_compliance_status_in_progress'
   | 'legal_compliance_status_completed'
   | 'legal_doc_preview_title'
-  | 'legal_doc_download_button';
+  | 'legal_doc_download_button'
+  | 'investment_page_title'
+  | 'investment_sidebar_title'
+  | 'investment_help_button_tooltip'
+  | 'cap_table_title'
+  | 'cap_table_add_stakeholder'
+  | 'cap_table_stakeholder'
+  | 'cap_table_share_count'
+  | 'cap_table_share_type'
+  | 'cap_table_ownership'
+  | 'cap_table_total_shares'
+  | 'cap_table_chart_title'
+  | 'cap_table_modal_add_title'
+  | 'cap_table_modal_edit_title'
+  | 'cap_table_share_type_common'
+  | 'cap_table_share_type_preferred'
+  | 'cap_table_share_type_options'
+  | 'cap_table_no_entries'
+  | 'ir_crm_title'
+  | 'ir_crm_add_investor'
+  | 'ir_crm_stage_initial'
+  | 'ir_crm_stage_contacted'
+  | 'ir_crm_stage_meeting'
+  | 'ir_crm_stage_due_diligence'
+  | 'ir_crm_stage_closed'
+  | 'ir_crm_stage_passed'
+  | 'ir_crm_modal_add_title'
+  | 'ir_crm_modal_edit_title'
+  | 'ir_crm_name_label'
+  | 'ir_crm_contact_label'
+  | 'ir_crm_stage_label'
+  | 'ir_crm_last_contacted_label'
+  | 'ir_crm_notes_label'
+  | 'ir_crm_no_investors';
 
 // --- DATA STRUCTURES ---
 
@@ -1093,18 +1126,19 @@ export interface ComplianceItem {
   dueDate?: string;
   notes: string;
 }
+export type ShareType = 'Common' | 'Preferred' | 'Options';
 export interface CapTableEntry {
   id: string;
   stakeholder: string;
   shareCount: number;
-  shareType: string; // 'Common', 'Preferred'
-  ownershipPercentage: number;
+  shareType: ShareType;
 }
+export type InvestorStage = 'initial' | 'contacted' | 'meeting' | 'due_diligence' | 'closed' | 'passed';
 export interface InvestorCrmEntry {
   id: string;
   name: string;
   contact: string;
-  stage: 'initial' | 'contacted' | 'meeting' | 'due_diligence' | 'closed' | 'passed';
+  stage: InvestorStage;
   lastContacted: string;
   notes: string;
 }

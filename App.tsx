@@ -10,7 +10,7 @@ import EconomicsPage from './components/EconomicsPage/EconomicsPage'; // New Eco
 import SalesPage from './components/SalesPage/SalesPage'; // New Sales Page
 import StrategyPage from './components/StrategyPage'; // New Strategy Page
 import { LegalPage } from './components/Grow/LegalPage'; 
-// import { InvestmentPage } from './components/Grow/InvestmentPage';
+import { InvestmentPage } from './components/Grow/InvestmentPage';
 // import { ManagementPage } from './components/Grow/ManagementPage';
 // import { ChecklistsPage } from './components/Grow/ChecklistsPage';
 import { ComingSoon } from './components/ComingSoon';
@@ -514,6 +514,14 @@ const App: React.FC = () => {
                 return <LegalPage 
                             initialData={growData.legal}
                             onUpdateData={(updatedLegalData) => handleUpdateGrowData({...growData, legal: updatedLegalData})}
+                            language={currentLanguage}
+                            t={t}
+                            userProfile={userProfile}
+                        />;
+            case SubPage.INVESTMENT:
+                return <InvestmentPage 
+                            initialData={growData.investment}
+                            onUpdateData={(updatedInvestmentData) => handleUpdateGrowData({...growData, investment: updatedInvestmentData})}
                             language={currentLanguage}
                             t={t}
                             userProfile={userProfile}

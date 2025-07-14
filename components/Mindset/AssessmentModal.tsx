@@ -16,6 +16,25 @@ interface AssessmentModalProps {
   t: (key: TranslationKey, defaultText?: string) => string;
 }
 
+const scaleLabelMap: Record<string, TranslationKey[]> = {
+    p1: [
+        'q_p1_opt_very_uncomfortable', 'q_p1_opt_uncomfortable', 'q_p1_opt_neutral',
+        'q_p1_opt_comfortable', 'q_p1_opt_very_comfortable'
+    ],
+    p4: [
+        'q_p4_opt_not_at_all', 'q_p4_opt_slightly', 'q_p4_opt_moderately',
+        'q_p4_opt_very', 'q_p4_opt_extremely'
+    ],
+    ba3: [
+        'q_ba3_opt_very_uncomfortable', 'q_ba3_opt_uncomfortable', 'q_ba3_opt_neutral',
+        'q_ba3_opt_comfortable', 'q_ba3_opt_very_comfortable'
+    ],
+    sk2: [
+        'q_sk2_opt_not_at_all', 'q_sk2_opt_slightly', 'q_sk2_opt_moderately',
+        'q_sk2_opt_very', 'q_sk2_opt_expert'
+    ],
+};
+
 const AssessmentModal: React.FC<AssessmentModalProps> = ({
   isOpen,
   onClose,
@@ -78,6 +97,8 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({
   if (assessmentType === 'businessAcumen') modalTitleKey = 'mindset_assessment_modal_title_acumen';
   if (assessmentType === 'startupKnowledge') modalTitleKey = 'mindset_assessment_modal_title_knowledge';
 
+  const scaleLabels = currentQuestion ? scaleLabelMap[currentQuestion.id] : undefined;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t(modalTitleKey)} size="xl">
       {totalQuestions === 0 && !currentQuestion ? <p className="text-slate-300">{t('coming_soon_message')}</p> : (
@@ -105,9 +126,9 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({
               <p className="text-lg font-medium text-slate-100 mb-4">{t(currentQuestion.textKey)}</p>
               
               {currentQuestion.type === 'multiple-choice-scale' && currentQuestion.scaleMin && currentQuestion.scaleMax && (
-                  <div className="flex flex-wrap justify-around items-center mt-2 space-y-2 sm:space-y-0 sm:space-x-2">
+                  <div className="flex flex-col sm:flex-row justify-around items-stretch mt-2 space-y-4 sm:space-y-0 sm:space-x-2">
                       {Array.from({ length: (currentQuestion.scaleMax - currentQuestion.scaleMin + 1) }, (_, i) => currentQuestion.scaleMin! + i).map(val => (
-                          <label key={val} className="flex flex-col items-center p-2 rounded-md cursor-pointer hover:bg-slate-600 transition-colors w-16">
+                          <label key={val} className="flex-1 min-w-[5rem] flex flex-col items-center p-3 rounded-md cursor-pointer hover:bg-slate-600 transition-colors border border-transparent has-[:checked]:bg-slate-600 has-[:checked]:border-blue-500">
                                <input 
                                   type="radio" 
                                   name={currentQuestion.id} 
@@ -116,7 +137,11 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({
                                   onChange={() => handleAnswerChange(currentQuestion.id, val)}
                                   className="form-radio h-5 w-5 text-blue-500 bg-slate-700 border-slate-500 focus:ring-blue-500"
                                 />
-                               <span className="text-sm text-slate-200 mt-1">{val}</span>
+                                {scaleLabels ? (
+                                    <span className="text-xs text-center text-slate-300 mt-2">{t(scaleLabels[val - 1])}</span>
+                                ) : (
+                                    <span className="text-sm text-slate-200 mt-1">{val}</span>
+                                )}
                           </label>
                       ))}
                   </div>
@@ -125,7 +150,7 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({
               {(currentQuestion.type === 'multiple-choice-options' || currentQuestion.type === 'scenario-options') && currentQuestion.options && (
                 <div className="space-y-3 mt-2">
                     {currentQuestion.options.map(option => (
-                        <label key={option.value} className="flex items-center space-x-3 p-3 bg-slate-600/50 rounded-md hover:bg-slate-600 transition-colors cursor-pointer">
+                        <label key={option.value} className="flex items-center space-x-3 p-3 bg-slate-600/50 rounded-md hover:bg-slate-600 transition-colors cursor-pointer border border-transparent has-[:checked]:bg-slate-600 has-[:checked]:border-blue-500">
                             <input 
                                 type="radio" 
                                 name={currentQuestion.id} 

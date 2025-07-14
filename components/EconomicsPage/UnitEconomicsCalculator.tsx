@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+
+import React, { useMemo, useState, useEffect } from 'react';
 import { EconomicsData, TranslationKey, Language, UnitEconomicsData } from '../../types';
 
 interface UnitEconomicsCalculatorProps {
@@ -39,34 +40,46 @@ const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, 
 };
 
 export const UnitEconomicsCalculator: React.FC<UnitEconomicsCalculatorProps> = ({ economicsData, onUpdateData, t, language }) => {
-  const unitEconomics = economicsData.unitEconomics || { avgRevenue: '', cogs: '', cac: '', customerLifetime: '' };
+  const [localInputs, setLocalInputs] = useState<UnitEconomicsData>(economicsData.unitEconomics);
 
-  const handleInputChange = (field: keyof UnitEconomicsData, value: string) => {
-    if (value === '') {
-      onUpdateData({
-        ...economicsData,
-        unitEconomics: { ...unitEconomics, [field]: '' },
-      });
-      return;
-    }
+  useEffect(() => {
+    // Sync local state when props change from external source
+    setLocalInputs(economicsData.unitEconomics);
+  }, [economicsData.unitEconomics]);
+
+  const handleLocalChange = (field: keyof UnitEconomicsData, value: string) => {
+    // Update local state for smooth typing
+    setLocalInputs(prev => ({ ...prev, [field]: value as any }));
+  };
+
+  const handlePersistChange = (field: keyof UnitEconomicsData) => {
+    // On blur, update the parent state with a clean numeric value
+    const value = localInputs[field];
+    const numericValue = value === '' ? '' : parseFloat(String(value));
     
-    const numericValue = parseFloat(value);
-    if (!isNaN(numericValue) && numericValue >= 0) {
-      onUpdateData({
-        ...economicsData,
-        unitEconomics: { ...unitEconomics, [field]: numericValue },
-      });
+    const isValidNumber = typeof numericValue === 'number' && !isNaN(numericValue) && numericValue >= 0;
+
+    if (value === '' || isValidNumber) {
+        if (String(numericValue) !== String(economicsData.unitEconomics[field])) {
+            onUpdateData({
+                ...economicsData,
+                unitEconomics: { ...economicsData.unitEconomics, [field]: numericValue },
+            });
+        }
+    } else {
+        // If invalid value is left on blur, revert to the parent's state
+        setLocalInputs(economicsData.unitEconomics);
     }
   };
 
   const { grossMargin, ltv, ltvToCacRatio, breakevenMonths } = useMemo(() => {
-    const avgRevenue = Number(unitEconomics.avgRevenue);
-    const cogs = Number(unitEconomics.cogs);
-    const cac = Number(unitEconomics.cac);
-    const lifetime = Number(unitEconomics.customerLifetime);
+    const avgRevenue = Number(localInputs.avgRevenue);
+    const cogs = Number(localInputs.cogs);
+    const cac = Number(localInputs.cac);
+    const lifetime = Number(localInputs.customerLifetime);
 
     if (isNaN(avgRevenue) || isNaN(cogs) || isNaN(cac) || isNaN(lifetime)) {
-      return { grossMargin: 0, ltv: 0, ltvToCacRatio: 0, breakevenMonths: 0 };
+      return { grossMargin: NaN, ltv: NaN, ltvToCacRatio: NaN, breakevenMonths: NaN };
     }
 
     const grossMargin = avgRevenue - cogs;
@@ -75,18 +88,18 @@ export const UnitEconomicsCalculator: React.FC<UnitEconomicsCalculatorProps> = (
     const breakevenMonths = grossMargin > 0 ? cac / grossMargin : Infinity;
 
     return { grossMargin, ltv, ltvToCacRatio, breakevenMonths };
-  }, [unitEconomics]);
+  }, [localInputs]);
 
   const inputBaseClasses = "w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400 text-base font-mono";
 
-  const InputField: React.FC<{ labelKey: TranslationKey; tooltipKey: TranslationKey; value: number | ''; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }> = ({ labelKey, tooltipKey, value, onChange }) => (
+  const InputField: React.FC<{ labelKey: TranslationKey; tooltipKey: TranslationKey; value: number | string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; onBlur: () => void; }> = ({ labelKey, tooltipKey, value, onChange, onBlur }) => (
     <div>
         <label className="block text-sm font-medium text-slate-300 mb-1">
             <Tooltip text={t(tooltipKey)}>
                 {t(labelKey)} <span className="text-slate-500">(?)</span>
             </Tooltip>
         </label>
-        <input type="number" value={value} onChange={onChange} min="0" step="any" className={inputBaseClasses} placeholder="0.00" />
+        <input type="text" pattern="[0-9]*\.?[0-9]*" value={value} onChange={onChange} onBlur={onBlur} className={inputBaseClasses} placeholder="0.00" />
     </div>
   );
 
@@ -110,10 +123,10 @@ export const UnitEconomicsCalculator: React.FC<UnitEconomicsCalculatorProps> = (
         {/* Inputs Column */}
         <div className="p-6 bg-slate-800 rounded-xl shadow-lg border border-slate-700 space-y-6">
           <h3 className="text-xl font-semibold text-slate-100 text-center">{t('ue_inputs_title')}</h3>
-          <InputField labelKey="ue_avg_revenue_label" tooltipKey="ue_avg_revenue_tooltip" value={unitEconomics.avgRevenue} onChange={(e) => handleInputChange('avgRevenue', e.target.value)} />
-          <InputField labelKey="ue_cogs_label" tooltipKey="ue_cogs_tooltip" value={unitEconomics.cogs} onChange={(e) => handleInputChange('cogs', e.target.value)} />
-          <InputField labelKey="ue_cac_label" tooltipKey="ue_cac_tooltip" value={unitEconomics.cac} onChange={(e) => handleInputChange('cac', e.target.value)} />
-          <InputField labelKey="ue_customer_lifetime_label" tooltipKey="ue_customer_lifetime_tooltip" value={unitEconomics.customerLifetime} onChange={(e) => handleInputChange('customerLifetime', e.target.value)} />
+          <InputField labelKey="ue_avg_revenue_label" tooltipKey="ue_avg_revenue_tooltip" value={localInputs.avgRevenue} onChange={(e) => handleLocalChange('avgRevenue', e.target.value)} onBlur={() => handlePersistChange('avgRevenue')} />
+          <InputField labelKey="ue_cogs_label" tooltipKey="ue_cogs_tooltip" value={localInputs.cogs} onChange={(e) => handleLocalChange('cogs', e.target.value)} onBlur={() => handlePersistChange('cogs')} />
+          <InputField labelKey="ue_cac_label" tooltipKey="ue_cac_tooltip" value={localInputs.cac} onChange={(e) => handleLocalChange('cac', e.target.value)} onBlur={() => handlePersistChange('cac')} />
+          <InputField labelKey="ue_customer_lifetime_label" tooltipKey="ue_customer_lifetime_tooltip" value={localInputs.customerLifetime} onChange={(e) => handleLocalChange('customerLifetime', e.target.value)} onBlur={() => handlePersistChange('customerLifetime')} />
         </div>
 
         {/* Results Column */}

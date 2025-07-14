@@ -653,6 +653,35 @@ export type TranslationKey =
   | 'br_chart_title'
   | 'br_chart_capital_label'
   | 'br_chart_month_label'
+  | 'now_label'
+  | 'fp_title'
+  | 'fp_subtitle'
+  | 'fp_inputs_title'
+  | 'fp_results_title'
+  | 'fp_starting_capital_label'
+  | 'fp_products_services_title'
+  | 'fp_add_product_button'
+  | 'fp_product_name_label'
+  | 'fp_product_price_label'
+  | 'fp_product_cost_label'
+  | 'fp_product_initial_sales_label'
+  | 'fp_remove_product_button_tooltip'
+  | 'fp_growth_assumptions_title'
+  | 'fp_sales_growth_rate_label'
+  | 'fp_other_monthly_revenue_label'
+  | 'fp_other_monthly_expenses_label'
+  | 'fp_generate_button'
+  | 'fp_table_metric_header'
+  | 'fp_table_month1_header'
+  | 'fp_table_month2_header'
+  | 'fp_table_month3_header'
+  | 'fp_table_total_header'
+  | 'fp_table_revenue'
+  | 'fp_table_cogs'
+  | 'fp_table_gross_profit'
+  | 'fp_table_other_expenses'
+  | 'fp_table_net_profit'
+  | 'fp_table_ending_balance'
   | 'sales_page_title'
   | 'sales_sidebar_title'
   | 'sales_help_button_tooltip'
@@ -831,6 +860,10 @@ export type TranslationKey =
   | 'checklists_page_title'
   | 'checklists_sidebar_title'
   | 'checklists_help_button_tooltip'
+  | 'checklist_add_item_placeholder'
+  | 'checklist_add_card_button'
+  | 'checklist_add_card_modal_title'
+  | 'checklist_card_title_label'
   | 'checklist_rl_tab_product'
   | 'checklist_rl_tab_marketing'
   | 'checklist_rl_tab_pricing'
@@ -1276,12 +1309,14 @@ export interface SupportTicket {
 }
 export interface ChecklistItem {
   id: string;
-  textKey: TranslationKey;
+  text?: string;
+  textKey?: TranslationKey;
   completed: boolean;
 }
 export interface ChecklistCard {
   id: string;
-  titleKey: TranslationKey;
+  title?: string;
+  titleKey?: TranslationKey;
   items: ChecklistItem[];
 }
 export interface ChecklistTab {

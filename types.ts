@@ -823,7 +823,75 @@ export type TranslationKey =
   | 'cs_priority_low'
   | 'cs_priority_medium'
   | 'cs_priority_high'
-  | 'cs_created_at_label';
+  | 'cs_created_at_label'
+  // checklists
+  | 'checklists_page_title'
+  | 'checklists_sidebar_title'
+  | 'checklists_help_button_tooltip'
+  | 'checklist_rl_tab_product'
+  | 'checklist_rl_tab_marketing'
+  | 'checklist_rl_tab_pricing'
+  | 'checklist_rl_tab_ops'
+  | 'checklist_rl_card_legal'
+  | 'checklist_rl_item_legal_1'
+  | 'checklist_rl_item_legal_2'
+  | 'checklist_rl_item_legal_3'
+  | 'checklist_rl_item_legal_4'
+  | 'checklist_rl_card_pmf'
+  | 'checklist_rl_item_pmf_1'
+  | 'checklist_rl_item_pmf_2'
+  | 'checklist_rl_item_pmf_3'
+  | 'checklist_rl_item_pmf_4'
+  | 'checklist_rl_item_pmf_5'
+  | 'checklist_rl_card_dev'
+  | 'checklist_rl_item_dev_1'
+  | 'checklist_rl_item_dev_2'
+  | 'checklist_rl_item_dev_3'
+  | 'checklist_rl_item_dev_4'
+  | 'checklist_rl_item_dev_5'
+  | 'checklist_rl_item_dev_6'
+  | 'checklist_rl_card_cx'
+  | 'checklist_rl_item_cx_1'
+  | 'checklist_rl_item_cx_2'
+  | 'checklist_rl_item_cx_3'
+  | 'checklist_rl_item_cx_4'
+  | 'checklist_rl_item_cx_5'
+  | 'checklist_rl_item_cx_6'
+  | 'checklist_rl_card_metrics'
+  | 'checklist_rl_item_metrics_1'
+  | 'checklist_rl_item_metrics_2'
+  | 'checklist_rl_item_metrics_3'
+  | 'checklist_gl_tab_plg'
+  | 'checklist_gl_tab_paid'
+  | 'checklist_gl_tab_thought'
+  | 'checklist_gl_tab_partners'
+  | 'checklist_gl_tab_enterprise'
+  | 'checklist_gl_card_acq'
+  | 'checklist_gl_item_acq_1'
+  | 'checklist_gl_item_acq_2'
+  | 'checklist_gl_item_acq_3'
+  | 'checklist_gl_item_acq_4'
+  | 'checklist_gl_item_acq_5'
+  | 'checklist_gl_item_acq_6'
+  | 'checklist_gl_item_acq_7'
+  | 'checklist_gl_item_acq_8'
+  | 'checklist_gl_item_acq_9'
+  | 'checklist_gl_card_landing'
+  | 'checklist_gl_item_landing_1'
+  | 'checklist_gl_item_landing_2'
+  | 'checklist_gl_item_landing_3'
+  | 'checklist_gl_item_landing_4'
+  | 'checklist_gl_card_onboarding'
+  | 'checklist_gl_item_onboarding_1'
+  | 'checklist_gl_item_onboarding_2'
+  | 'checklist_gl_item_onboarding_3'
+  | 'checklist_gl_item_onboarding_4'
+  | 'checklist_gl_item_onboarding_5'
+  | 'checklist_gl_card_retention'
+  | 'checklist_gl_item_retention_1'
+  | 'checklist_gl_item_retention_2'
+  | 'checklist_gl_item_retention_3'
+  | 'checklist_gl_item_retention_4';
 
 // --- DATA STRUCTURES ---
 
@@ -1204,10 +1272,25 @@ export interface SupportTicket {
     createdAt: string;
 }
 export interface ChecklistItem {
-    id: string;
-    name: string;
-    completed: boolean;
+  id: string;
+  textKey: TranslationKey;
+  completed: boolean;
 }
+export interface ChecklistCard {
+  id: string;
+  titleKey: TranslationKey;
+  items: ChecklistItem[];
+}
+export interface ChecklistTab {
+  id: string;
+  titleKey: TranslationKey;
+  cards: ChecklistCard[];
+}
+export interface ChecklistsData {
+  releaseList: ChecklistTab[];
+  growthList: ChecklistTab[];
+}
+
 export interface GrowData {
   legal: {
     documents: LegalDocument[];
@@ -1222,10 +1305,7 @@ export interface GrowData {
     qmsItems: QmsItem[];
     supportTickets: SupportTicket[];
   };
-  checklists: {
-    releaseList: ChecklistItem[];
-    growthList: ChecklistItem[];
-  }
+  checklists: ChecklistsData;
 }
 
 // --- HELP SECTION TYPES ---

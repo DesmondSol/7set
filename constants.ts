@@ -1,4 +1,4 @@
-import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey, AssessmentQuestion, Partner, Trainer, Testimonial, ProductDesignSubSection, ProductDesignSectionHelp, EconomicsSubSection, EconomicsSectionHelp, SalesSubSection, SalesSectionHelp, StrategySubSection, StrategySectionHelp, GrowSection, GrowSectionHelp, LegalTool, InvestmentTool, ManagementTool, ChecklistTool } from './types';
+import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey, AssessmentQuestion, Partner, Trainer, Testimonial, ProductDesignSubSection, ProductDesignSectionHelp, EconomicsSubSection, EconomicsSectionHelp, SalesSubSection, SalesSectionHelp, StrategySubSection, StrategySectionHelp, GrowSection, GrowSectionHelp, LegalTool, InvestmentTool, ManagementTool, ChecklistTool, ChecklistTab } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
   {
@@ -400,6 +400,90 @@ export const GROW_SECTIONS_HELP: GrowSectionHelp[] = [
         { tool: ChecklistTool.GROWTH_LIST, explanationKey: 'grow_checklists_growth_explanation'}
     ]
   }
+];
+
+export const INITIAL_RELEASE_LIST_DATA: ChecklistTab[] = [
+  {
+    id: 'rl-tab-1', titleKey: 'checklist_rl_tab_product',
+    cards: [
+      { id: 'rl-card-1', titleKey: 'checklist_rl_card_legal', items: [
+        { id: 'rli-1-1', textKey: 'checklist_rl_item_legal_1', completed: false },
+        { id: 'rli-1-2', textKey: 'checklist_rl_item_legal_2', completed: false },
+        { id: 'rli-1-3', textKey: 'checklist_rl_item_legal_3', completed: false },
+        { id: 'rli-1-4', textKey: 'checklist_rl_item_legal_4', completed: false },
+      ]},
+      { id: 'rl-card-2', titleKey: 'checklist_rl_card_pmf', items: [
+        { id: 'rli-2-1', textKey: 'checklist_rl_item_pmf_1', completed: false },
+        { id: 'rli-2-2', textKey: 'checklist_rl_item_pmf_2', completed: false },
+        { id: 'rli-2-3', textKey: 'checklist_rl_item_pmf_3', completed: false },
+        { id: 'rli-2-4', textKey: 'checklist_rl_item_pmf_4', completed: false },
+        { id: 'rli-2-5', textKey: 'checklist_rl_item_pmf_5', completed: false },
+      ]},
+      { id: 'rl-card-3', titleKey: 'checklist_rl_card_dev', items: [
+        { id: 'rli-3-1', textKey: 'checklist_rl_item_dev_1', completed: false },
+        { id: 'rli-3-2', textKey: 'checklist_rl_item_dev_2', completed: false },
+        { id: 'rli-3-3', textKey: 'checklist_rl_item_dev_3', completed: false },
+        { id: 'rli-3-4', textKey: 'checklist_rl_item_dev_4', completed: false },
+        { id: 'rli-3-5', textKey: 'checklist_rl_item_dev_5', completed: false },
+        { id: 'rli-3-6', textKey: 'checklist_rl_item_dev_6', completed: false },
+      ]},
+      { id: 'rl-card-4', titleKey: 'checklist_rl_card_cx', items: [
+        { id: 'rli-4-1', textKey: 'checklist_rl_item_cx_1', completed: false },
+        { id: 'rli-4-2', textKey: 'checklist_rl_item_cx_2', completed: false },
+        { id: 'rli-4-3', textKey: 'checklist_rl_item_cx_3', completed: false },
+        { id: 'rli-4-4', textKey: 'checklist_rl_item_cx_4', completed: false },
+        { id: 'rli-4-5', textKey: 'checklist_rl_item_cx_5', completed: false },
+        { id: 'rli-4-6', textKey: 'checklist_rl_item_cx_6', completed: false },
+      ]},
+      { id: 'rl-card-5', titleKey: 'checklist_rl_card_metrics', items: [
+        { id: 'rli-5-1', textKey: 'checklist_rl_item_metrics_1', completed: false },
+        { id: 'rli-5-2', textKey: 'checklist_rl_item_metrics_2', completed: false },
+        { id: 'rli-5-3', textKey: 'checklist_rl_item_metrics_3', completed: false },
+      ]},
+    ]
+  },
+  { id: 'rl-tab-2', titleKey: 'checklist_rl_tab_marketing', cards: [] },
+  { id: 'rl-tab-3', titleKey: 'checklist_rl_tab_pricing', cards: [] },
+  { id: 'rl-tab-4', titleKey: 'checklist_rl_tab_ops', cards: [] },
+];
+
+export const INITIAL_GROWTH_LIST_DATA: ChecklistTab[] = [
+    { id: 'gl-tab-1', titleKey: 'checklist_gl_tab_plg', cards: [
+        { id: 'gl-card-1', titleKey: 'checklist_gl_card_acq', items: [
+            { id: 'gli-1-1', textKey: 'checklist_gl_item_acq_1', completed: false },
+            { id: 'gli-1-2', textKey: 'checklist_gl_item_acq_2', completed: false },
+            { id: 'gli-1-3', textKey: 'checklist_gl_item_acq_3', completed: false },
+            { id: 'gli-1-4', textKey: 'checklist_gl_item_acq_4', completed: false },
+            { id: 'gli-1-5', textKey: 'checklist_gl_item_acq_5', completed: false },
+            { id: 'gli-1-6', textKey: 'checklist_gl_item_acq_6', completed: false },
+            { id: 'gli-1-7', textKey: 'checklist_gl_item_acq_7', completed: false },
+            { id: 'gli-1-8', textKey: 'checklist_gl_item_acq_8', completed: false },
+            { id: 'gli-1-9', textKey: 'checklist_gl_item_acq_9', completed: false },
+        ]},
+        { id: 'gl-card-2', titleKey: 'checklist_gl_card_landing', items: [
+            { id: 'gli-2-1', textKey: 'checklist_gl_item_landing_1', completed: false },
+            { id: 'gli-2-2', textKey: 'checklist_gl_item_landing_2', completed: false },
+            { id: 'gli-2-3', textKey: 'checklist_gl_item_landing_3', completed: false },
+            { id: 'gli-2-4', textKey: 'checklist_gl_item_landing_4', completed: false },
+        ]},
+        { id: 'gl-card-3', titleKey: 'checklist_gl_card_onboarding', items: [
+            { id: 'gli-3-1', textKey: 'checklist_gl_item_onboarding_1', completed: false },
+            { id: 'gli-3-2', textKey: 'checklist_gl_item_onboarding_2', completed: false },
+            { id: 'gli-3-3', textKey: 'checklist_gl_item_onboarding_3', completed: false },
+            { id: 'gli-3-4', textKey: 'checklist_gl_item_onboarding_4', completed: false },
+            { id: 'gli-3-5', textKey: 'checklist_gl_item_onboarding_5', completed: false },
+        ]},
+        { id: 'gl-card-4', titleKey: 'checklist_gl_card_retention', items: [
+            { id: 'gli-4-1', textKey: 'checklist_gl_item_retention_1', completed: false },
+            { id: 'gli-4-2', textKey: 'checklist_gl_item_retention_2', completed: false },
+            { id: 'gli-4-3', textKey: 'checklist_gl_item_retention_3', completed: false },
+            { id: 'gli-4-4', textKey: 'checklist_gl_item_retention_4', completed: false },
+        ]},
+    ]},
+    { id: 'gl-tab-2', titleKey: 'checklist_gl_tab_paid', cards: [] },
+    { id: 'gl-tab-3', titleKey: 'checklist_gl_tab_thought', cards: [] },
+    { id: 'gl-tab-4', titleKey: 'checklist_gl_tab_partners', cards: [] },
+    { id: 'gl-tab-5', titleKey: 'checklist_gl_tab_enterprise', cards: [] },
 ];
 
 

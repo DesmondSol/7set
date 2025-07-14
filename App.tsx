@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { BusinessLaunchCanvas } from './components/BusinessLaunchCanvas/BusinessLaunchCanvas';
@@ -13,7 +12,7 @@ import StrategyPage from './components/StrategyPage'; // New Strategy Page
 import { LegalPage } from './components/Grow/LegalPage'; 
 import { InvestmentPage } from './components/Grow/InvestmentPage';
 import ManagementPage from './components/Grow/ManagementPage';
-// import { ChecklistsPage } from './components/Grow/ChecklistsPage';
+import { ChecklistsPage } from './components/Grow/ChecklistsPage';
 import { ComingSoon } from './components/ComingSoon';
 import { UserProfileModal } from './components/UserProfileModal';
 import InfographicPage from './components/InfographicPage'; 
@@ -531,6 +530,14 @@ const App: React.FC = () => {
                 return <ManagementPage 
                             initialData={growData.management}
                             onUpdateData={(updatedManagementData) => handleUpdateGrowData({...growData, management: updatedManagementData})}
+                            language={currentLanguage}
+                            t={t}
+                            userProfile={userProfile}
+                        />;
+            case SubPage.CHECKLISTS:
+                return <ChecklistsPage 
+                            initialData={growData.checklists}
+                            onUpdateData={(updatedChecklistsData) => handleUpdateGrowData({...growData, checklists: updatedChecklistsData})}
                             language={currentLanguage}
                             t={t}
                             userProfile={userProfile}

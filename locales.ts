@@ -1,5 +1,6 @@
 
 
+
 import { 
     Page, 
     SubPage, 
@@ -352,6 +353,45 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     ai_g2m_modal_description: "Based on your complete business profile (Strategy, Research, etc.), the AI will generate a detailed, step-by-step Go-to-Market launch sequence.\n\nThis will overwrite any existing sequence. Do you want to proceed?",
     ai_g2m_modal_generate_button: 'Generate Launch Sequence',
     ai_g2m_modal_generating_button: 'Generating Sequence...',
+
+    // Legal Page
+    legal_page_title: "Legal Hub",
+    legal_sidebar_title: "Legal Tools",
+    legal_help_button_tooltip: "Legal Help",
+    legal_doc_automation_title: "Legal Document Automation",
+    legal_select_doc_type: "Select a document type to generate",
+    legal_doc_type_nda: "Non-Disclosure Agreement (NDA)",
+    legal_doc_type_sa: "Service Agreement",
+    legal_doc_type_emp: "Employment Contract",
+    legal_generate_doc_button: "Generate Document with AI",
+    legal_generating_doc_button: "Generating Document...",
+    legal_generated_docs_title: "My Generated Documents",
+    legal_no_docs_placeholder: "No documents generated yet.",
+    legal_doc_form_disclosing_party_name: "Disclosing Party Name",
+    legal_doc_form_disclosing_party_address: "Disclosing Party Address",
+    legal_doc_form_receiving_party_name: "Receiving Party Name",
+    legal_doc_form_receiving_party_address: "Receiving Party Address",
+    legal_doc_form_confidential_info: "Description of Confidential Information",
+    legal_doc_form_purpose: "Purpose of Disclosure",
+    legal_doc_form_term: "Term of Agreement (in months)",
+    legal_doc_form_service_provider_name: "Service Provider Name",
+    legal_doc_form_client_name: "Client Name",
+    legal_doc_form_service_desc: "Description of Services",
+    legal_doc_form_payment_amount: "Payment Amount (ETB)",
+    legal_doc_form_payment_terms: "Payment Terms",
+    legal_doc_form_start_date: "Start Date",
+    legal_doc_form_end_date: "End Date",
+    legal_doc_form_employer_name: "Employer Name",
+    legal_doc_form_employee_name: "Employee Name",
+    legal_doc_form_job_title: "Job Title",
+    legal_doc_form_salary: "Salary (ETB per month)",
+    legal_doc_form_duties: "Key Duties & Responsibilities",
+    legal_compliance_title: "Ethiopian Startup Compliance Checklist",
+    legal_compliance_status_pending: "Pending",
+    legal_compliance_status_in_progress: "In Progress",
+    legal_compliance_status_completed: "Completed",
+    legal_doc_preview_title: "Document Preview",
+    legal_doc_download_button: "Download .txt",
 
 
     // General

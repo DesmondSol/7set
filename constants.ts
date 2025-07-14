@@ -365,7 +365,7 @@ export const SALES_SECTIONS_HELP: SalesSectionHelp[] = [
 export const GROW_SECTIONS_HELP: GrowSectionHelp[] = [
   {
     title: GrowSection.LEGAL,
-    sidebarTitle: { en: GrowSection.LEGAL, am: GrowSection.LEGAL },
+    sidebarTitle: { en: SubPage.LEGAL, am: SubPage.LEGAL },
     explanationKey: 'grow_legal_explanation',
     tools: [
       { tool: LegalTool.DOCUMENT_AUTOMATION, explanationKey: 'grow_legal_doc_auto_explanation' },
@@ -374,7 +374,7 @@ export const GROW_SECTIONS_HELP: GrowSectionHelp[] = [
   },
   {
     title: GrowSection.INVESTMENT,
-    sidebarTitle: { en: GrowSection.INVESTMENT, am: GrowSection.INVESTMENT },
+    sidebarTitle: { en: SubPage.INVESTMENT, am: SubPage.INVESTMENT },
     explanationKey: 'grow_investment_explanation',
     tools: [
       { tool: InvestmentTool.CAP_TABLE_MANAGEMENT, explanationKey: 'grow_investment_cap_table_explanation' },
@@ -383,7 +383,7 @@ export const GROW_SECTIONS_HELP: GrowSectionHelp[] = [
   },
   {
     title: GrowSection.MANAGEMENT,
-    sidebarTitle: { en: GrowSection.MANAGEMENT, am: GrowSection.MANAGEMENT },
+    sidebarTitle: { en: SubPage.MANAGEMENT, am: SubPage.MANAGEMENT },
     explanationKey: 'grow_management_explanation',
     tools: [
         { tool: ManagementTool.SUPPLY_CHAIN, explanationKey: 'grow_management_scm_explanation'},
@@ -393,7 +393,7 @@ export const GROW_SECTIONS_HELP: GrowSectionHelp[] = [
   },
   {
     title: GrowSection.CHECKLISTS,
-    sidebarTitle: { en: GrowSection.CHECKLISTS, am: GrowSection.CHECKLISTS },
+    sidebarTitle: { en: SubPage.CHECKLISTS, am: SubPage.CHECKLISTS },
     explanationKey: 'grow_checklists_explanation',
     tools: [
         { tool: ChecklistTool.RELEASE_LIST, explanationKey: 'grow_checklists_release_explanation'},

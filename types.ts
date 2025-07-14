@@ -90,10 +90,10 @@ export enum SalesSubSection {
 }
 
 export enum GrowSection {
-    LEGAL = "Legal",
-    INVESTMENT = "Investment",
-    MANAGEMENT = "Management",
-    CHECKLISTS = "Checklists",
+    LEGAL = "Legal_Section",
+    INVESTMENT = "Investment_Section",
+    MANAGEMENT = "Management_Section",
+    CHECKLISTS = "Checklists_Section",
 }
 
 export enum LegalTool {
@@ -714,7 +714,44 @@ export type TranslationKey =
   | 'grow_management_qms_explanation'
   | 'grow_management_cs_explanation'
   | 'grow_checklists_release_explanation'
-  | 'grow_checklists_growth_explanation';
+  | 'grow_checklists_growth_explanation'
+  | 'legal_page_title'
+  | 'legal_sidebar_title'
+  | 'legal_help_button_tooltip'
+  | 'legal_doc_automation_title'
+  | 'legal_select_doc_type'
+  | 'legal_doc_type_nda'
+  | 'legal_doc_type_sa'
+  | 'legal_doc_type_emp'
+  | 'legal_generate_doc_button'
+  | 'legal_generating_doc_button'
+  | 'legal_generated_docs_title'
+  | 'legal_no_docs_placeholder'
+  | 'legal_doc_form_disclosing_party_name'
+  | 'legal_doc_form_disclosing_party_address'
+  | 'legal_doc_form_receiving_party_name'
+  | 'legal_doc_form_receiving_party_address'
+  | 'legal_doc_form_confidential_info'
+  | 'legal_doc_form_purpose'
+  | 'legal_doc_form_term'
+  | 'legal_doc_form_service_provider_name'
+  | 'legal_doc_form_client_name'
+  | 'legal_doc_form_service_desc'
+  | 'legal_doc_form_payment_amount'
+  | 'legal_doc_form_payment_terms'
+  | 'legal_doc_form_start_date'
+  | 'legal_doc_form_end_date'
+  | 'legal_doc_form_employer_name'
+  | 'legal_doc_form_employee_name'
+  | 'legal_doc_form_job_title'
+  | 'legal_doc_form_salary'
+  | 'legal_doc_form_duties'
+  | 'legal_compliance_title'
+  | 'legal_compliance_status_pending'
+  | 'legal_compliance_status_in_progress'
+  | 'legal_compliance_status_completed'
+  | 'legal_doc_preview_title'
+  | 'legal_doc_download_button';
 
 // --- DATA STRUCTURES ---
 
@@ -1039,17 +1076,20 @@ export interface SalesData {
   crmLeads: CrmLead[];
 }
 
+export type LegalDocumentType = 'nda' | 'service-agreement' | 'employment-contract';
 export interface LegalDocument {
   id: string;
   name: string;
-  type: string; // e.g., 'NDA', 'Employment Contract'
-  content: string; // or link
+  type: LegalDocumentType;
+  content: string;
   createdAt: string;
 }
+
+export type ComplianceStatus = 'pending' | 'in_progress' | 'completed';
 export interface ComplianceItem {
   id: string;
   name: string;
-  status: 'pending' | 'in_progress' | 'completed';
+  status: ComplianceStatus;
   dueDate?: string;
   notes: string;
 }

@@ -9,8 +9,7 @@ import ProductDesignPage from './components/ProductDesignPage/ProductDesignPage'
 import EconomicsPage from './components/EconomicsPage/EconomicsPage'; // New Economics Page
 import SalesPage from './components/SalesPage/SalesPage'; // New Sales Page
 import StrategyPage from './components/StrategyPage'; // New Strategy Page
-// NOTE: Grow pages are temporarily disabled to fix module resolution errors, as component files were not provided.
-// import { LegalPage } from './components/Grow/LegalPage'; 
+import { LegalPage } from './components/Grow/LegalPage'; 
 // import { InvestmentPage } from './components/Grow/InvestmentPage';
 // import { ManagementPage } from './components/Grow/ManagementPage';
 // import { ChecklistsPage } from './components/Grow/ChecklistsPage';
@@ -118,7 +117,15 @@ const initialSalesData: SalesData = {
 const initialGrowData: GrowData = {
   legal: {
     documents: [],
-    complianceItems: [],
+    complianceItems: [
+        { id: 'comp-1', name: 'Business Registration & Licensing', status: 'pending', notes: 'Register company name and obtain principal registration certificate from Ministry of Trade and Industry (MoTI).'},
+        { id: 'comp-2', name: 'Tax Identification Number (TIN)', status: 'pending', notes: 'Obtain TIN from the Ethiopian Revenue and Customs Authority (ERCA). This is mandatory for all businesses.'},
+        { id: 'comp-3', name: 'Value Added Tax (VAT) Registration', status: 'pending', notes: 'Register for VAT if annual turnover is expected to exceed ETB 1,000,000.'},
+        { id: 'comp-4', name: 'Employment Contracts', status: 'pending', notes: 'Ensure all employment contracts comply with the Ethiopian Labour Proclamation No. 1156/2019.'},
+        { id: 'comp-5', name: 'Private Organization Employees Pension Fund', status: 'pending', notes: 'Register and contribute for all permanent employees. Contribution is 7% from employer and 11% from employee.'},
+        { id: 'comp-6', name: 'Business Bank Account', status: 'pending', notes: 'Open a dedicated commercial bank account for all business transactions.'},
+        { id: 'comp-7', name: 'Intellectual Property (IP) Protection', status: 'pending', notes: 'Consider registering trademarks, patents, or copyrights with the Ethiopian Intellectual Property Office (EIPO).'},
+    ],
   },
   investment: {
     capTable: [],
@@ -326,8 +333,15 @@ const App: React.FC = () => {
         try {
             const parsed = JSON.parse(storedData);
             // Basic validation and merging with defaults
+            const mergedLegal = { 
+                ...initialGrowData.legal, 
+                ...(parsed.legal || {}),
+                // Ensure compliance items are not overwritten if they exist in storage but not in defaults
+                complianceItems: parsed.legal?.complianceItems || initialGrowData.legal.complianceItems
+            };
+
             return {
-                legal: { ...initialGrowData.legal, ...(parsed.legal || {}) },
+                legal: mergedLegal,
                 investment: { ...initialGrowData.investment, ...(parsed.investment || {}) },
                 management: { ...initialGrowData.management, ...(parsed.management || {}) },
                 checklists: { ...initialGrowData.checklists, ...(parsed.checklists || {}) },
@@ -495,8 +509,18 @@ const App: React.FC = () => {
               />;
     }
     if (activePage === Page.GROW) {
-        // Since the component files don't exist, we will show coming soon for now to fix the error.
-        return <ComingSoon featureName={t(activeSubPage as TranslationKey, activeSubPage || 'Grow')} language={currentLanguage} t={t} />;
+        switch (activeSubPage) {
+            case SubPage.LEGAL:
+                return <LegalPage 
+                            initialData={growData.legal}
+                            onUpdateData={(updatedLegalData) => handleUpdateGrowData({...growData, legal: updatedLegalData})}
+                            language={currentLanguage}
+                            t={t}
+                            userProfile={userProfile}
+                        />;
+            default:
+                return <ComingSoon featureName={t(activeSubPage as TranslationKey, activeSubPage || 'Grow')} language={currentLanguage} t={t} />;
+        }
     }
 
     if (activePage && activeSubPage) { 

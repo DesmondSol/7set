@@ -1,9 +1,12 @@
+
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { GrowData, InvestmentTool, Language, UserProfile, TranslationKey, CapTableEntry, InvestorCrmEntry, ShareType, InvestorStage } from '../../types';
+import { GrowData, InvestmentTool, Language, UserProfile, TranslationKey, CapTableEntry, InvestorCrmEntry, ShareType, InvestorStage, GrowSection } from '../../types';
 import { GROW_SECTIONS_HELP } from '../../constants';
 import { Button } from '../common/Button';
 import { Modal } from '../common/Modal';
 import { FloatingActionButton } from '../common/FloatingActionButton';
+import { addUserProfileHeader, addPageFooter, addTextWithPageBreaks, MARGIN_MM, LINE_HEIGHT_NORMAL, TITLE_FONT_SIZE, LINE_HEIGHT_TITLE, SECTION_TITLE_FONT_SIZE, LINE_HEIGHT_SECTION_TITLE, TEXT_FONT_SIZE } from '../../utils/pdfUtils';
 
 declare var Chart: any;
 
@@ -117,14 +120,14 @@ const CapTableTool: React.FC<Omit<InvestmentPageProps, 'userProfile'>> = ({ init
                         maintainAspectRatio: false,
                         plugins: {
                             legend: { position: 'bottom', labels: { color: '#cbd5e1' } },
-                            tooltip: { callbacks: { label: (c) => `${c.label}: ${((c.raw as number / totalShares) * 100).toFixed(2)}%` } }
+                            tooltip: { callbacks: { label: (c: any) => `${c.label}: ${((c.raw as number / totalShares) * 100).toFixed(2)}%` } }
                         }
                     }
                 });
             }
         }
         return () => { if (chartInstanceRef.current) chartInstanceRef.current.destroy(); };
-    }, [initialData.capTable, totalShares]);
+    }, [initialData.capTable, totalShares, t]);
 
     const handleSaveEntry = (entry: CapTableEntry) => {
         const existing = initialData.capTable.find(e => e.id === entry.id);
@@ -188,7 +191,7 @@ const CapTableTool: React.FC<Omit<InvestmentPageProps, 'userProfile'>> = ({ init
                 <div className="lg:col-span-2 bg-slate-800 p-4 rounded-xl shadow-lg border border-slate-700">
                      <h4 className="text-lg font-semibold text-center text-slate-100 mb-4">{t('cap_table_chart_title')}</h4>
                      <div className="h-80 relative">
-                        <canvas ref={chartRef}></canvas>
+                        <canvas ref={chartRef} id="capTablePieChart"></canvas>
                      </div>
                 </div>
             </div>
@@ -279,7 +282,6 @@ const InvestorCrmTool: React.FC<Omit<InvestmentPageProps, 'userProfile'>> = ({ i
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, itemId: string) => setDraggedItemId(itemId);
     const handleDragEnd = () => setDraggedItemId(null);
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
-
     const handleDrop = (e: React.DragEvent<HTMLDivElement>, newStage: InvestorStage) => {
         e.preventDefault();
         e.currentTarget.classList.remove('bg-slate-800/50');
@@ -303,7 +305,7 @@ const InvestorCrmTool: React.FC<Omit<InvestmentPageProps, 'userProfile'>> = ({ i
                         <div key={stage} onDragOver={handleDragOver} onDrop={e => handleDrop(e, stage)}
                             onDragEnter={e => e.currentTarget.classList.add('bg-slate-800/50')} onDragLeave={e => e.currentTarget.classList.remove('bg-slate-800/50')}
                             className="w-72 bg-slate-800 p-3 rounded-lg border-t-4 border-slate-600 flex-shrink-0 transition-colors">
-                            <h4 className="font-semibold text-slate-300 mb-4">{t(`ir_crm_stage_${stage}` as TranslationKey)} ({initialData.investorCrm.filter(i => i.stage === stage).length})</h4>
+                            <h4 className="font-semibold text-slate-300 mb-4">{t(`ir_crm_stage_${stage}`)} ({initialData.investorCrm.filter(i => i.stage === stage).length})</h4>
                             <div className="space-y-3 min-h-[100px]">
                                 {initialData.investorCrm.filter(i => i.stage === stage).map(item => (
                                     <div key={item.id} draggable onDragStart={e => handleDragStart(e, item.id)} onDragEnd={handleDragEnd}
@@ -335,7 +337,93 @@ export const InvestmentPage: React.FC<InvestmentPageProps> = ({ initialData, onU
 
     useEffect(() => { if (window.innerWidth < 768) setIsSidebarOpen(false); }, []);
 
-    const investmentGrowHelp = GROW_SECTIONS_HELP.find(s => s.title === 'Investment_Section');
+    const handleExport = async () => {
+        const { default: jsPDF } = await import('jspdf');
+        const doc = new jsPDF();
+        const yRef = { value: MARGIN_MM };
+        const totalPagesRef = { current: doc.getNumberOfPages() };
+        
+        addUserProfileHeader(doc, userProfile, yRef, totalPagesRef, t);
+    
+        doc.setFontSize(TITLE_FONT_SIZE);
+        doc.setFont("helvetica", "bold");
+        addTextWithPageBreaks(doc, t('investment_page_title'), MARGIN_MM, yRef, {}, LINE_HEIGHT_TITLE, totalPagesRef, t);
+        yRef.value += LINE_HEIGHT_NORMAL;
+    
+        // --- Cap Table Section ---
+        doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+        addTextWithPageBreaks(doc, t(InvestmentTool.CAP_TABLE_MANAGEMENT), MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, t);
+        
+        const canvas = document.getElementById('capTablePieChart') as HTMLCanvasElement;
+        if (canvas) {
+            try {
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 80;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                if (yRef.value + imgHeight > 280) { doc.addPage(); yRef.value = MARGIN_MM; }
+                doc.addImage(imgData, 'PNG', MARGIN_MM, yRef.value, imgWidth, imgHeight);
+                yRef.value += imgHeight + 10;
+            } catch(e) { console.error("Could not add chart to PDF", e); }
+        }
+        
+        const capTableData = initialData.capTable;
+        const totalShares = capTableData.reduce((sum, entry) => sum + entry.shareCount, 0);
+        const head = [[t('cap_table_stakeholder'), t('cap_table_share_count'), t('cap_table_share_type'), t('cap_table_ownership')]];
+        const body = capTableData.map(entry => [
+            entry.stakeholder,
+            entry.shareCount.toLocaleString(),
+            t(`cap_table_share_type_${entry.shareType.toLowerCase()}` as TranslationKey, entry.shareType),
+            totalShares > 0 ? ((entry.shareCount / totalShares) * 100).toFixed(2) + '%' : '0.00%'
+        ]);
+    
+        if (yRef.value > 240) { doc.addPage(); yRef.value = MARGIN_MM; }
+    
+        (doc as any).autoTable({
+            startY: yRef.value, head: head, body: body, theme: 'grid',
+            headStyles: { fillColor: [6, 214, 160] },
+        });
+        yRef.value = (doc as any).lastAutoTable.finalY + 10;
+        
+        // --- Investor CRM Section ---
+        doc.addPage();
+        yRef.value = MARGIN_MM;
+        doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+        addTextWithPageBreaks(doc, t(InvestmentTool.INVESTOR_RELATIONS_CRM), MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, t);
+        
+        const crmData = initialData.investorCrm;
+        const stages: InvestorStage[] = ['initial', 'contacted', 'meeting', 'due_diligence', 'closed', 'passed'];
+        
+        stages.forEach(stage => {
+            const investorsInStage = crmData.filter(inv => inv.stage === stage);
+            if (investorsInStage.length > 0) {
+                doc.setFontSize(TEXT_FONT_SIZE + 2);
+                doc.setFont("helvetica", "bold");
+                addTextWithPageBreaks(doc, t(`ir_crm_stage_${stage}` as TranslationKey, stage), MARGIN_MM, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+                
+                doc.setFontSize(TEXT_FONT_SIZE);
+                doc.setFont("helvetica", "normal");
+                const stageBody = investorsInStage.map(inv => [
+                    inv.name, inv.contact, new Date(inv.lastContacted).toLocaleDateString(), inv.notes
+                ]);
+                
+                (doc as any).autoTable({
+                    startY: yRef.value,
+                    head: [[t('ir_crm_name_label'), t('ir_crm_contact_label'), t('ir_crm_last_contacted_label'), t('ir_crm_notes_label')]],
+                    body: stageBody, theme: 'striped', headStyles: { fillColor: [17, 138, 178] }
+                });
+                yRef.value = (doc as any).lastAutoTable.finalY + 10;
+            }
+        });
+    
+        for (let i = 1; i <= doc.getNumberOfPages(); i++) {
+            doc.setPage(i);
+            addPageFooter(doc, i, doc.getNumberOfPages(), t);
+        }
+        
+        doc.save(`${t('investment_page_title', 'investment').toLowerCase().replace(/\s/g, '_')}_export.pdf`);
+    };
+
+    const investmentGrowHelp = GROW_SECTIONS_HELP.find(s => s.title === GrowSection.INVESTMENT);
     const currentToolHelp = investmentGrowHelp?.tools.find(tool => tool.tool === activeTool);
 
     return (
@@ -360,9 +448,12 @@ export const InvestmentPage: React.FC<InvestmentPageProps> = ({ initialData, onU
             <main className="flex-grow p-4 md:p-8 bg-transparent shadow-inner overflow-y-auto">
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="text-3xl font-bold text-slate-100">{t('investment_page_title')}</h2>
-                    <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden">
-                        {isSidebarOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
-                    </Button>
+                    <div className="flex items-center gap-4">
+                        <Button onClick={handleExport} variant="secondary">{t('export_all_button')}</Button>
+                        <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden">
+                            {isSidebarOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
+                        </Button>
+                    </div>
                 </div>
                 {activeTool === InvestmentTool.CAP_TABLE_MANAGEMENT && <CapTableTool initialData={initialData} onUpdateData={onUpdateData} language={language} t={t} />}
                 {activeTool === InvestmentTool.INVESTOR_RELATIONS_CRM && <InvestorCrmTool initialData={initialData} onUpdateData={onUpdateData} language={language} t={t} />}

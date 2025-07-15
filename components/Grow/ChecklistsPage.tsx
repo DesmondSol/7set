@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { GrowData, ChecklistTool, Language, UserProfile, TranslationKey, ChecklistTab, ChecklistCard, ChecklistItem } from '../../types';
+import { GrowData, ChecklistTool, Language, UserProfile, TranslationKey, ChecklistTab, ChecklistCard, ChecklistItem, GrowSection } from '../../types';
 import { GROW_SECTIONS_HELP, INITIAL_RELEASE_LIST_DATA, INITIAL_GROWTH_LIST_DATA } from '../../constants';
 import { Button } from '../common/Button';
 import { Modal } from '../common/Modal';
@@ -272,7 +272,7 @@ export const ChecklistsPage: React.FC<ChecklistsPageProps> = ({ initialData, onU
         }
     }, []); // Run only once on mount
 
-    const checklistsGrowHelp = GROW_SECTIONS_HELP.find(s => s.title === 'Checklists_Section');
+    const checklistsGrowHelp = GROW_SECTIONS_HELP.find(s => s.title === GrowSection.CHECKLISTS);
     const currentToolHelp = checklistsGrowHelp?.tools.find(tool => tool.tool === activeTool);
 
     const handleUpdateList = (listType: 'releaseList' | 'growthList', updatedList: ChecklistTab[]) => {

@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from 'react';
 import { EconomicsData, EconomicsSubSection, Language, UserProfile, TranslationKey, EconomicsSectionHelp } from '../../types';
 import { ECONOMICS_SECTIONS_HELP } from '../../constants';
@@ -37,7 +39,7 @@ const EconomicsPage: React.FC<EconomicsPageProps> = ({
   }, []);
 
   const pageTitleObject = ECONOMICS_SECTIONS_HELP.find(s => s.title === activeSubSection);
-  const pageTitle = pageTitleObject ? t(pageTitleObject.sidebarTitle[language] as TranslationKey, pageTitleObject.title) : t(activeSubSection as TranslationKey, activeSubSection);
+  const pageTitle = pageTitleObject ? t(pageTitleObject.sidebarTitle[language], pageTitleObject.title) : t(activeSubSection, activeSubSection);
 
   const handleExportAll = async () => {
     const { default: jsPDF } = await import('jspdf');
@@ -152,7 +154,7 @@ const EconomicsPage: React.FC<EconomicsPageProps> = ({
       case EconomicsSubSection.FINANCIAL_PROJECTION:
         return <FinancialProjectionGenerator economicsData={initialData} onUpdateData={onUpdateData} t={t} language={language} />;
       default:
-        return <ComingSoon featureName={t(activeSubSection as TranslationKey, activeSubSection)} language={language} t={t} />;
+        return <ComingSoon featureName={t(activeSubSection, activeSubSection)} language={language} t={t} />;
     }
   };
 
@@ -184,7 +186,7 @@ const EconomicsPage: React.FC<EconomicsPageProps> = ({
                       : 'hover:bg-slate-700 hover:text-slate-100'
                     }`}
                 >
-                  {t(sectionHelp.sidebarTitle[language] as TranslationKey, sectionHelp.title)}
+                  {t(sectionHelp.sidebarTitle[language], sectionHelp.title)}
                 </a>
               </li>
             ))}
@@ -217,7 +219,7 @@ const EconomicsPage: React.FC<EconomicsPageProps> = ({
       <Modal
         isOpen={isHelpModalOpen}
         onClose={() => setIsHelpModalOpen(false)}
-        title={`${t('mra_help_modal_title_prefix')}: ${t(currentHelpContent.sidebarTitle[language] as TranslationKey, currentHelpContent.title)}`}
+        title={`${t('mra_help_modal_title_prefix')}: ${t(currentHelpContent.sidebarTitle[language], currentHelpContent.title)}`}
         size="xl"
       >
         <div className="prose prose-sm prose-invert max-w-none text-slate-300 whitespace-pre-line max-h-[70vh] overflow-y-auto pr-2">

@@ -1,3 +1,5 @@
+
+
 import { Page, SubPage, NavItem, CanvasSection, CanvasSectionHelp, ResearchSection, ResearchSectionHelp, Language, ALL_CANVAS_SECTIONS, CopywritingSubSection, CopywritingSectionHelp, MindsetSubSection, MindsetSectionHelp, TranslationKey, AssessmentQuestion, Partner, Trainer, Testimonial, ProductDesignSubSection, ProductDesignSectionHelp, EconomicsSubSection, EconomicsSectionHelp, SalesSubSection, SalesSectionHelp, StrategySubSection, StrategySectionHelp, GrowSection, GrowSectionHelp, LegalTool, InvestmentTool, ManagementTool, ChecklistTool, ChecklistTab } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
@@ -36,6 +38,7 @@ export const STRATEGY_SECTIONS_HELP: StrategySectionHelp[] = [
 export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   {
     title: CanvasSection.PROJECT_OVERVIEW,
+    sidebarTitle: { en: CanvasSection.PROJECT_OVERVIEW, am: CanvasSection.PROJECT_OVERVIEW },
     explanation: {
       en: "A brief summary of your project, its goals, and scope. Think of it as the elevator pitch for your entire venture, tailored for an Ethiopian context.",
       am: "ስለ ፕሮጀክትዎ፣ ግቦቹ እና ስፋቱ አጭር ማጠቃለያ። ለመላው ድርጅትዎ እንደ ሊፍት ንግግር አድርገው ያስቡት፣ ለኢትዮጵያ ሁኔታ የተዘጋጀ።"
@@ -47,6 +50,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.PRODUCT_VISION,
+    sidebarTitle: { en: CanvasSection.PRODUCT_VISION, am: CanvasSection.PRODUCT_VISION },
     explanation: {
       en: "The overarching long-term goal and aspiration for your product. What ultimate impact do you want to make in Ethiopia and potentially beyond?",
       am: "ለምርትዎ ያለው አጠቃላይ የረጅም ጊዜ ግብ እና ምኞት። በኢትዮጵያ እና ከዚያም በላይ ምን የመጨረሻ ተጽዕኖ ማሳደር ይፈልጋሉ?"
@@ -58,6 +62,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.NORTH_STAR_METRIC,
+    sidebarTitle: { en: CanvasSection.NORTH_STAR_METRIC, am: CanvasSection.NORTH_STAR_METRIC },
     explanation: { 
         en: "The single metric that best captures the core value your product delivers to Ethiopian customers. This metric should reflect customer success and business growth in the local market.", 
         am: "የሰሜን ኮከብ መለኪያ፡ ምርትዎ ለኢትዮጵያውያን ደንበኞች የሚያቀርበውን ዋና እሴት በተሻለ ሁኔታ የሚይዝ ብቸኛው መለኪያ። ይህ መለኪያ የደንበኞችን ስኬት እና የአገር ውስጥ የንግድ ዕድገትን ማንጸባረቅ አለበት።" 
@@ -69,6 +74,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.PRODUCT_WHY,
+    sidebarTitle: { en: CanvasSection.PRODUCT_WHY, am: CanvasSection.PRODUCT_WHY },
     explanation: {
         en: "The fundamental reason and motivation behind creating this product, especially considering the needs and opportunities in Ethiopia.", 
         am: "ይህን ምርት ለመፍጠር ዋናው ምክንያትና መነሳሳት፣ በተለይም በኢትዮጵያ ያለውን ፍላጎትና ዕድል ግምት ውስጥ በማስገባት።"
@@ -80,6 +86,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
    {
     title: CanvasSection.PROBLEM,
+    sidebarTitle: { en: CanvasSection.PROBLEM, am: CanvasSection.PROBLEM },
     explanation: {
         en: "The specific customer pain point or problem your product aims to solve for Ethiopians. Be precise and focus on the customer's perspective within the local context.", 
         am: "ምርትዎ ለኢትዮጵያውያን ሊፈታው ያሰበው የተለየ የደንበኛ ችግር ወይም ህመም። ትክክለኛ ይሁኑ እና በአካባቢያዊ ሁኔታ የደንበኛውን እይታ ላይ ያተኩሩ።"
@@ -91,6 +98,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.SOLUTION,
+    sidebarTitle: { en: CanvasSection.SOLUTION, am: CanvasSection.SOLUTION },
     explanation: {
         en: "How your product addresses the identified problem in Ethiopia. Describe the core functionality and value offered, considering local infrastructure (e.g., mobile penetration, logistics).", 
         am: "ምርትዎ በኢትዮጵያ ውስጥ የተለየውን ችግር እንዴት እንደሚፈታ። የአካባቢውን የመሠረተ ልማት (ለምሳሌ የሞባይል ተደራሽነት፣ ሎጂስቲክስ) ከግምት ውስጥ በማስገባት ዋናውን ተግባራዊነት እና የሚሰጠውን ዋጋ ይግለጹ።"
@@ -102,6 +110,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.PRODUCT_DETAIL,
+    sidebarTitle: { en: CanvasSection.PRODUCT_DETAIL, am: CanvasSection.PRODUCT_DETAIL },
     explanation: {
       en: "Describe the key features, functionalities, and technical aspects of your product or service. How does it work? What makes it distinct in its operation for the Ethiopian user? (e.g., USSD interface, Amharic language support, offline capabilities).",
       am: "የምርትዎን ወይም የአገልግሎትዎን ቁልፍ ባህሪዎች፣ ተግባራት እና ቴክኒካዊ ገጽታዎች ይግለጹ። እንዴት ነው የሚሰራው? ለኢትዮጵያ ተጠቃሚ በአሰራሩ የተለየ የሚያደርገው ምንድን ነው? (ለምሳሌ፣ የUSSD በይነገጽ፣ የአማርኛ ቋንቋ ድጋፍ፣ ከመስመር ውጭ የመስራት ችሎታዎች)።"
@@ -113,6 +122,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.MARKET,
+    sidebarTitle: { en: CanvasSection.MARKET, am: CanvasSection.MARKET },
     explanation: {
       en: "Define your target market in Ethiopia. Include its size, demographics (age, location e.g. Addis Ababa, regional cities), psychographics (lifestyle, values relevant in Ethiopia), and specific needs. Who are your primary customers?",
       am: "በኢትዮጵያ ውስጥ ያለዎትን ዒላማ ገበያ ይግለጹ። መጠኑን፣ የሕዝብ ስብጥር (ዕድሜ፣ ቦታ ለምሳሌ አዲስ አበባ፣ የክልል ከተሞች)፣ ሥነ-ልቦናዊ ገጽታዎች (በኢትዮጵያ ውስጥ ተገቢነት ያለው የአኗኗር ዘይቤ፣ እሴቶች)፣ እና የተወሰኑ ፍላጎቶችን ያካትቱ። የእርስዎ ዋና ደንበኞች እነማን ናቸው?"
@@ -124,6 +134,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.USE_CASES,
+    sidebarTitle: { en: CanvasSection.USE_CASES, am: CanvasSection.USE_CASES },
     explanation: {
       en: "Describe specific scenarios of how different Ethiopian customer personas will interact with your product to achieve their 'Jobs To Be Done'. (e.g., 'Farmer Abebe uses USSD to list 10 quintals of teff...').",
       am: "የተለያዩ የኢትዮጵያ ደንበኛ ዓይነቶች 'ሥራዎቻቸውን' ለማከናወን ከምርትዎ ጋር እንዴት እንደሚገናኙ የተወሰኑ ሁኔታዎችን ይግለጹ። (ለምሳሌ፣ 'ገበሬ አበበ 10 ኩንታል ጤፍ ለመዘርዘር USSD ይጠቀማል...')።"
@@ -135,6 +146,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.UNIQUE_VALUE_PROPOSITION,
+    sidebarTitle: { en: CanvasSection.UNIQUE_VALUE_PROPOSITION, am: CanvasSection.UNIQUE_VALUE_PROPOSITION },
     explanation: {
       en: "What unique benefit does your product provide to Ethiopian customers that competitors don't? How do you solve their problem or improve their situation distinctively? Be clear and concise.",
       am: "ተፎካካሪዎች የማያቀርቡትን ምን ልዩ ጥቅም ነው ምርትዎ ለኢትዮጵያ ደንበኞች የሚያቀርበው? ችግራቸውን እንዴት በተለየ መንገድ ይፈታሉ ወይም ሁኔታቸውን ያሻሽላሉ? ግልጽ እና አጭር ይሁኑ።"
@@ -146,6 +158,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.UNFAIR_ADVANTAGE,
+    sidebarTitle: { en: CanvasSection.UNFAIR_ADVANTAGE, am: CanvasSection.UNFAIR_ADVANTAGE },
     explanation: {
       en: "What is something your business has that cannot be easily copied or bought by competitors in Ethiopia? (e.g., unique local partnerships, proprietary tech adapted for Ethiopia, strong brand loyalty, deep understanding of specific Ethiopian sub-cultures).",
       am: "በኢትዮጵያ ውስጥ በተወዳዳሪዎች በቀላሉ ሊገለበጥ ወይም ሊገዛ የማይችል ንግድዎ ያለው ነገር ምንድን ነው? (ለምሳሌ፣ ልዩ የአካባቢ አጋርነቶች፣ ለኢትዮጵያ የተስማማ የባለቤትነት ቴክኖሎጂ፣ ጠንካራ የምርት ስም ታማኝነት፣ ስለተወሰኑ የኢትዮጵያ ንዑስ ባህሎች ጥልቅ ግንዛቤ)።"
@@ -157,6 +170,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.BUSINESS_MODEL,
+    sidebarTitle: { en: CanvasSection.BUSINESS_MODEL, am: CanvasSection.BUSINESS_MODEL },
     explanation: {
       en: "How will your business make money in Ethiopia? Describe your revenue streams (e.g., commission on sales, subscription fees in ETB, data monetization respecting local privacy norms).",
       am: "ንግድዎ በኢትዮጵያ እንዴት ገንዘብ ያገኛል? የገቢ ምንጮችዎን ይግለጹ (ለምሳሌ፣ በሽያጭ ላይ ኮሚሽን፣ የደንበኝነት ምዝገባ ክፍያዎች በኢትዮጵያ ብር፣ የአካባቢ የግላዊነት ደንቦችን የሚያከብር የውሂብ ገቢ መፍጠር)።"
@@ -168,6 +182,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.PRICING,
+    sidebarTitle: { en: CanvasSection.PRICING, am: CanvasSection.PRICING },
     explanation: {
       en: "Detail your pricing strategy for Ethiopian customers. How much will your product/service cost (in ETB)? How does this compare to alternatives? Is it value-based, cost-plus, or competitive? Consider local affordability.",
       am: "ለኢትዮጵያ ደንበኞች የዋጋ አወጣጥ ስትራቴጂዎን በዝርዝር ይግለጹ። ምርትዎ/አገልግሎትዎ ስንት ያስከፍላል (በኢትዮጵያ ብር)? ይህ ከአማራጮች ጋር ሲነጻጸር እንዴት ነው? በእሴት ላይ የተመሰረተ、 ወጪ-ተጨማሪ、 ወይስ ተወዳዳሪ ነው? የአካባቢውን የመግዛት አቅም ግምት ውስጥ ያስገቡ።"
@@ -179,6 +194,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.COMPETITORS,
+    sidebarTitle: { en: CanvasSection.COMPETITORS, am: CanvasSection.COMPETITORS },
     explanation: {
       en: "Identify your main competitors in the Ethiopian market. These could be direct (offering similar solutions) or indirect (alternative ways customers solve the problem). What are their strengths and weaknesses in the Ethiopian context?",
       am: "በኢትዮጵያ ገበያ ውስጥ ዋና ተፎካካሪዎችዎን ይለዩ። እነዚህ ቀጥተኛ (ተመሳሳይ መፍትሄዎችን የሚያቀርቡ) ወይም ቀጥተኛ ያልሆኑ (ደንበኞች ችግሩን የሚፈቱባቸው አማራጭ መንገዶች) ሊሆኑ ይችላሉ። በኢትዮጵያ አውድ ጥንካሬዎቻቸው እና ድክመቶቻቸው ምንድን ናቸው?"
@@ -190,6 +206,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.UNIT_ECONOMICS,
+    sidebarTitle: { en: CanvasSection.UNIT_ECONOMICS, am: CanvasSection.UNIT_ECONOMICS },
     explanation: {
       en: "Analyze the revenue and costs associated with a single unit of your product/service in Ethiopia (e.g., per customer, per transaction). What is your Customer Acquisition Cost (CAC) in ETB? What is the Lifetime Value (LTV) of an Ethiopian customer?",
       am: "በኢትዮጵያ ውስጥ ካለው አንድ የምርትዎ/አገልግሎትዎ ክፍል ጋር የተያያዙ ገቢዎችን እና ወጪዎችን ይተንትኑ (ለምሳሌ፣ በአንድ ደንበኛ、 በአንድ ግብይት)። የእርስዎ የደንበኛ ማግኛ ወጪ (CAC) በኢትዮጵያ ብር ስንት ነው? የአንድ ኢትዮጵያዊ ደንበኛ የህይወት ዘመን ዋጋ (LTV) ስንት ነው?"
@@ -201,6 +218,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.BRAND_STYLE_GUIDES,
+    sidebarTitle: { en: CanvasSection.BRAND_STYLE_GUIDES, am: CanvasSection.BRAND_STYLE_GUIDES },
     explanation: {
       en: "Define your brand's personality, voice, and visual identity (logo, colors, typography) as it relates to the Ethiopian market. How will you communicate your brand to resonate with Ethiopian users? (e.g., using local motifs, community-focused imagery).",
       am: "ከኢትዮጵያ ገበያ ጋር በተያያዘ የምርትዎን ስብዕና፣ ድምጽ እና ምስላዊ ማንነት (አርማ፣ ቀለሞች、 የፊደል አጻጻፍ) ይግለጹ። ከኢትዮጵያ ተጠቃሚዎች ጋር ለመስማማት የምርትዎን ስም እንዴት ያስተላልፋሉ? (ለምሳሌ፣ የአካባቢ ዘይቤዎችን፣ በማህበረሰብ ላይ ያተኮሩ ምስሎችን በመጠቀም)።"
@@ -212,6 +230,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
   },
   {
     title: CanvasSection.PRODUCT_MARKET_FIT,
+    sidebarTitle: { en: CanvasSection.PRODUCT_MARKET_FIT, am: CanvasSection.PRODUCT_MARKET_FIT },
     explanation: {
       en: "How will you know if your product has achieved fit with the Ethiopian market? What key metrics (e.g., adoption rate by Ethiopian users, retention, referral rate, positive feedback in local languages) will indicate this?",
       am: "ምርትዎ ከኢትዮጵያ ገበያ ጋር መጣጣሙን እንዴት ያውቃሉ? ይህን የሚያመለክቱት የትኞቹ ቁልፍ መለኪያዎች (ለምሳሌ፣ በኢትዮጵያ ተጠቃሚዎች የመቀበል መጠን፣ የደንበኛ ታማኝነት፣ የማስተዋወቅ መጠን፣ በአካባቢ ቋንቋዎች አዎንታዊ ግብረመልስ) ናቸው?"
@@ -226,7 +245,7 @@ export const CANVAS_SECTIONS_HELP: CanvasSectionHelp[] = [
 export const RESEARCH_SECTIONS_HELP: ResearchSectionHelp[] = [
   {
     title: ResearchSection.QUESTIONS,
-    sidebarTitle: { en: 'Research Q&A', am: 'የምርምር ጥያቄና መልስ' },
+    sidebarTitle: { en: 'sidebar_research_qa', am: 'sidebar_research_qa' },
     explanation: {
       en: 'Define and answer key questions to understand your market. Use AI to generate culturally relevant questions based on your strategy.',
       am: 'ገበያዎን ለመረዳት ቁልፍ ጥያቄዎችን ይግለጹ እና ይመልሱ። በስትራቴጂዎ ላይ በመመስረት ከባህል ጋር ተዛማጅነት ያላቸውን ጥያቄዎች ለማመንጨት AI ይጠቀሙ።'
@@ -234,7 +253,7 @@ export const RESEARCH_SECTIONS_HELP: ResearchSectionHelp[] = [
   },
   {
     title: ResearchSection.GENERAL_NOTES_IMPORT,
-    sidebarTitle: { en: 'General Notes & Import', am: 'አጠቃላይ ማስታወሻዎች እና ማስመጣት' },
+    sidebarTitle: { en: 'sidebar_research_notes', am: 'sidebar_research_notes' },
     explanation: {
       en: 'A scratchpad for all your research thoughts, interview notes, and observations. You can also import data from CSV files like Google Forms responses.',
       am: 'ለሁሉም የምርምር ሀሳቦችዎ፣ የቃለ መጠይቅ ማስታወሻዎችዎ እና ምልከታዎችዎ ማስታወሻ ደብተር። እንዲሁም እንደ የጉግል ቅጾች ምላሾች ካሉ የCSV ፋይሎች ውሂብ ማስመጣት ይችላሉ።'
@@ -242,7 +261,7 @@ export const RESEARCH_SECTIONS_HELP: ResearchSectionHelp[] = [
   },
   {
     title: ResearchSection.COMPETITOR_ANALYSIS,
-    sidebarTitle: { en: 'Competitor Analysis', am: 'የተፎካካሪ ትንተና' },
+    sidebarTitle: { en: 'sidebar_research_competitors', am: 'sidebar_research_competitors' },
     explanation: {
       en: 'Identify and analyze your competitors in the Ethiopian market. Document their strengths, weaknesses, pricing, and key features to find your unique edge.',
       am: 'በኢትዮጵያ ገበያ ውስጥ ተወዳዳሪዎችዎን ይለዩ እና ይተንትኑ። ልዩ ጠርዝዎን ለማግኘት ጥንካሬዎቻቸውን፣ ድክመቶቻቸውን、 የዋጋ አወጣጣቸውን እና ቁልፍ ባህሪያቶቻቸውን ይመዝግቡ።'
@@ -250,7 +269,7 @@ export const RESEARCH_SECTIONS_HELP: ResearchSectionHelp[] = [
   },
   {
     title: ResearchSection.TRENDS,
-    sidebarTitle: { en: 'Industry Trends', am: 'የኢንዱስትሪ አዝማሚያዎች' },
+    sidebarTitle: { en: 'sidebar_research_trends', am: 'sidebar_research_trends' },
     explanation: {
       en: 'Keep track of key trends in your industry, both locally in Ethiopia and globally. Note their potential impact on your business.',
       am: 'በኢንዱስትሪዎ ውስጥ ያሉ ቁልፍ አዝማሚያዎችን በአገር ውስጥ በኢትዮጵያ እና በዓለም አቀፍ ደረጃ ይከታተሉ። በንግድዎ ላይ ሊኖራቸው የሚችለውን ተጽዕኖ ልብ ይበሉ።'
@@ -258,7 +277,7 @@ export const RESEARCH_SECTIONS_HELP: ResearchSectionHelp[] = [
   },
   {
     title: ResearchSection.AI_SUMMARY,
-    sidebarTitle: { en: 'AI Summary', am: 'የ AI ማጠቃለያ' },
+    sidebarTitle: { en: 'sidebar_research_ai_summary', am: 'sidebar_research_ai_summary' },
     explanation: {
       en: 'Use AI to synthesize all your research data from the other sections into a cohesive summary. This helps identify key insights, challenges, and opportunities.',
       am: 'ከሌሎች ክፍሎች ሁሉንም የምርምር መረጃዎችዎን ወደ አንድ ወጥ ማጠቃለያ ለማዋሃድ AI ይጠቀሙ። ይህ ቁልፍ ግንዛቤዎችን፣ ተግዳሮቶችን እና እድሎችን ለመለየት ይረዳል።'
@@ -269,7 +288,7 @@ export const RESEARCH_SECTIONS_HELP: ResearchSectionHelp[] = [
 export const COPYWRITING_SECTIONS_HELP: CopywritingSectionHelp[] = [
   {
     title: CopywritingSubSection.MARKETING,
-    sidebarTitle: { en: 'Marketing Content', am: 'የግብይት ይዘት' },
+    sidebarTitle: { en: 'sidebar_copywriting_marketing', am: 'sidebar_copywriting_marketing' },
     explanation: {
         en: 'Create and manage your social media posts, blog articles, and other marketing materials. Use the calendar view to plan your content schedule. Leverage AI to generate a full marketing plan based on your strategy.',
         am: 'የማህበራዊ ሚዲያ ጽሑፎችዎን፣ የብሎግ ጽሑፎችዎን እና ሌሎች የግብይት ቁሳቁሶችን ይፍጠሩ እና ያስተዳድሩ። የይዘት መርሃ ግብርዎን ለማቀድ የቀን መቁጠሪያ እይታን ይጠቀሙ። በስትራቴጂዎ ላይ በመመስረት ሙሉ የግብይት እቅድ ለማመንጨት AI ይጠቀሙ።'
@@ -277,7 +296,7 @@ export const COPYWRITING_SECTIONS_HELP: CopywritingSectionHelp[] = [
   },
   {
     title: CopywritingSubSection.PITCH_REFINEMENT,
-    sidebarTitle: { en: 'Pitch Refinement', am: 'የሀሳብ ማቅረቢያ ማሻሻያ' },
+    sidebarTitle: { en: 'sidebar_copywriting_pitch', am: 'sidebar_copywriting_pitch' },
     explanation: {
         en: 'Draft, refine, and store various pitches—whether for investors, sales, or email campaigns. Use the AI assistant to get a head start by generating drafts tailored to your specific audience and goals in the Ethiopian context.',
         am: 'ለባለሀብቶች፣ ለሽያጭ ወይም ለኢሜል ዘመቻዎች ይሁኑ የተለያዩ የሀሳብ ማቅረቢያዎችን ይቅረጹ、 ያሻሽሉ እና ያከማቹ። በኢትዮጵያ አውድ ውስጥ ለተወሰኑ ታዳሚዎችዎ እና ግቦችዎ የተዘጋጁ ረቂቆችን በማመንጨት ለመጀመር የ AI ረዳትን ይጠቀሙ።'
@@ -442,9 +461,116 @@ export const INITIAL_RELEASE_LIST_DATA: ChecklistTab[] = [
       ]},
     ]
   },
-  { id: 'rl-tab-2', titleKey: 'checklist_rl_tab_marketing', cards: [] },
-  { id: 'rl-tab-3', titleKey: 'checklist_rl_tab_pricing', cards: [] },
-  { id: 'rl-tab-4', titleKey: 'checklist_rl_tab_ops', cards: [] },
+  { id: 'rl-tab-2', titleKey: 'checklist_rl_tab_marketing', cards: [
+      { id: 'rl-card-press', titleKey: 'checklist_rl_card_press', items: [
+        { id: 'rli-press-1', textKey: 'checklist_rl_item_press_1', completed: false },
+        { id: 'rli-press-2', textKey: 'checklist_rl_item_press_2', completed: false },
+        { id: 'rli-press-3', textKey: 'checklist_rl_item_press_3', completed: false },
+      ]},
+      { id: 'rl-card-brand', titleKey: 'checklist_rl_card_brand', items: [
+        { id: 'rli-brand-1', textKey: 'checklist_rl_item_brand_1', completed: false },
+        { id: 'rli-brand-2', textKey: 'checklist_rl_item_brand_2', completed: false },
+      ]},
+      { id: 'rl-card-ext-comms', titleKey: 'checklist_rl_card_ext_comms', items: [
+        { id: 'rli-ext-comms-1', textKey: 'checklist_rl_item_ext_comms_1', completed: false },
+        { id: 'rli-ext-comms-2', textKey: 'checklist_rl_item_ext_comms_2', completed: false },
+        { id: 'rli-ext-comms-3', textKey: 'checklist_rl_item_ext_comms_3', completed: false },
+        { id: 'rli-ext-comms-4', textKey: 'checklist_rl_item_ext_comms_4', completed: false },
+        { id: 'rli-ext-comms-5', textKey: 'checklist_rl_item_ext_comms_5', completed: false },
+        { id: 'rli-ext-comms-6', textKey: 'checklist_rl_item_ext_comms_6', completed: false },
+      ]},
+      { id: 'rl-card-acq-growth', titleKey: 'checklist_rl_card_acq_growth', items: [
+        { id: 'rli-acq-growth-1', textKey: 'checklist_rl_item_acq_growth_1', completed: false },
+        { id: 'rli-acq-growth-2', textKey: 'checklist_rl_item_acq_growth_2', completed: false },
+        { id: 'rli-acq-growth-3', textKey: 'checklist_rl_item_acq_growth_3', completed: false },
+        { id: 'rli-acq-growth-4', textKey: 'checklist_rl_item_acq_growth_4', completed: false },
+        { id: 'rli-acq-growth-5', textKey: 'checklist_rl_item_acq_growth_5', completed: false },
+        { id: 'rli-acq-growth-6', textKey: 'checklist_rl_item_acq_growth_6', completed: false },
+        { id: 'rli-acq-growth-7', textKey: 'checklist_rl_item_acq_growth_7', completed: false },
+        { id: 'rli-acq-growth-8', textKey: 'checklist_rl_item_acq_growth_8', completed: false },
+      ]},
+      { id: 'rl-card-int-comms', titleKey: 'checklist_rl_card_int_comms', items: [
+        { id: 'rli-int-comms-1', textKey: 'checklist_rl_item_int_comms_1', completed: false },
+        { id: 'rli-int-comms-2', textKey: 'checklist_rl_item_int_comms_2', completed: false },
+        { id: 'rli-int-comms-3', textKey: 'checklist_rl_item_int_comms_3', completed: false },
+        { id: 'rli-int-comms-4', textKey: 'checklist_rl_item_int_comms_4', completed: false },
+        { id: 'rli-int-comms-5', textKey: 'checklist_rl_item_int_comms_5', completed: false },
+        { id: 'rli-int-comms-6', textKey: 'checklist_rl_item_int_comms_6', completed: false },
+      ]},
+  ] },
+  { id: 'rl-tab-3', titleKey: 'checklist_rl_tab_pricing', cards: [
+      { id: 'rl-card-pricing-structure', titleKey: 'checklist_rl_card_pricing_structure', items: [
+        { id: 'rli-ps-1', textKey: 'checklist_rl_item_pricing_structure_1', completed: false },
+        { id: 'rli-ps-2', textKey: 'checklist_rl_item_pricing_structure_2', completed: false },
+        { id: 'rli-ps-3', textKey: 'checklist_rl_item_pricing_structure_3', completed: false },
+      ]},
+      { id: 'rl-card-channel-pricing', titleKey: 'checklist_rl_card_channel_pricing', items: [
+        { id: 'rli-cp-1', textKey: 'checklist_rl_item_channel_pricing_1', completed: false },
+        { id: 'rli-cp-2', textKey: 'checklist_rl_item_channel_pricing_2', completed: false },
+        { id: 'rli-cp-3', textKey: 'checklist_rl_item_channel_pricing_3', completed: false },
+        { id: 'rli-cp-4', textKey: 'checklist_rl_item_channel_pricing_4', completed: false },
+      ]},
+      { id: 'rl-card-pricing-tools', titleKey: 'checklist_rl_card_pricing_tools', items: [
+        { id: 'rli-pt-1', textKey: 'checklist_rl_item_pricing_tools_1', completed: false },
+        { id: 'rli-pt-2', textKey: 'checklist_rl_item_pricing_tools_2', completed: false },
+        { id: 'rli-pt-3', textKey: 'checklist_rl_item_pricing_tools_3', completed: false },
+      ]},
+      { id: 'rl-card-pricing-analysis', titleKey: 'checklist_rl_card_pricing_analysis', items: [
+        { id: 'rli-pa-1', textKey: 'checklist_rl_item_pricing_analysis_1', completed: false },
+        { id: 'rli-pa-2', textKey: 'checklist_rl_item_pricing_analysis_2', completed: false },
+        { id: 'rli-pa-3', textKey: 'checklist_rl_item_pricing_analysis_3', completed: false },
+      ]},
+  ] },
+  { id: 'rl-tab-4', titleKey: 'checklist_rl_tab_ops', cards: [
+      { id: 'rl-card-ops-partners', titleKey: 'checklist_rl_card_ops_partners', items: [
+        { id: 'rli-op-1', textKey: 'checklist_rl_item_ops_partners_1', completed: false },
+        { id: 'rli-op-2', textKey: 'checklist_rl_item_ops_partners_2', completed: false },
+        { id: 'rli-op-3', textKey: 'checklist_rl_item_ops_partners_3', completed: false },
+        { id: 'rli-op-4', textKey: 'checklist_rl_item_ops_partners_4', completed: false },
+      ]},
+      { id: 'rl-card-ops-plans', titleKey: 'checklist_rl_card_ops_plans', items: [
+        { id: 'rli-opl-1', textKey: 'checklist_rl_item_ops_plans_1', completed: false },
+        { id: 'rli-opl-2', textKey: 'checklist_rl_item_ops_plans_2', completed: false },
+        { id: 'rli-opl-3', textKey: 'checklist_rl_item_ops_plans_3', completed: false },
+        { id: 'rli-opl-4', textKey: 'checklist_rl_item_ops_plans_4', completed: false },
+        { id: 'rli-opl-5', textKey: 'checklist_rl_item_ops_plans_5', completed: false },
+      ]},
+      { id: 'rl-card-ops-post-launch', titleKey: 'checklist_rl_card_ops_post_launch', items: [
+        { id: 'rli-pl-1', textKey: 'checklist_rl_item_ops_post_launch_1', completed: false },
+        { id: 'rli-pl-2', textKey: 'checklist_rl_item_ops_post_launch_2', completed: false },
+        { id: 'rli-pl-3', textKey: 'checklist_rl_item_ops_post_launch_3', completed: false },
+        { id: 'rli-pl-4', textKey: 'checklist_rl_item_ops_post_launch_4', completed: false },
+        { id: 'rli-pl-5', textKey: 'checklist_rl_item_ops_post_launch_5', completed: false },
+        { id: 'rli-pl-6', textKey: 'checklist_rl_item_ops_post_launch_6', completed: false },
+        { id: 'rli-pl-7', textKey: 'checklist_rl_item_ops_post_launch_7', completed: false },
+        { id: 'rli-pl-8', textKey: 'checklist_rl_item_ops_post_launch_8', completed: false },
+        { id: 'rli-pl-9', textKey: 'checklist_rl_item_ops_post_launch_9', completed: false },
+      ]},
+      { id: 'rl-card-ops-pc', titleKey: 'checklist_rl_card_ops_partner_channel', items: [
+        { id: 'rli-opc-1', textKey: 'checklist_rl_item_ops_pc_1', completed: false },
+        { id: 'rli-opc-2', textKey: 'checklist_rl_item_ops_pc_2', completed: false },
+        { id: 'rli-opc-3', textKey: 'checklist_rl_item_ops_pc_3', completed: false },
+        { id: 'rli-opc-4', textKey: 'checklist_rl_item_ops_pc_4', completed: false },
+      ]},
+      { id: 'rl-card-ops-support', titleKey: 'checklist_rl_card_ops_support', items: [
+        { id: 'rli-os-1', textKey: 'checklist_rl_item_ops_support_1', completed: false },
+        { id: 'rli-os-2', textKey: 'checklist_rl_item_ops_support_2', completed: false },
+        { id: 'rli-os-3', textKey: 'checklist_rl_item_ops_support_3', completed: false },
+        { id: 'rli-os-4', textKey: 'checklist_rl_item_ops_support_4', completed: false },
+      ]},
+      { id: 'rl-card-ops-sm', titleKey: 'checklist_rl_card_ops_sales_marketing', items: [
+        { id: 'rli-osm-1', textKey: 'checklist_rl_item_ops_sm_1', completed: false },
+        { id: 'rli-osm-2', textKey: 'checklist_rl_item_ops_sm_2', completed: false },
+        { id: 'rli-osm-3', textKey: 'checklist_rl_item_ops_sm_3', completed: false },
+        { id: 'rli-osm-4', textKey: 'checklist_rl_item_ops_sm_4', completed: false },
+      ]},
+      { id: 'rl-card-ops-ops', titleKey: 'checklist_rl_card_ops_operations', items: [
+        { id: 'rli-oo-1', textKey: 'checklist_rl_item_ops_ops_1', completed: false },
+        { id: 'rli-oo-2', textKey: 'checklist_rl_item_ops_ops_2', completed: false },
+        { id: 'rli-oo-3', textKey: 'checklist_rl_item_ops_ops_3', completed: false },
+        { id: 'rli-oo-4', textKey: 'checklist_rl_item_ops_ops_4', completed: false },
+      ]},
+  ] },
 ];
 
 export const INITIAL_GROWTH_LIST_DATA: ChecklistTab[] = [
@@ -480,10 +606,102 @@ export const INITIAL_GROWTH_LIST_DATA: ChecklistTab[] = [
             { id: 'gli-4-4', textKey: 'checklist_gl_item_retention_4', completed: false },
         ]},
     ]},
-    { id: 'gl-tab-2', titleKey: 'checklist_gl_tab_paid', cards: [] },
-    { id: 'gl-tab-3', titleKey: 'checklist_gl_tab_thought', cards: [] },
-    { id: 'gl-tab-4', titleKey: 'checklist_gl_tab_partners', cards: [] },
-    { id: 'gl-tab-5', titleKey: 'checklist_gl_tab_enterprise', cards: [] },
+    { id: 'gl-tab-2', titleKey: 'checklist_gl_tab_paid', cards: [
+        { id: 'gl-card-paid-linkedin', titleKey: 'checklist_gl_card_paid_linkedin', items: [
+            { id: 'gli-pl-1', textKey: 'checklist_gl_item_paid_linkedin_1', completed: false },
+            { id: 'gli-pl-2', textKey: 'checklist_gl_item_paid_linkedin_2', completed: false },
+            { id: 'gli-pl-3', textKey: 'checklist_gl_item_paid_linkedin_3', completed: false },
+            { id: 'gli-pl-4', textKey: 'checklist_gl_item_paid_linkedin_4', completed: false },
+        ]},
+        { id: 'gl-card-paid-lead-auto', titleKey: 'checklist_gl_card_paid_lead_auto', items: [
+            { id: 'gli-pla-1', textKey: 'checklist_gl_item_paid_lead_auto_1', completed: false },
+            { id: 'gli-pla-2', textKey: 'checklist_gl_item_paid_lead_auto_2', completed: false },
+        ]},
+        { id: 'gl-card-paid-google', titleKey: 'checklist_gl_card_paid_google', items: [
+            { id: 'gli-pg-1', textKey: 'checklist_gl_item_paid_google_1', completed: false },
+        ]},
+        { id: 'gl-card-paid-instagram', titleKey: 'checklist_gl_card_paid_instagram', items: [
+            { id: 'gli-pi-1', textKey: 'checklist_gl_item_paid_instagram_1', completed: false },
+            { id: 'gli-pi-2', textKey: 'checklist_gl_item_paid_instagram_2', completed: false },
+        ]},
+        { id: 'gl-card-paid-twitter', titleKey: 'checklist_gl_card_paid_twitter', items: [
+            { id: 'gli-pt-1', textKey: 'checklist_gl_item_paid_twitter_1', completed: false },
+            { id: 'gli-pt-2', textKey: 'checklist_gl_item_paid_twitter_2', completed: false },
+        ]},
+        { id: 'gl-card-paid-tiktok', titleKey: 'checklist_gl_card_paid_tiktok', items: [
+            { id: 'gli-ptt-1', textKey: 'checklist_gl_item_paid_tiktok_1', completed: false },
+            { id: 'gli-ptt-2', textKey: 'checklist_gl_item_paid_tiktok_2', completed: false },
+        ]},
+        { id: 'gl-card-paid-reddit', titleKey: 'checklist_gl_card_paid_reddit', items: [
+            { id: 'gli-pr-1', textKey: 'checklist_gl_item_paid_reddit_1', completed: false },
+            { id: 'gli-pr-2', textKey: 'checklist_gl_item_paid_reddit_2', completed: false },
+        ]},
+        { id: 'gl-card-paid-email', titleKey: 'checklist_gl_card_paid_email', items: [
+            { id: 'gli-pe-1', textKey: 'checklist_gl_item_paid_email_1', completed: false },
+            { id: 'gli-pe-2', textKey: 'checklist_gl_item_paid_email_2', completed: false },
+            { id: 'gli-pe-3', textKey: 'checklist_gl_item_paid_email_3', completed: false },
+        ]},
+    ]},
+    { id: 'gl-tab-3', titleKey: 'checklist_gl_tab_thought', cards: [
+        { id: 'gl-card-thought-social', titleKey: 'checklist_gl_card_thought_social', items: [
+            { id: 'gli-ts-1', textKey: 'checklist_gl_item_thought_social_1', completed: false },
+            { id: 'gli-ts-2', textKey: 'checklist_gl_item_thought_social_2', completed: false },
+            { id: 'gli-ts-3', textKey: 'checklist_gl_item_thought_social_3', completed: false },
+            { id: 'gli-ts-4', textKey: 'checklist_gl_item_thought_social_4', completed: false },
+            { id: 'gli-ts-5', textKey: 'checklist_gl_item_thought_social_5', completed: false },
+            { id: 'gli-ts-6', textKey: 'checklist_gl_item_thought_social_6', completed: false },
+        ]},
+        { id: 'gl-card-thought-content', titleKey: 'checklist_gl_card_thought_content', items: [
+            { id: 'gli-tc-1', textKey: 'checklist_gl_item_thought_content_1', completed: false },
+            { id: 'gli-tc-2', textKey: 'checklist_gl_item_thought_content_2', completed: false },
+            { id: 'gli-tc-3', textKey: 'checklist_gl_item_thought_content_3', completed: false },
+        ]},
+        { id: 'gl-card-thought-speaking', titleKey: 'checklist_gl_card_thought_speaking', items: [
+            { id: 'gli-tse-1', textKey: 'checklist_gl_item_thought_speaking_1', completed: false },
+            { id: 'gli-tse-2', textKey: 'checklist_gl_item_thought_speaking_2', completed: false },
+            { id: 'gli-tse-3', textKey: 'checklist_gl_item_thought_speaking_3', completed: false },
+        ]},
+        { id: 'gl-card-thought-podcasts', titleKey: 'checklist_gl_card_thought_podcasts', items: [
+            { id: 'gli-tp-1', textKey: 'checklist_gl_item_thought_podcasts_1', completed: false },
+            { id: 'gli-tp-2', textKey: 'checklist_gl_item_thought_podcasts_2', completed: false },
+            { id: 'gli-tp-3', textKey: 'checklist_gl_item_thought_podcasts_3', completed: false },
+        ]},
+    ]},
+    { id: 'gl-tab-4', titleKey: 'checklist_gl_tab_partners', cards: [
+        { id: 'gl-card-partners-events', titleKey: 'checklist_gl_card_partners_events', items: [
+            { id: 'gli-pe-1', textKey: 'checklist_gl_item_partners_events_1', completed: false },
+            { id: 'gli-pe-2', textKey: 'checklist_gl_item_partners_events_2', completed: false },
+            { id: 'gli-pe-3', textKey: 'checklist_gl_item_partners_events_3', completed: false },
+        ]},
+        { id: 'gl-card-partners-channel', titleKey: 'checklist_gl_card_partners_channel', items: [
+            { id: 'gli-pc-1', textKey: 'checklist_gl_item_partners_channel_1', completed: false },
+            { id: 'gli-pc-2', textKey: 'checklist_gl_item_partners_channel_2', completed: false },
+            { id: 'gli-pc-3', textKey: 'checklist_gl_item_partners_channel_3', completed: false },
+        ]},
+        { id: 'gl-card-partners-orgs', titleKey: 'checklist_gl_card_partners_orgs', items: [
+            { id: 'gli-po-1', textKey: 'checklist_gl_item_partners_orgs_1', completed: false },
+            { id: 'gli-po-2', textKey: 'checklist_gl_item_partners_orgs_2', completed: false },
+            { id: 'gli-po-3', textKey: 'checklist_gl_item_partners_orgs_3', completed: false },
+            { id: 'gli-po-4', textKey: 'checklist_gl_item_partners_orgs_4', completed: false },
+        ]},
+    ]},
+    { id: 'gl-tab-5', titleKey: 'checklist_gl_tab_enterprise', cards: [
+        { id: 'gl-card-enterprise-bdr', titleKey: 'checklist_gl_card_enterprise_bdr', items: [
+            { id: 'gli-eb-1', textKey: 'checklist_gl_item_enterprise_bdr_1', completed: false },
+            { id: 'gli-eb-2', textKey: 'checklist_gl_item_enterprise_bdr_2', completed: false },
+            { id: 'gli-eb-3', textKey: 'checklist_gl_item_enterprise_bdr_3', completed: false },
+        ]},
+        { id: 'gl-card-enterprise-ae', titleKey: 'checklist_gl_card_enterprise_ae', items: [
+            { id: 'gli-ea-1', textKey: 'checklist_gl_item_enterprise_ae_1', completed: false },
+            { id: 'gli-ea-2', textKey: 'checklist_gl_item_enterprise_ae_2', completed: false },
+            { id: 'gli-ea-3', textKey: 'checklist_gl_item_enterprise_ae_3', completed: false },
+        ]},
+        { id: 'gl-card-enterprise-cs', titleKey: 'checklist_gl_card_enterprise_cs', items: [
+            { id: 'gli-ec-1', textKey: 'checklist_gl_item_enterprise_cs_1', completed: false },
+            { id: 'gli-ec-2', textKey: 'checklist_gl_item_enterprise_cs_2', completed: false },
+            { id: 'gli-ec-3', textKey: 'checklist_gl_item_enterprise_cs_3', completed: false },
+        ]},
+    ]},
 ];
 
 

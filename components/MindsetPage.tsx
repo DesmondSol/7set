@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { 
     MindsetData, 
@@ -121,7 +122,7 @@ const MindsetPage: React.FC<MindsetPageProps> = ({
                       : 'hover:bg-slate-700 hover:text-slate-100'
                     }`}
                 >
-                  {t(sectionHelp.sidebarTitle[language] as TranslationKey, sectionHelp.title)}
+                  {t(sectionHelp.sidebarTitle[language], sectionHelp.title)}
                 </a>
               </li>
             ))}
@@ -164,7 +165,7 @@ const MindsetPage: React.FC<MindsetPageProps> = ({
       <Modal 
         isOpen={isHelpModalOpen} 
         onClose={() => setIsHelpModalOpen(false)} 
-        title={`${t('mra_help_modal_title_prefix')}: ${t(currentHelpContent.sidebarTitle[language] as TranslationKey, currentHelpContent.title)}`} 
+        title={`${t('mra_help_modal_title_prefix')}: ${t(currentHelpContent.sidebarTitle[language], currentHelpContent.title)}`} 
         size="xl"
       >
         <div className="prose prose-sm prose-invert max-w-none text-slate-300 whitespace-pre-line max-h-[70vh] overflow-y-auto pr-2">

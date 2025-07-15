@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState, useEffect } from 'react';
 import { EconomicsData, TranslationKey, Language, UnitEconomicsData } from '../../types';
 
@@ -40,43 +39,40 @@ const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, 
 };
 
 export const UnitEconomicsCalculator: React.FC<UnitEconomicsCalculatorProps> = ({ economicsData, onUpdateData, t, language }) => {
-  const [localInputs, setLocalInputs] = useState<UnitEconomicsData>(economicsData.unitEconomics);
 
-  useEffect(() => {
-    // Sync local state when props change from external source
-    setLocalInputs(economicsData.unitEconomics);
-  }, [economicsData.unitEconomics]);
-
-  const handleLocalChange = (field: keyof UnitEconomicsData, value: string) => {
-    // Update local state for smooth typing
-    setLocalInputs(prev => ({ ...prev, [field]: value as any }));
+  const handleChange = (field: keyof UnitEconomicsData, value: string) => {
+    // Keep value as a string to allow for free editing (e.g., typing '.')
+    onUpdateData({
+      ...economicsData,
+      unitEconomics: {
+        ...economicsData.unitEconomics,
+        [field]: value,
+      },
+    });
   };
 
-  const handlePersistChange = (field: keyof UnitEconomicsData) => {
-    // On blur, update the parent state with a clean numeric value
-    const value = localInputs[field];
-    const numericValue = value === '' ? '' : parseFloat(String(value));
+  const handleBlur = (field: keyof UnitEconomicsData) => {
+    // On blur, sanitize the value to a number or an empty string
+    const value = economicsData.unitEconomics[field];
+    const numericValue = value === '' ? '' : (parseFloat(String(value)) || '');
     
-    const isValidNumber = typeof numericValue === 'number' && !isNaN(numericValue) && numericValue >= 0;
-
-    if (value === '' || isValidNumber) {
-        if (String(numericValue) !== String(economicsData.unitEconomics[field])) {
-            onUpdateData({
-                ...economicsData,
-                unitEconomics: { ...economicsData.unitEconomics, [field]: numericValue },
-            });
-        }
-    } else {
-        // If invalid value is left on blur, revert to the parent's state
-        setLocalInputs(economicsData.unitEconomics);
+    // Only update if the sanitized value is different from the current one
+    if (numericValue !== value) {
+        onUpdateData({
+            ...economicsData,
+            unitEconomics: {
+                ...economicsData.unitEconomics,
+                [field]: numericValue,
+            },
+        });
     }
   };
 
   const { grossMargin, ltv, ltvToCacRatio, breakevenMonths } = useMemo(() => {
-    const avgRevenue = Number(localInputs.avgRevenue);
-    const cogs = Number(localInputs.cogs);
-    const cac = Number(localInputs.cac);
-    const lifetime = Number(localInputs.customerLifetime);
+    const avgRevenue = Number(economicsData.unitEconomics.avgRevenue);
+    const cogs = Number(economicsData.unitEconomics.cogs);
+    const cac = Number(economicsData.unitEconomics.cac);
+    const lifetime = Number(economicsData.unitEconomics.customerLifetime);
 
     if (isNaN(avgRevenue) || isNaN(cogs) || isNaN(cac) || isNaN(lifetime)) {
       return { grossMargin: NaN, ltv: NaN, ltvToCacRatio: NaN, breakevenMonths: NaN };
@@ -88,7 +84,7 @@ export const UnitEconomicsCalculator: React.FC<UnitEconomicsCalculatorProps> = (
     const breakevenMonths = grossMargin > 0 ? cac / grossMargin : Infinity;
 
     return { grossMargin, ltv, ltvToCacRatio, breakevenMonths };
-  }, [localInputs]);
+  }, [economicsData.unitEconomics]);
 
   const inputBaseClasses = "w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400 text-base font-mono";
 
@@ -123,10 +119,10 @@ export const UnitEconomicsCalculator: React.FC<UnitEconomicsCalculatorProps> = (
         {/* Inputs Column */}
         <div className="p-6 bg-slate-800 rounded-xl shadow-lg border border-slate-700 space-y-6">
           <h3 className="text-xl font-semibold text-slate-100 text-center">{t('ue_inputs_title')}</h3>
-          <InputField labelKey="ue_avg_revenue_label" tooltipKey="ue_avg_revenue_tooltip" value={localInputs.avgRevenue} onChange={(e) => handleLocalChange('avgRevenue', e.target.value)} onBlur={() => handlePersistChange('avgRevenue')} />
-          <InputField labelKey="ue_cogs_label" tooltipKey="ue_cogs_tooltip" value={localInputs.cogs} onChange={(e) => handleLocalChange('cogs', e.target.value)} onBlur={() => handlePersistChange('cogs')} />
-          <InputField labelKey="ue_cac_label" tooltipKey="ue_cac_tooltip" value={localInputs.cac} onChange={(e) => handleLocalChange('cac', e.target.value)} onBlur={() => handlePersistChange('cac')} />
-          <InputField labelKey="ue_customer_lifetime_label" tooltipKey="ue_customer_lifetime_tooltip" value={localInputs.customerLifetime} onChange={(e) => handleLocalChange('customerLifetime', e.target.value)} onBlur={() => handlePersistChange('customerLifetime')} />
+          <InputField labelKey="ue_avg_revenue_label" tooltipKey="ue_avg_revenue_tooltip" value={economicsData.unitEconomics.avgRevenue} onChange={(e) => handleChange('avgRevenue', e.target.value)} onBlur={() => handleBlur('avgRevenue')} />
+          <InputField labelKey="ue_cogs_label" tooltipKey="ue_cogs_tooltip" value={economicsData.unitEconomics.cogs} onChange={(e) => handleChange('cogs', e.target.value)} onBlur={() => handleBlur('cogs')} />
+          <InputField labelKey="ue_cac_label" tooltipKey="ue_cac_tooltip" value={economicsData.unitEconomics.cac} onChange={(e) => handleChange('cac', e.target.value)} onBlur={() => handleBlur('cac')} />
+          <InputField labelKey="ue_customer_lifetime_label" tooltipKey="ue_customer_lifetime_tooltip" value={economicsData.unitEconomics.customerLifetime} onChange={(e) => handleChange('customerLifetime', e.target.value)} onBlur={() => handleBlur('customerLifetime')} />
         </div>
 
         {/* Results Column */}

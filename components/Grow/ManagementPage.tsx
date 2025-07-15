@@ -1,10 +1,13 @@
 
+
 import React, { useState, useEffect, useMemo } from 'react';
-import { GrowData, ManagementTool, Language, UserProfile, TranslationKey, InventoryItem, QmsItem, SupportTicket } from '../../types';
+import { GrowData, ManagementTool, Language, UserProfile, TranslationKey, InventoryItem, QmsItem, SupportTicket, GrowSection } from '../../types';
 import { GROW_SECTIONS_HELP } from '../../constants';
 import { Button } from '../common/Button';
 import { Modal } from '../common/Modal';
 import { FloatingActionButton } from '../common/FloatingActionButton';
+import { addUserProfileHeader, addPageFooter, addTextWithPageBreaks, MARGIN_MM, LINE_HEIGHT_NORMAL, TITLE_FONT_SIZE, LINE_HEIGHT_TITLE, SECTION_TITLE_FONT_SIZE, LINE_HEIGHT_SECTION_TITLE, TEXT_FONT_SIZE } from '../../utils/pdfUtils';
+
 
 interface ManagementPageProps {
   initialData: GrowData['management'];
@@ -100,6 +103,7 @@ const InventoryModal: React.FC<{ isOpen: boolean; onClose: () => void; onSave: (
         e.preventDefault();
         if (!name.trim() || quantity === '') { alert(t('mra_error_fill_all_fields')); return; }
         onSave({ id: itemData?.id || '', name, sku, quantity: Number(quantity), location });
+        onClose();
     };
 
     return (
@@ -183,8 +187,8 @@ const QmsTool: React.FC<{
 
 const QmsModal: React.FC<{ isOpen: boolean; onClose: () => void; onSave: (item: QmsItem) => void; itemData: QmsItem | null; t: (key: TranslationKey) => string; }> = ({ isOpen, onClose, onSave, itemData, t }) => {
     const [name, setName] = useState('');
-    const [category, setCategory] = useState('Process');
-    const [status, setStatus] = useState<'draft' | 'review' | 'approved'>('draft');
+    const [category, setCategory] = useState<QmsItem['category']>('Process');
+    const [status, setStatus] = useState<QmsItem['status']>('draft');
     const [version, setVersion] = useState('1.0');
 
     useEffect(() => {
@@ -199,13 +203,14 @@ const QmsModal: React.FC<{ isOpen: boolean; onClose: () => void; onSave: (item: 
         e.preventDefault();
         if(!name.trim() || !version.trim()) { alert(t('mra_error_fill_all_fields')); return; }
         onSave({ id: itemData?.id || '', name, category, status, version });
+        onClose();
     };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={itemData ? t('qms_edit_item') : t('qms_add_item')}>
             <form onSubmit={handleSubmit} className="space-y-4">
                  <div><label className={labelBaseClasses}>{t('qms_name_label')}</label><input type="text" value={name} onChange={e => setName(e.target.value)} required className={inputBaseClasses} /></div>
-                 <div><label className={labelBaseClasses}>{t('qms_category_label')}</label><select value={category} onChange={e => setCategory(e.target.value)} className={inputBaseClasses}><option value="Process">{t('qms_category_process')}</option><option value="Policy">{t('qms_category_policy')}</option><option value="Record">{t('qms_category_record')}</option></select></div>
+                 <div><label className={labelBaseClasses}>{t('qms_category_label')}</label><select value={category} onChange={e => setCategory(e.target.value as QmsItem['category'])} className={inputBaseClasses}><option value="Process">{t('qms_category_process')}</option><option value="Policy">{t('qms_category_policy')}</option><option value="Record">{t('qms_category_record')}</option></select></div>
                  <div><label className={labelBaseClasses}>{t('qms_status_label')}</label><select value={status} onChange={e => setStatus(e.target.value as any)} className={inputBaseClasses}><option value="draft">{t('qms_status_draft')}</option><option value="review">{t('qms_status_review')}</option><option value="approved">{t('qms_status_approved')}</option></select></div>
                  <div><label className={labelBaseClasses}>{t('qms_version_label')}</label><input type="text" value={version} onChange={e => setVersion(e.target.value)} required className={inputBaseClasses} /></div>
                  <div className="flex justify-end pt-4 space-x-2"><Button type="button" variant="outline" onClick={onClose}>{t('cancel_button')}</Button><Button type="submit" variant="primary">{t('save_button')}</Button></div>
@@ -260,7 +265,7 @@ const CustomerServiceTool: React.FC<{
                         <div key={stage} onDragOver={handleDragOver} onDrop={e => handleDrop(e, stage)}
                             onDragEnter={e => e.currentTarget.classList.add('bg-slate-800/50')} onDragLeave={e => e.currentTarget.classList.remove('bg-slate-800/50')}
                             className="w-80 bg-slate-800 p-3 rounded-lg border-t-4 border-slate-600 flex-shrink-0 transition-colors">
-                            <h4 className="font-semibold text-slate-300 mb-4">{t(`cs_stage_${stage}` as TranslationKey)} ({managementData.supportTickets.filter(i => i.status === stage).length})</h4>
+                            <h4 className="font-semibold text-slate-300 mb-4">{t(`cs_stage_${stage}`)} ({managementData.supportTickets.filter(i => i.status === stage).length})</h4>
                             <div className="space-y-3 min-h-[100px]">
                                 {managementData.supportTickets.filter(i => i.status === stage).map(ticket => (
                                     <div key={ticket.id} draggable onDragStart={e => handleDragStart(e, ticket.id)} onDragEnd={handleDragEnd}
@@ -270,7 +275,7 @@ const CustomerServiceTool: React.FC<{
                                         <p className="text-xs text-slate-400 mt-1">{t('cs_customer_label')}: {ticket.customer}</p>
                                         <div className="flex justify-between items-center mt-2 text-xs">
                                             <span className="text-slate-500">{new Date(ticket.createdAt).toLocaleDateString()}</span>
-                                            <span className={`px-2 py-0.5 rounded-full text-white ${ticket.priority === 'high' ? 'bg-red-600' : ticket.priority === 'medium' ? 'bg-yellow-600' : 'bg-sky-600'}`}>{t(`cs_priority_${ticket.priority}` as TranslationKey)}</span>
+                                            <span className={`px-2 py-0.5 rounded-full text-white ${ticket.priority === 'high' ? 'bg-red-600' : ticket.priority === 'medium' ? 'bg-yellow-600' : 'bg-sky-600'}`}>{t(`cs_priority_${ticket.priority}`)}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -288,8 +293,8 @@ const CustomerServiceTool: React.FC<{
 const SupportTicketModal: React.FC<{ isOpen: boolean; onClose: () => void; onSave: (ticket: SupportTicket) => void; ticketData: SupportTicket | null; t: (key: TranslationKey) => string; }> = ({ isOpen, onClose, onSave, ticketData, t }) => {
     const [subject, setSubject] = useState('');
     const [customer, setCustomer] = useState('');
-    const [status, setStatus] = useState<'open' | 'in_progress' | 'closed'>('open');
-    const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
+    const [status, setStatus] = useState<SupportTicket['status']>('open');
+    const [priority, setPriority] = useState<SupportTicket['priority']>('medium');
 
     useEffect(() => {
         if(ticketData) {
@@ -303,6 +308,7 @@ const SupportTicketModal: React.FC<{ isOpen: boolean; onClose: () => void; onSav
         e.preventDefault();
         if(!subject.trim() || !customer.trim()) { alert(t('mra_error_fill_all_fields')); return; }
         onSave({ id: ticketData?.id || '', subject, customer, status, priority, createdAt: ticketData?.createdAt || new Date().toISOString() });
+        onClose();
     };
 
     return (
@@ -326,7 +332,75 @@ const ManagementPage: React.FC<ManagementPageProps> = ({ initialData, onUpdateDa
 
     useEffect(() => { if (window.innerWidth < 768) setIsSidebarOpen(false); }, []);
 
-    const managementGrowHelp = GROW_SECTIONS_HELP.find(s => s.title === 'Management_Section');
+    const handleExport = async () => {
+        const { default: jsPDF } = await import('jspdf');
+        const doc = new jsPDF();
+        const yRef = { value: MARGIN_MM };
+        const totalPagesRef = { current: doc.getNumberOfPages() };
+        
+        addUserProfileHeader(doc, userProfile, yRef, totalPagesRef, t);
+    
+        doc.setFontSize(TITLE_FONT_SIZE);
+        doc.setFont("helvetica", "bold");
+        addTextWithPageBreaks(doc, t('management_page_title'), MARGIN_MM, yRef, {}, LINE_HEIGHT_TITLE, totalPagesRef, t);
+        yRef.value += LINE_HEIGHT_NORMAL;
+    
+        // --- Supply Chain Section ---
+        doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+        addTextWithPageBreaks(doc, t(ManagementTool.SUPPLY_CHAIN), MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, t);
+        
+        const inventoryHead = [[t('scm_name_label'), t('scm_sku_label'), t('scm_quantity_label'), t('scm_location_label')]];
+        const inventoryBody = initialData.inventory.map(item => [item.name, item.sku, item.quantity.toString(), item.location]);
+    
+        if (inventoryBody.length > 0) {
+            (doc as any).autoTable({ startY: yRef.value, head: inventoryHead, body: inventoryBody, theme: 'grid', headStyles: { fillColor: [17, 138, 178] } });
+            yRef.value = (doc as any).lastAutoTable.finalY + 10;
+        } else {
+            doc.setFontSize(TEXT_FONT_SIZE); doc.setFont("helvetica", "normal");
+            addTextWithPageBreaks(doc, t('no_content_yet_placeholder_pdf'), MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+            yRef.value += LINE_HEIGHT_NORMAL;
+        }
+        
+        // --- Quality Management Section ---
+        if (yRef.value > 250) { doc.addPage(); yRef.value = MARGIN_MM; }
+        doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+        addTextWithPageBreaks(doc, t(ManagementTool.QUALITY_MANAGEMENT), MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, t);
+        
+        const qmsHead = [[t('qms_name_label'), t('qms_category_label'), t('qms_status_label'), t('qms_version_label')]];
+        const qmsBody = initialData.qmsItems.map(item => [item.name, t(`qms_category_${item.category.toLowerCase()}` as TranslationKey, item.category), t(`qms_status_${item.status.toLowerCase()}` as TranslationKey, item.status), item.version]);
+        if (qmsBody.length > 0) {
+            (doc as any).autoTable({ startY: yRef.value, head: qmsHead, body: qmsBody, theme: 'grid', headStyles: { fillColor: [6, 214, 160] } });
+            yRef.value = (doc as any).lastAutoTable.finalY + 10;
+        } else {
+            doc.setFontSize(TEXT_FONT_SIZE); doc.setFont("helvetica", "normal");
+            addTextWithPageBreaks(doc, t('no_content_yet_placeholder_pdf'), MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+            yRef.value += LINE_HEIGHT_NORMAL;
+        }
+        
+        // --- Customer Service Section ---
+        if (yRef.value > 250) { doc.addPage(); yRef.value = MARGIN_MM; }
+        doc.setFontSize(SECTION_TITLE_FONT_SIZE);
+        addTextWithPageBreaks(doc, t(ManagementTool.CUSTOMER_SERVICE), MARGIN_MM, yRef, {}, LINE_HEIGHT_SECTION_TITLE, totalPagesRef, t);
+        
+        const csHead = [[t('cs_subject_label'), t('cs_customer_label'), t('qms_status_label'), t('cs_priority_label'), t('cs_created_at_label')]];
+        const csBody = initialData.supportTickets.map(item => [item.subject, item.customer, t(`cs_stage_${item.status.toLowerCase().replace(' ', '_')}` as TranslationKey, item.status), t(`cs_priority_${item.priority.toLowerCase()}` as TranslationKey, item.priority), new Date(item.createdAt).toLocaleDateString()]);
+         if (csBody.length > 0) {
+            (doc as any).autoTable({ startY: yRef.value, head: csHead, body: csBody, theme: 'grid', headStyles: { fillColor: [239, 71, 111] } });
+            yRef.value = (doc as any).lastAutoTable.finalY + 10;
+        } else {
+            doc.setFontSize(TEXT_FONT_SIZE); doc.setFont("helvetica", "normal");
+            addTextWithPageBreaks(doc, t('no_content_yet_placeholder_pdf'), MARGIN_MM + 2, yRef, {}, LINE_HEIGHT_NORMAL, totalPagesRef, t);
+            yRef.value += LINE_HEIGHT_NORMAL;
+        }
+        
+        for (let i = 1; i <= doc.getNumberOfPages(); i++) {
+            doc.setPage(i); addPageFooter(doc, i, doc.getNumberOfPages(), t);
+        }
+        
+        doc.save(`${t('management_page_title', 'management').toLowerCase().replace(/\s/g, '_')}_export.pdf`);
+    };
+
+    const managementGrowHelp = GROW_SECTIONS_HELP.find(s => s.title === GrowSection.MANAGEMENT);
     const currentToolHelp = managementGrowHelp?.tools.find(tool => tool.tool === activeTool);
 
     return (
@@ -351,15 +425,18 @@ const ManagementPage: React.FC<ManagementPageProps> = ({ initialData, onUpdateDa
             <main className="flex-grow p-4 md:p-8 bg-transparent shadow-inner overflow-y-auto">
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="text-3xl font-bold text-slate-100">{t('management_page_title')}</h2>
-                    <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden">
-                        {isSidebarOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
-                    </Button>
+                    <div className="flex items-center gap-4">
+                        <Button onClick={handleExport} variant="secondary">{t('export_all_button')}</Button>
+                        <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden">
+                            {isSidebarOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
+                        </Button>
+                    </div>
                 </div>
                 {activeTool === ManagementTool.SUPPLY_CHAIN && <SupplyChainTool managementData={initialData} onUpdateData={onUpdateData} t={t} />}
                 {activeTool === ManagementTool.QUALITY_MANAGEMENT && <QmsTool managementData={initialData} onUpdateData={onUpdateData} t={t} />}
                 {activeTool === ManagementTool.CUSTOMER_SERVICE && <CustomerServiceTool managementData={initialData} onUpdateData={onUpdateData} t={t} />}
             </main>
-             <FloatingActionButton icon={<HelpIcon className="h-6 w-6"/>} tooltip={t('management_help_button_tooltip')} onClick={() => setIsHelpModalOpen(true)} className="bottom-6 right-6 z-30" colorClass="bg-slate-600 hover:bg-slate-500" />
+             <FloatingActionButton icon={<HelpIcon />} tooltip={t('management_help_button_tooltip')} onClick={() => setIsHelpModalOpen(true)} className="bottom-6 right-6 z-30" colorClass="bg-slate-600 hover:bg-slate-500" />
              <Modal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title={`${t('mra_help_modal_title_prefix')}: ${t(activeTool as TranslationKey)}`} size="xl">
                 <div className="prose prose-sm prose-invert max-w-none text-slate-300 whitespace-pre-line max-h-[70vh] overflow-y-auto pr-2">
                     {currentToolHelp ? t(currentToolHelp.explanationKey) : "Help not found."}
@@ -368,12 +445,13 @@ const ManagementPage: React.FC<ManagementPageProps> = ({ initialData, onUpdateDa
         </div>
     );
 };
-export default ManagementPage;
 
 // --- SVG Icons ---
 const CloseIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>);
 const MenuIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>);
-const HelpIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" /></svg>);
+const HelpIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (<svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" /></svg>);
 const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (<svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" {...props}><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" /></svg>);
 const PencilIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (<svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" {...props}><path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" /></svg>);
 const TrashIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (<svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" {...props}><path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.58.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25-.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clipRule="evenodd" /></svg>);
+
+export default ManagementPage;

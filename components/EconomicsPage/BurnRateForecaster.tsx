@@ -1,4 +1,3 @@
-
 import React, { useMemo, useEffect, useRef, useState } from 'react';
 import { EconomicsData, TranslationKey, Language, BurnRateData } from '../../types';
 
@@ -32,31 +31,29 @@ const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, 
 export const BurnRateForecaster: React.FC<BurnRateForecasterProps> = ({ economicsData, onUpdateData, t, language }) => {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstanceRef = useRef<any>(null);
-  const [localInputs, setLocalInputs] = useState<BurnRateData>(economicsData.burnRate);
 
-  useEffect(() => {
-    setLocalInputs(economicsData.burnRate);
-  }, [economicsData.burnRate]);
-
-  const handleLocalChange = (field: keyof BurnRateData, value: string) => {
-    setLocalInputs(prev => ({ ...prev, [field]: value as any }));
+  const handleChange = (field: keyof BurnRateData, value: string) => {
+    onUpdateData({
+        ...economicsData,
+        burnRate: {
+            ...economicsData.burnRate,
+            [field]: value,
+        },
+    });
   };
 
-  const handlePersistChange = (field: keyof BurnRateData) => {
-    const value = localInputs[field];
-    const numericValue = value === '' ? '' : parseFloat(String(value));
+  const handleBlur = (field: keyof BurnRateData) => {
+    const value = economicsData.burnRate[field];
+    const numericValue = value === '' ? '' : (parseFloat(String(value)) || '');
 
-    const isValidNumber = typeof numericValue === 'number' && !isNaN(numericValue) && numericValue >= 0;
-
-    if (value === '' || isValidNumber) {
-        if (String(numericValue) !== String(economicsData.burnRate[field])) {
-            onUpdateData({
-                ...economicsData,
-                burnRate: { ...economicsData.burnRate, [field]: numericValue },
-            });
-        }
-    } else {
-        setLocalInputs(economicsData.burnRate);
+    if (numericValue !== value) {
+        onUpdateData({
+            ...economicsData,
+            burnRate: {
+                ...economicsData.burnRate,
+                [field]: numericValue,
+            },
+        });
     }
   };
 
@@ -64,9 +61,9 @@ export const BurnRateForecaster: React.FC<BurnRateForecasterProps> = ({ economic
     const recurringCosts = economicsData.costs?.filter(c => c.type === 'recurring').reduce((sum, item) => sum + item.amount, 0) || 0;
     const recurringRevenues = economicsData.revenues?.filter(r => r.type === 'recurring').reduce((sum, item) => sum + item.amount, 0) || 0;
     
-    const hiring = Number(localInputs.additionalHiringSpend) || 0;
-    const marketing = Number(localInputs.additionalMarketingSpend) || 0;
-    const capital = Number(localInputs.startingCapital) || 0;
+    const hiring = Number(economicsData.burnRate.additionalHiringSpend) || 0;
+    const marketing = Number(economicsData.burnRate.additionalMarketingSpend) || 0;
+    const capital = Number(economicsData.burnRate.startingCapital) || 0;
 
     const baseBurn = recurringCosts;
     const totalBurn = baseBurn + hiring + marketing;
@@ -74,10 +71,10 @@ export const BurnRateForecaster: React.FC<BurnRateForecasterProps> = ({ economic
     const runwayMonths = (netBurn > 0 && capital > 0) ? capital / netBurn : Infinity;
 
     return { baseBurn, totalBurn, netBurn, runwayMonths };
-  }, [economicsData.costs, economicsData.revenues, localInputs]);
+  }, [economicsData.costs, economicsData.revenues, economicsData.burnRate]);
 
   const projectionData = useMemo(() => {
-    const capital = Number(localInputs.startingCapital) || 0;
+    const capital = Number(economicsData.burnRate.startingCapital) || 0;
     if (capital === 0 || netBurn <= 0) return { labels: [], data: [] };
 
     const labels = [];
@@ -98,7 +95,7 @@ export const BurnRateForecaster: React.FC<BurnRateForecasterProps> = ({ economic
         data.push(currentCapital);
     }
     return { labels, data };
-  }, [localInputs.startingCapital, netBurn, t, language]);
+  }, [economicsData.burnRate.startingCapital, netBurn, t, language]);
 
 
   useEffect(() => {
@@ -195,9 +192,9 @@ export const BurnRateForecaster: React.FC<BurnRateForecasterProps> = ({ economic
         {/* Inputs */}
         <div className="lg:col-span-2 p-6 bg-slate-800 rounded-xl shadow-lg border border-slate-700 space-y-6">
           <h3 className="text-xl font-semibold text-slate-100 text-center">{t('br_inputs_title')}</h3>
-          <InputField labelKey="br_starting_capital_label" value={localInputs.startingCapital} onChange={e => handleLocalChange('startingCapital', e.target.value)} onBlur={() => handlePersistChange('startingCapital')} />
-          <InputField labelKey="br_hiring_spend_label" value={localInputs.additionalHiringSpend} onChange={e => handleLocalChange('additionalHiringSpend', e.target.value)} onBlur={() => handlePersistChange('additionalHiringSpend')} />
-          <InputField labelKey="br_marketing_spend_label" value={localInputs.additionalMarketingSpend} onChange={e => handleLocalChange('additionalMarketingSpend', e.target.value)} onBlur={() => handlePersistChange('additionalMarketingSpend')} />
+          <InputField labelKey="br_starting_capital_label" value={economicsData.burnRate.startingCapital} onChange={e => handleChange('startingCapital', e.target.value)} onBlur={() => handleBlur('startingCapital')} />
+          <InputField labelKey="br_hiring_spend_label" value={economicsData.burnRate.additionalHiringSpend} onChange={e => handleChange('additionalHiringSpend', e.target.value)} onBlur={() => handleBlur('additionalHiringSpend')} />
+          <InputField labelKey="br_marketing_spend_label" value={economicsData.burnRate.additionalMarketingSpend} onChange={e => handleChange('additionalMarketingSpend', e.target.value)} onBlur={() => handleBlur('additionalMarketingSpend')} />
         </div>
         {/* Results & Chart */}
         <div className="lg:col-span-3 p-6 bg-slate-800 rounded-xl shadow-lg border border-slate-700 space-y-6">

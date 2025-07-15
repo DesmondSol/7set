@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from 'react';
 import { SalesData, SalesSubSection, Language, UserProfile, TranslationKey, SalesSectionHelp, CanvasData, PersonasData, MarketResearchData, LaunchPhase } from '../../types';
 import { SALES_SECTIONS_HELP } from '../../constants';
@@ -44,7 +46,7 @@ const SalesPage: React.FC<SalesPageProps> = ({
   }, []);
 
   const pageTitleObject = SALES_SECTIONS_HELP.find(s => s.title === activeSubSection);
-  const pageTitle = pageTitleObject ? t(pageTitleObject.sidebarTitle[language] as TranslationKey, pageTitleObject.title) : t(activeSubSection as TranslationKey, activeSubSection);
+  const pageTitle = pageTitleObject ? t(pageTitleObject.sidebarTitle[language], pageTitleObject.title) : t(activeSubSection, activeSubSection);
 
   const handleExportAll = async () => {
     const { default: jsPDF } = await import('jspdf');
@@ -208,7 +210,7 @@ const SalesPage: React.FC<SalesPageProps> = ({
                       : 'hover:bg-slate-700 hover:text-slate-100'
                     }`}
                 >
-                  {t(sectionHelp.sidebarTitle[language] as TranslationKey, sectionHelp.title)}
+                  {t(sectionHelp.sidebarTitle[language], sectionHelp.title)}
                 </a>
               </li>
             ))}
@@ -251,7 +253,7 @@ const SalesPage: React.FC<SalesPageProps> = ({
       <Modal
         isOpen={isHelpModalOpen}
         onClose={() => setIsHelpModalOpen(false)}
-        title={`${t('mra_help_modal_title_prefix')}: ${t(currentHelpContent.sidebarTitle[language] as TranslationKey, currentHelpContent.title)}`}
+        title={`${t('mra_help_modal_title_prefix')}: ${t(currentHelpContent.sidebarTitle[language], currentHelpContent.title)}`}
         size="xl"
       >
         <div className="prose prose-sm prose-invert max-w-none text-slate-300 whitespace-pre-line max-h-[70vh] overflow-y-auto pr-2">

@@ -1,25 +1,25 @@
 
 
-import { 
-    Page, 
-    SubPage, 
-    CanvasSection, 
-    ResearchSection, 
-    Language, 
-    CopywritingSubSection, 
-    MindsetSubSection,
-    ProductDesignSubSection,
-    EconomicsSubSection,
-    SalesSubSection,
-    CostCategory,
-    RevenueCategory,
-    TranslationKey,
-    StrategySubSection,
-    GrowSection,
-    LegalTool,
-    InvestmentTool,
-    ManagementTool,
-    ChecklistTool,
+import {
+  Page,
+  SubPage,
+  CanvasSection,
+  ResearchSection,
+  Language,
+  CopywritingSubSection,
+  MindsetSubSection,
+  ProductDesignSubSection,
+  EconomicsSubSection,
+  SalesSubSection,
+  CostCategory,
+  RevenueCategory,
+  TranslationKey,
+  StrategySubSection,
+  GrowSection,
+  LegalTool,
+  InvestmentTool,
+  ManagementTool,
+  ChecklistTool,
 } from './types';
 
 export type LocalizedContent = Record<TranslationKey, string>;
@@ -67,7 +67,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [ResearchSection.COMPETITOR_ANALYSIS]: "Competitor Analysis",
     [ResearchSection.TRENDS]: "Industry Trends",
     [ResearchSection.AI_SUMMARY]: "AI Summary",
-    
+
     [CopywritingSubSection.MARKETING]: "Marketing Content & Plans",
     [CopywritingSubSection.PITCH_REFINEMENT]: "Pitch Refinement",
 
@@ -79,7 +79,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     [ProductDesignSubSection.PRODUCT_PLANNING]: "Product Planning",
     [ProductDesignSubSection.ACTION_BOARD]: "Action Board",
     [ProductDesignSubSection.FEEDBACK_AGGREGATOR]: "Feedback Aggregator",
-    
+
     [EconomicsSubSection.COST_REVENUE]: "Cost & Revenue",
     [EconomicsSubSection.UNIT_ECONOMICS]: "Unit Economics Calculator",
     [EconomicsSubSection.BURN_RATE]: "Burn Rate Forecaster",
@@ -112,15 +112,15 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     grow_investment_explanation: "Streamline fundraising and equity management with cap table and investor relationship tools.",
     grow_management_explanation: "Optimize your operations with tools for supply chain, quality, and customer service management.",
     grow_checklists_explanation: "Stay organized and ensure nothing falls through the cracks with structured checklists for key business milestones.",
-    
+
     // Legal Tool Explanations
     grow_legal_doc_auto_explanation: "Generate automated templates for common legal documents such as Non-Disclosure Agreements (NDAs), employment contracts, and service agreements. Answer a few questions to get a customized, lawyer-grade document.",
     grow_legal_compliance_explanation: "Use this guide to understand key compliance areas for Ethiopian startups. We'll provide a checklist and link to helpful resources and software.",
-    
+
     // Investment Tool Explanations
     grow_investment_cap_table_explanation: "Simplify the complex management of company ownership, equity, stock options, and investor shares. Get a clear, real-time view of your capitalization table.",
     grow_investment_ir_crm_explanation: "Manage investor contacts, track communication, create investor updates, and streamline the fundraising process with a dedicated CRM.",
-    
+
     // Management Tool Explanations
     grow_management_scm_explanation: "For product-based startups, this tool helps manage inventory, orders, and logistics, providing real-time visibility into your supply chain.",
     grow_management_qms_explanation: "Ensure product/service quality and manage compliance with industry standards using this Quality Management System (QMS) checklist tool.",
@@ -137,7 +137,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     strategy_help_button_tooltip: "Strategy Help",
     canvas_explanation: "The Business Launch Canvas helps you map out the core components of your business on a single page, providing a high-level overview of your venture.",
     personas_explanation: "Create detailed profiles of your target customers to better understand their needs, motivations, and pain points. This is crucial for product development and marketing.",
-    
+
     // Product Design
     product_design_page_title: "Product Design Hub",
     product_design_sidebar_title: "Design Sections",
@@ -389,7 +389,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     legal_compliance_status_completed: "Completed",
     legal_doc_preview_title: "Document Preview",
     legal_doc_download_button: "Download .txt",
-    
+
     // Investment Page
     investment_page_title: "Investment Hub",
     investment_sidebar_title: "Investment Tools",
@@ -424,7 +424,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     ir_crm_last_contacted_label: "Last Contacted",
     ir_crm_notes_label: "Notes",
     ir_crm_no_investors: "No investors in this stage.",
-    
+
     // Management Page
     management_page_title: "Management Hub",
     management_sidebar_title: "Management Tools",
@@ -568,7 +568,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     checklist_gl_item_retention_2: "Automated Engagement",
     checklist_gl_item_retention_3: "CS Outreach",
     checklist_gl_item_retention_4: "In App Help and Education",
-    
+
     // New Pricing Checklist Items
     checklist_rl_card_pricing_structure: "Pricing Structure",
     checklist_rl_item_pricing_structure_1: "Pricing planned and in place?",
@@ -632,7 +632,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     checklist_rl_item_ops_ops_2: 'Processes defined for operations?',
     checklist_rl_item_ops_ops_3: 'Metrics defined to check performance?',
     checklist_rl_item_ops_ops_4: 'Operations documentation is ready e.g. FAQ, support site, etc.',
-    
+
     // New Growth Checklist Items
     checklist_gl_card_paid_linkedin: "LinkedIn",
     checklist_gl_item_paid_linkedin_1: "Founder Posts",
@@ -794,7 +794,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     mra_report_strengths_label: 'Strengths',
     mra_report_weaknesses_label: 'Weaknesses',
     mra_report_gaps_label: 'Market Gaps Addressed',
-    mra_report_notes_label: 'Notes', 
+    mra_report_notes_label: 'Notes',
     mra_report_description_label: 'Description',
     mra_report_source_label: 'Source/Evidence',
     mra_report_timeframe_label: 'Timeframe',
@@ -898,10 +898,10 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     calendar_add_post_tooltip: 'Add new post for this day',
     'day_sun_short': 'SUN', 'day_mon_short': 'MON', 'day_tue_short': 'TUE', 'day_wed_short': 'WED', 'day_thu_short': 'THU', 'day_fri_short': 'FRI', 'day_sat_short': 'SAT',
     'month_jan': 'January', 'month_feb': 'February', 'month_mar': 'March', 'month_apr': 'April', 'month_may': 'May', 'month_jun': 'June', 'month_jul': 'July', 'month_aug': 'August', 'month_sep': 'September', 'month_oct': 'October', 'month_nov': 'November', 'month_dec': 'December',
-    
+
     // Infographic Page
     infographic_title: "The Entrepreneur's Blueprint",
-    infographic_subtitle: "Your comprehensive 12-week journey from idea to impact with 7set Spark.",
+    infographic_subtitle: "Your comprehensive 20-week journey from idea to impact with 7set Spark.",
     infographic_blueprint_title: "The 3 Stages of Your Venture",
     infographic_blueprint_desc: "Our program is structured into three intensive, 4-week stages, guiding you through the critical phases of building a successful business.",
     infographic_stage1_name: "START",
@@ -916,13 +916,13 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     infographic_chart_start_week2: 'Market Research',
     infographic_chart_start_week3: 'Customer Personas',
     infographic_chart_start_week4: 'Copywriting',
-    infographic_deepdive_build_title: "Deep Dive: BUILD (Weeks 5-8)",
+    infographic_deepdive_build_title: "Deep Dive: BUILD (Weeks 5-12)",
     infographic_deepdive_build_desc: "Shift to building your product, financial plan, and initial sales strategies.",
     infographic_chart_build_mvp: 'Product / MVP Design',
     infographic_chart_build_finance: 'Financial Modeling',
     infographic_chart_build_marketing: 'Go-to-Market Strategy',
     infographic_chart_build_legal: 'Initial Legal Setup',
-    infographic_deepdive_grow_title: "Deep Dive: GROW (Weeks 9-12)",
+    infographic_deepdive_grow_title: "Deep Dive: GROW (Weeks 13-20)",
     infographic_deepdive_grow_desc: "Prepare for sustainable growth with a focus on operations and investment readiness.",
     infographic_chart_grow_legal: 'Advanced Legal & Compliance',
     infographic_chart_grow_finance: 'Investment Readiness',
@@ -1329,7 +1329,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     strategy_help_button_tooltip: "የስትራቴጂ እገዛ",
     canvas_explanation: "የቢዝነስ ማስጀመሪያ ሸራ የንግድዎን ዋና ዋና ክፍሎች በአንድ ገጽ ላይ እንዲቀርጹ ያግዝዎታል፣ ይህም ስለድርጅትዎ ከፍተኛ ደረጃ አጠቃላይ እይታ ይሰጣል።",
     personas_explanation: "የደንበኞችዎን ፍላጎቶች፣ ተነሳሽነቶች እና የህመም ነጥቦች በተሻለ ለመረዳት የዒላማ ደንበኞችዎን ዝርዝር መገለጫዎች ይፍጠሩ። ይህ ለምርት ልማት እና ለገበያ በጣም አስፈላጊ ነው።",
-    
+
     product_design_page_title: "የምርት ንድፍ ማዕከል",
     product_design_sidebar_title: "የንድፍ ክፍሎች",
     product_design_help_button_tooltip: "የምርት ንድፍ እገዛ",
@@ -1539,7 +1539,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     ai_g2m_modal_description: "በእርስዎ ስትራቴጂ፣ የደንበኛ መገለጫዎች እና ጥናት ላይ በመመስረት፣ AI አጠቃላይ የሆነ ወደ ገበያ መግቢያ እቅድ ይፈጥራል።",
     ai_g2m_modal_generate_button: "እቅድ ፍጠር",
     ai_g2m_modal_generating_button: "እቅድ እየተፈጠረ ነው...",
-    
+
     legal_page_title: "የህግ ማዕከል",
     legal_sidebar_title: "የህግ መሳሪያዎች",
     legal_help_button_tooltip: "የህግ እገዛ",
@@ -1577,7 +1577,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     legal_compliance_status_completed: "ተጠናቋል",
     legal_doc_preview_title: "የሰነድ ቅድመ-እይታ",
     legal_doc_download_button: ".txt አውርድ",
-    
+
     investment_page_title: "የኢንቨስትመንት ማዕከል",
     investment_sidebar_title: "የኢንቨስትመንት መሳሪያዎች",
     investment_help_button_tooltip: "የኢንቨስትመንት እገዛ",
@@ -1611,7 +1611,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     ir_crm_last_contacted_label: "ለመጨረሻ ጊዜ የተገናኘው",
     ir_crm_notes_label: "ማስታወሻዎች",
     ir_crm_no_investors: "በዚህ ደረጃ ምንም ባለሀብቶች የሉም።",
-    
+
     management_page_title: "የአስተዳደር ማዕከል",
     management_sidebar_title: "የአስተዳደር መሳሪያዎች",
     management_help_button_tooltip: "የአስተዳደር እገዛ",
@@ -1723,7 +1723,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     checklist_gl_item_retention_2: "ራስ-ሰር ተሳትፎ",
     checklist_gl_item_retention_3: "CS ተደራሽነት",
     checklist_gl_item_retention_4: "በመተግበሪያ ውስጥ እገዛ እና ትምህርት",
-    
+
     checklist_rl_card_ops_partner_channel: 'አጋር / ቻናል',
     checklist_rl_item_ops_pc_1: 'በምርቱ ላይ ስልጠና ተሰጥቷል?',
     checklist_rl_item_ops_pc_2: 'የሽያጭ ሂደት ዝግጁ ነው?',
@@ -1938,7 +1938,7 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     calendar_add_post_tooltip: 'ለዚህ ቀን አዲስ ልጥፍ ጨምር',
     'day_sun_short': 'እሑድ', 'day_mon_short': 'ሰኞ', 'day_tue_short': 'ማክሰ', 'day_wed_short': 'ረቡዕ', 'day_thu_short': 'ሐሙስ', 'day_fri_short': 'ዓርብ', 'day_sat_short': 'ቅዳሜ',
     'month_jan': 'ጥር', 'month_feb': 'የካቲት', 'month_mar': 'መጋቢት', 'month_apr': 'ሚያዝያ', 'month_may': 'ግንቦት', 'month_jun': 'ሰኔ', 'month_jul': 'ሐምሌ', 'month_aug': 'ነሐሴ', 'month_sep': 'መስከረም', 'month_oct': 'ጥቅምት', 'month_nov': 'ኅዳር', 'month_dec': 'ታኅሣሥ',
-    
+
     infographic_title: "የሥራ ፈጣሪው ንድፍ",
     infographic_subtitle: "ከ7set Spark ጋር ከሀሳብ ወደ ስኬት የሚወስድዎት አጠቃላይ የ12-ሳምንት ጉዞዎ።",
     infographic_blueprint_title: "የድርጅትዎ 3 የእድገት ደረጃዎች",
@@ -1955,13 +1955,13 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
     infographic_chart_start_week2: 'የገበያ ጥናት',
     infographic_chart_start_week3: 'የደንበኛ መገለጫዎች',
     infographic_chart_start_week4: 'የጽሑፍ ዝግጅት',
-    infographic_deepdive_build_title: "ዝርዝር እይታ፡ ግንባ (ሳምንታት 5-8)",
+    infographic_deepdive_build_title: "ዝርዝር እይታ፡ ገንባ (ሳምንታት 5-12)",
     infographic_deepdive_build_desc: "ወደ ምርት ግንባታ፣ የገንዘብ እቅድ እና የመጀመሪያ የሽያጭ ስልቶች ይቀይሩ።",
     infographic_chart_build_mvp: 'የምርት / MVP ንድፍ',
     infographic_chart_build_finance: 'የፋይናንስ ሞዴሊንግ',
     infographic_chart_build_marketing: 'ወደ ገበያ መግቢያ ስትራቴጂ',
     infographic_chart_build_legal: 'የመጀመሪያ ህጋዊ ዝግጅት',
-    infographic_deepdive_grow_title: "ዝርዝር እይታ፡ አሳድግ (ሳምንታት 9-12)",
+    infographic_deepdive_grow_title: "ዝርዝር እይታ፡ አሳድግ (ሳምንታት 12-20)",
     infographic_deepdive_grow_desc: "በኦፕሬሽኖች እና በኢንቨስትመንት ዝግጁነት ላይ በማተኮር ለቀጣይ እድገት ይዘጋጁ።",
     infographic_chart_grow_legal: 'የላቀ ህጋዊ እና ተገዢነት',
     infographic_chart_grow_finance: 'የኢንቨስትመንት ዝግጁነት',
@@ -2279,19 +2279,19 @@ export const translations: Record<Language, Partial<LocalizedContent>> = {
 };
 
 export const getTranslator = (language: Language) => {
-    return (key: TranslationKey, defaultText?: string): string => {
-        const translation = translations[language]?.[key];
-        if (translation !== undefined) {
-            return translation;
-        }
-        if (defaultText !== undefined) {
-            return defaultText;
-        }
-        // Fallback for keys that might not be in the English map either (e.g. dynamic ones)
-        const englishFallback = translations.en[key];
-        if (englishFallback !== undefined) {
-            return englishFallback;
-        }
-        return key; // Return the key itself as a last resort
-    };
+  return (key: TranslationKey, defaultText?: string): string => {
+    const translation = translations[language]?.[key];
+    if (translation !== undefined) {
+      return translation;
+    }
+    if (defaultText !== undefined) {
+      return defaultText;
+    }
+    // Fallback for keys that might not be in the English map either (e.g. dynamic ones)
+    const englishFallback = translations.en[key];
+    if (englishFallback !== undefined) {
+      return englishFallback;
+    }
+    return key; // Return the key itself as a last resort
+  };
 };
